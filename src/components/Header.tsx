@@ -9,14 +9,25 @@ export const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
 
-  const navigation = [
-    { name: "Home", href: "/" },
+  // Different navigation for landing page vs dashboard
+  const isLandingPage = location.pathname === "/";
+  
+  const landingNavigation = [
+    { name: "Features", href: "#features" },
+    { name: "How It Works", href: "#how-it-works" },
+    { name: "Testimonials", href: "#testimonials" }
+  ];
+
+  const dashboardNavigation = [
+    { name: "Dashboard", href: "/home" },
     { name: "Upload Report", href: "/upload" },
     { name: "AI Chat", href: "/chat" },
     { name: "Insights", href: "/insights" },
+    { name: "Trends", href: "/trends" },
     { name: "Profile", href: "/profile" }
   ];
 
+  const navigation = isLandingPage ? landingNavigation : dashboardNavigation;
   const isActive = (path: string) => location.pathname === path;
 
   return (
@@ -46,19 +57,37 @@ export const Header = () => {
               {item.name}
             </Link>
           ))}
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="border-medical-primary text-medical-primary hover:bg-medical-primary hover:text-white"
-          >
-            Login
-          </Button>
-          <Button 
-            size="sm" 
-            className="bg-medical-primary hover:bg-medical-dark text-white"
-          >
-            Sign Up
-          </Button>
+          
+          {isLandingPage ? (
+            <>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-medical-primary text-medical-primary hover:bg-medical-primary hover:text-white"
+                asChild
+              >
+                <Link to="/home">Login</Link>
+              </Button>
+              <Button 
+                size="sm" 
+                className="bg-medical-primary hover:bg-medical-dark text-white"
+                asChild
+              >
+                <Link to="/home">Sign Up</Link>
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="border-medical-primary text-medical-primary hover:bg-medical-primary hover:text-white"
+                asChild
+              >
+                <Link to="/">Logout</Link>
+              </Button>
+            </>
+          )}
         </nav>
 
         {/* Mobile Navigation */}
@@ -93,17 +122,31 @@ export const Header = () => {
                 </Link>
               ))}
               <div className="pt-4 space-y-2">
-                <Button 
-                  variant="outline" 
-                  className="w-full border-medical-primary text-medical-primary hover:bg-medical-primary hover:text-white"
-                >
-                  Login
-                </Button>
-                <Button 
-                  className="w-full bg-medical-primary hover:bg-medical-dark text-white"
-                >
-                  Sign Up
-                </Button>
+                {isLandingPage ? (
+                  <>
+                    <Button 
+                      variant="outline" 
+                      className="w-full border-medical-primary text-medical-primary hover:bg-medical-primary hover:text-white"
+                      asChild
+                    >
+                      <Link to="/home">Login</Link>
+                    </Button>
+                    <Button 
+                      className="w-full bg-medical-primary hover:bg-medical-dark text-white"
+                      asChild
+                    >
+                      <Link to="/home">Sign Up</Link>
+                    </Button>
+                  </>
+                ) : (
+                  <Button 
+                    variant="outline" 
+                    className="w-full border-medical-primary text-medical-primary hover:bg-medical-primary hover:text-white"
+                    asChild
+                  >
+                    <Link to="/">Logout</Link>
+                  </Button>
+                )}
               </div>
             </nav>
           </SheetContent>

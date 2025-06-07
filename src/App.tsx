@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import Landing from "./pages/Landing";
 import Home from "./pages/Home";
 import Upload from "./pages/Upload";
 import Chat from "./pages/Chat";
@@ -26,7 +27,8 @@ const App = () => (
           <Header />
           <main className="flex-1">
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<Landing />} />
+              <Route path="/home" element={<Home />} />
               <Route path="/upload" element={<Upload />} />
               <Route path="/chat" element={<Chat />} />
               <Route path="/insights" element={<Insights />} />
