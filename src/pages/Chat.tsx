@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarContent, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Send, Bot, User, Heart, Activity, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
@@ -124,17 +124,15 @@ const Chat = () => {
                       className={`flex gap-3 ${message.isBot ? '' : 'flex-row-reverse'}`}
                     >
                       <Avatar className="w-8 h-8">
-                        <AvatarContent>
-                          {message.isBot ? (
-                            <div className="w-8 h-8 medical-gradient rounded-full flex items-center justify-center">
-                              <Bot className="h-4 w-4 text-white" />
-                            </div>
-                          ) : (
-                            <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                              <User className="h-4 w-4 text-gray-600" />
-                            </div>
-                          )}
-                        </AvatarContent>
+                        {message.isBot ? (
+                          <div className="w-8 h-8 medical-gradient rounded-full flex items-center justify-center">
+                            <Bot className="h-4 w-4 text-white" />
+                          </div>
+                        ) : (
+                          <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                            <User className="h-4 w-4 text-gray-600" />
+                          </div>
+                        )}
                         <AvatarFallback>
                           {message.isBot ? 'AI' : 'U'}
                         </AvatarFallback>
@@ -164,11 +162,9 @@ const Chat = () => {
                   {isTyping && (
                     <div className="flex gap-3">
                       <Avatar className="w-8 h-8">
-                        <AvatarContent>
-                          <div className="w-8 h-8 medical-gradient rounded-full flex items-center justify-center">
-                            <Bot className="h-4 w-4 text-white" />
-                          </div>
-                        </AvatarContent>
+                        <div className="w-8 h-8 medical-gradient rounded-full flex items-center justify-center">
+                          <Bot className="h-4 w-4 text-white" />
+                        </div>
                         <AvatarFallback>AI</AvatarFallback>
                       </Avatar>
                       <div className="bg-white border border-medical-light/20 p-3 rounded-lg">
