@@ -1,15 +1,25 @@
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Upload as UploadIcon, TrendingUp, Lightbulb, Shield, Zap, Heart, FileText, Image, CheckCircle, ArrowRight, Users, Star } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Landing = () => {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirect authenticated users to home
+  useEffect(() => {
+    if (user) {
+      navigate('/home');
+    }
+  }, [user, navigate]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const validFiles = acceptedFiles.filter(file => {
@@ -100,78 +110,78 @@ const Landing = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="pt-20 pb-16 bg-gradient-to-br from-medical-light/10 via-white to-blue-50">
-        <div className="container max-w-6xl text-center">
-          <h1 className="text-4xl md:text-6xl font-montserrat font-bold mb-6 text-accent">
+      {/* Hero Section - Mobile Optimized */}
+      <section className="pt-16 md:pt-20 pb-12 md:pb-16 bg-gradient-to-br from-medical-light/10 via-white to-blue-50">
+        <div className="container max-w-6xl text-center px-4">
+          <h1 className="text-3xl md:text-4xl lg:text-6xl font-montserrat font-bold mb-4 md:mb-6 text-accent">
             Understand Your Health
             <span className="block text-medical-primary">Like Never Before</span>
           </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl lg:text-2xl text-muted-foreground mb-6 md:mb-8 max-w-3xl mx-auto px-4">
             Upload your lab reports and get instant AI-powered insights that decode complex medical terminology into simple, actionable health advice.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Button size="lg" className="bg-medical-primary hover:bg-medical-dark text-white" asChild>
-              <Link to="/home">
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center mb-8 md:mb-12 px-4">
+            <Button size="lg" className="bg-medical-primary hover:bg-medical-dark text-white h-12 px-6" asChild>
+              <Link to="/auth">
                 Get Started Free
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
-            <Button size="lg" variant="outline" className="border-medical-primary text-medical-primary">
+            <Button size="lg" variant="outline" className="border-medical-primary text-medical-primary h-12 px-6">
               Watch Demo
             </Button>
           </div>
           
-          {/* Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto">
+          {/* Stats - Mobile Responsive Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 max-w-2xl mx-auto px-4">
             <div className="text-center">
-              <div className="text-3xl font-bold text-medical-primary mb-2">10,000+</div>
-              <div className="text-muted-foreground">Reports Analyzed</div>
+              <div className="text-2xl md:text-3xl font-bold text-medical-primary mb-2">10,000+</div>
+              <div className="text-sm md:text-base text-muted-foreground">Reports Analyzed</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-medical-primary mb-2">95%</div>
-              <div className="text-muted-foreground">Accuracy Rate</div>
+              <div className="text-2xl md:text-3xl font-bold text-medical-primary mb-2">95%</div>
+              <div className="text-sm md:text-base text-muted-foreground">Accuracy Rate</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-medical-primary mb-2">5,000+</div>
-              <div className="text-muted-foreground">Happy Users</div>
+              <div className="text-2xl md:text-3xl font-bold text-medical-primary mb-2">5,000+</div>
+              <div className="text-sm md:text-base text-muted-foreground">Happy Users</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Interactive Upload Section */}
-      <section className="py-16 bg-white">
-        <div className="container max-w-4xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-montserrat font-bold mb-4 text-accent">
+      {/* Interactive Upload Section - Mobile Optimized */}
+      <section className="py-12 md:py-16 bg-white">
+        <div className="container max-w-4xl px-4">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-montserrat font-bold mb-3 md:mb-4 text-accent">
               Try It Now - Upload Your Report
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-lg md:text-xl text-muted-foreground px-4">
               See how our AI transforms your lab data into meaningful insights
             </p>
           </div>
 
           <Card className="health-card">
-            <CardContent className="p-8">
+            <CardContent className="p-4 md:p-8">
               <div
                 {...getRootProps()}
-                className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-all duration-300 ${
+                className={`border-2 border-dashed rounded-lg p-8 md:p-12 text-center cursor-pointer transition-all duration-300 ${
                   isDragActive 
                     ? 'border-medical-primary bg-medical-light/10' 
                     : 'border-gray-300 hover:border-medical-primary hover:bg-gray-50'
                 }`}
               >
                 <input {...getInputProps()} />
-                <UploadIcon className="h-16 w-16 text-medical-primary mx-auto mb-6" />
+                <UploadIcon className="h-12 md:h-16 w-12 md:w-16 text-medical-primary mx-auto mb-4 md:mb-6" />
                 {isDragActive ? (
                   <p className="text-medical-primary font-medium text-lg">Drop your files here...</p>
                 ) : (
                   <div>
-                    <p className="text-accent font-medium text-xl mb-3">
+                    <p className="text-accent font-medium text-lg md:text-xl mb-2 md:mb-3">
                       Drag & drop your lab reports here
                     </p>
-                    <p className="text-muted-foreground mb-6">
+                    <p className="text-muted-foreground mb-4 md:mb-6 text-sm md:text-base">
                       or click to browse • Supports PDF, JPG, PNG files up to 10MB
                     </p>
                     <Button className="bg-medical-primary hover:bg-medical-dark">
@@ -182,7 +192,7 @@ const Landing = () => {
               </div>
 
               {uploadedFiles.length > 0 && (
-                <div className="mt-8 p-6 bg-green-50 rounded-lg border border-green-200">
+                <div className="mt-6 md:mt-8 p-4 md:p-6 bg-green-50 rounded-lg border border-green-200">
                   <div className="flex items-center gap-3 mb-4">
                     <CheckCircle className="h-6 w-6 text-green-600" />
                     <h3 className="font-semibold text-green-800">Files Ready for Analysis!</h3>
@@ -201,13 +211,13 @@ const Landing = () => {
                       <p className="text-green-700 mb-4">Sign up to analyze your reports and get instant health insights!</p>
                       <div className="flex flex-col sm:flex-row gap-3 justify-center">
                         <Button className="bg-medical-primary hover:bg-medical-dark" asChild>
-                          <Link to="/home">
+                          <Link to="/auth">
                             Sign Up & Analyze
                             <ArrowRight className="ml-2 h-4 w-4" />
                           </Link>
                         </Button>
                         <Button variant="outline" asChild>
-                          <Link to="/home">Already have an account? Login</Link>
+                          <Link to="/auth">Already have an account? Login</Link>
                         </Button>
                       </div>
                     </div>
@@ -219,29 +229,29 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="container max-w-6xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-montserrat font-bold mb-4 text-accent">
+      {/* Features Section - Mobile Responsive Grid */}
+      <section className="py-12 md:py-16 bg-gray-50">
+        <div className="container max-w-6xl px-4">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-montserrat font-bold mb-3 md:mb-4 text-accent">
               Powerful Features for Better Health
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-lg md:text-xl text-muted-foreground">
               Everything you need to understand and improve your health
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             {features.map((feature, index) => (
               <Card key={index} className="health-card text-center">
-                <CardHeader>
-                  <div className={`w-16 h-16 ${feature.color.split(' ')[0]} rounded-lg flex items-center justify-center mx-auto mb-4`}>
-                    <feature.icon className={`h-8 w-8 ${feature.color.split(' ')[1]}`} />
+                <CardHeader className="pb-4">
+                  <div className={`w-14 h-14 md:w-16 md:h-16 ${feature.color.split(' ')[0]} rounded-lg flex items-center justify-center mx-auto mb-3 md:mb-4`}>
+                    <feature.icon className={`h-7 w-7 md:h-8 md:w-8 ${feature.color.split(' ')[1]}`} />
                   </div>
                   <CardTitle className="text-lg">{feature.title}</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">{feature.description}</p>
+                <CardContent className="pt-0">
+                  <p className="text-muted-foreground text-sm md:text-base">{feature.description}</p>
                 </CardContent>
               </Card>
             ))}
@@ -249,19 +259,19 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* How It Works Section */}
-      <section className="py-16 bg-white">
-        <div className="container max-w-6xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-montserrat font-bold mb-4 text-accent">
+      {/* How It Works Section - Mobile Optimized */}
+      <section className="py-12 md:py-16 bg-white">
+        <div className="container max-w-6xl px-4">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-montserrat font-bold mb-3 md:mb-4 text-accent">
               How It Works
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-lg md:text-xl text-muted-foreground">
               Get health insights in 3 simple steps
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-8">
             {[
               {
                 step: "01",
@@ -283,8 +293,8 @@ const Landing = () => {
               }
             ].map((item, index) => (
               <div key={index} className="text-center">
-                <div className="w-20 h-20 medical-gradient rounded-full flex items-center justify-center mx-auto mb-6">
-                  <item.icon className="h-10 w-10 text-white" />
+                <div className="w-16 h-16 md:w-20 md:h-20 medical-gradient rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
+                  <item.icon className="h-8 w-8 md:h-10 md:w-10 text-white" />
                 </div>
                 <div className="text-medical-primary font-bold text-lg mb-2">Step {item.step}</div>
                 <h3 className="font-montserrat font-semibold text-xl mb-3 text-accent">{item.title}</h3>
@@ -295,28 +305,28 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-16 bg-gray-50">
-        <div className="container max-w-6xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-montserrat font-bold mb-4 text-accent">
+      {/* Testimonials Section - Mobile Responsive */}
+      <section className="py-12 md:py-16 bg-gray-50">
+        <div className="container max-w-6xl px-4">
+          <div className="text-center mb-8 md:mb-12">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-montserrat font-bold mb-3 md:mb-4 text-accent">
               What Our Users Say
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-lg md:text-xl text-muted-foreground">
               Trusted by healthcare professionals and patients alike
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             {testimonials.map((testimonial, index) => (
               <Card key={index} className="health-card">
-                <CardContent className="p-6">
+                <CardContent className="p-4 md:p-6">
                   <div className="flex mb-4">
                     {[...Array(testimonial.rating)].map((_, i) => (
                       <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
                     ))}
                   </div>
-                  <p className="text-muted-foreground mb-4 italic">"{testimonial.content}"</p>
+                  <p className="text-muted-foreground mb-4 italic text-sm md:text-base">"{testimonial.content}"</p>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-medical-primary rounded-full flex items-center justify-center">
                       <Users className="h-5 w-5 text-white" />
@@ -333,17 +343,17 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16 bg-medical-primary text-white">
-        <div className="container max-w-4xl text-center">
-          <h2 className="text-3xl md:text-4xl font-montserrat font-bold mb-4">
+      {/* CTA Section - Mobile Optimized */}
+      <section className="py-12 md:py-16 bg-medical-primary text-white">
+        <div className="container max-w-4xl text-center px-4">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-montserrat font-bold mb-3 md:mb-4">
             Ready to Take Control of Your Health?
           </h2>
-          <p className="text-xl mb-8 opacity-90">
+          <p className="text-lg md:text-xl mb-6 md:mb-8 opacity-90">
             Join thousands of users who are already making informed health decisions with HealthIntel AI
           </p>
-          <Button size="lg" className="bg-white text-medical-primary hover:bg-gray-100" asChild>
-            <Link to="/home">
+          <Button size="lg" className="bg-white text-medical-primary hover:bg-gray-100 h-12 px-6" asChild>
+            <Link to="/auth">
               Start Your Health Journey Today
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
