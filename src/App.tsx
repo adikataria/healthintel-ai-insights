@@ -9,6 +9,9 @@ import { Footer } from "@/components/Footer";
 import Home from "./pages/Home";
 import Upload from "./pages/Upload";
 import Chat from "./pages/Chat";
+import Insights from "./pages/Insights";
+import Trends from "./pages/Trends";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,8 +29,10 @@ const App = () => (
               <Route path="/" element={<Home />} />
               <Route path="/upload" element={<Upload />} />
               <Route path="/chat" element={<Chat />} />
-              <Route path="/insights" element={<Home />} />
-              <Route path="/profile" element={<Home />} />
+              <Route path="/insights" element={<Insights />} />
+              <Route path="/trends" element={<Trends />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/profile" element={<Settings />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
