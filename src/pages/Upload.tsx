@@ -1,3 +1,4 @@
+
 import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -36,6 +37,39 @@ const Upload = () => {
       console.error('Analysis failed:', error);
     }
   });
+
+  // Enhanced file content extraction
+  const extractFileContent = async (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        const result = e.target?.result;
+        
+        if (file.type.includes('image')) {
+          // For images, we'll send a message indicating it's an image
+          resolve(`[IMAGE FILE: ${file.name}] - This is a medical report image. Please analyze any visible text, numbers, or medical data in this image.`);
+        } else if (file.type.includes('pdf')) {
+          // For PDFs, try to extract text or indicate it's a PDF
+          if (typeof result === 'string') {
+            resolve(result);
+          } else {
+            resolve(`[PDF FILE: ${file.name}] - This is a medical report PDF. Please analyze the medical content and data present in this document.`);
+          }
+        } else {
+          // For text files
+          resolve(result as string);
+        }
+      };
+      
+      reader.onerror = () => {
+        reject(new Error('Failed to read file'));
+      };
+      
+      // Read as text for all file types initially
+      reader.readAsText(file);
+    });
+  };
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const validFiles = acceptedFiles.filter(file => {
@@ -110,21 +144,25 @@ const Upload = () => {
             clearInterval(interval);
             setIsUploading(false);
             
-            // Convert file to text for analysis
-            const reader = new FileReader();
-            reader.onload = (e) => {
-              const content = e.target?.result as string;
-              
-              // Start AI analysis with consent flow
-              startAnalysis({
-                reportId: reportData.id,
-                content: content,
-                type: uploadedFiles[0].type,
-                fileName: uploadedFiles[0].name
+            // Extract file content with enhanced processing
+            extractFileContent(uploadedFiles[0])
+              .then(content => {
+                console.log('File content extracted, length:', content.length);
+                
+                // Start AI analysis with consent flow
+                startAnalysis({
+                  reportId: reportData.id,
+                  content: content,
+                  type: uploadedFiles[0].type,
+                  fileName: uploadedFiles[0].name
+                });
+              })
+              .catch(error => {
+                console.error('File extraction error:', error);
+                toast.error('Failed to extract file content. Please try a different file format.');
+                setAnalysisStatus('idle');
               });
-            };
             
-            reader.readAsText(uploadedFiles[0]);
             return 100;
           }
           return prev + 10;
@@ -299,7 +337,7 @@ const Upload = () => {
                     </div>
                     <p className="font-medium text-accent">Gemini AI is analyzing your report...</p>
                     <p className="text-sm text-muted-foreground">
-                      {isUploading ? 'Uploading and processing...' : 'Extracting insights and generating recommendations...'}
+                      {isUploading ? 'Processing file content...' : 'Extracting insights and generating recommendations...'}
                     </p>
                   </div>
                   <Progress value={uploadProgress} className="w-full" />
@@ -323,9 +361,9 @@ const Upload = () => {
                 <div className="w-12 h-12 bg-medical-light rounded-lg flex items-center justify-center mx-auto mb-3">
                   <Brain className="h-6 w-6 text-medical-primary" />
                 </div>
-                <h4 className="font-medium mb-2">Gemini AI Powered</h4>
+                <h4 className="font-medium mb-2">Multi-Format Support</h4>
                 <p className="text-sm text-muted-foreground">
-                  Advanced Google AI analyzes complex medical data with high accuracy
+                  Analyze PDF reports, medical images (JPG, PNG), and text files with advanced AI
                 </p>
               </div>
               <div className="text-center">

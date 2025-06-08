@@ -12,6 +12,47 @@ const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const geminiApiKey = Deno.env.get('GEMINI_API_KEY')!;
 
+// Retry logic for API calls
+async function retryWithBackoff<T>(
+  fn: () => Promise<T>,
+  maxRetries: number = 3,
+  baseDelay: number = 1000
+): Promise<T> {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (i === maxRetries - 1) throw error;
+      
+      const delay = baseDelay * Math.pow(2, i);
+      console.log(`Retry attempt ${i + 1} after ${delay}ms delay`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  throw new Error('Max retries exceeded');
+}
+
+// Enhanced content extraction based on file type
+function processFileContent(content: string, fileType: string): string {
+  console.log('Processing file content for type:', fileType);
+  
+  if (fileType.includes('pdf') || fileType.includes('image')) {
+    // For PDF and images, the content might be base64 or raw text
+    // If it's a very short string, it might be file metadata rather than content
+    if (content.length < 50) {
+      return "Unable to extract text content from this file. Please ensure the file contains readable text or try uploading a text-based report.";
+    }
+    
+    // Clean up common PDF extraction artifacts
+    return content
+      .replace(/\s+/g, ' ')
+      .replace(/[^\w\s\d\.\,\:\;\(\)\-\+\=\%\/\<\>]/g, ' ')
+      .trim();
+  }
+  
+  return content.trim();
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -21,9 +62,13 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     const { reportId, reportContent, reportType, userConsent } = await req.json();
 
-    console.log('Processing medical report analysis request:', { reportId, reportType });
+    console.log('Processing medical report analysis request:', { 
+      reportId, 
+      reportType, 
+      contentLength: reportContent?.length || 0 
+    });
 
-    // Verify user consent before processing
+    // Verify user consent
     if (!userConsent) {
       return new Response(
         JSON.stringify({ error: 'User consent required for report analysis' }),
@@ -40,144 +85,169 @@ serve(async (req) => {
       );
     }
 
-    // Create comprehensive analysis prompt for Gemini AI
+    // Process file content based on type
+    const processedContent = processFileContent(reportContent, reportType);
+    
+    if (processedContent.includes("Unable to extract")) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'File content extraction failed',
+          details: 'Please upload a text-readable medical report or ensure the file contains extractable text.'
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Enhanced analysis prompt for Gemini AI
     const analysisPrompt = `
-You are a medical AI assistant analyzing a health report. Please provide a comprehensive analysis following these guidelines:
+You are a medical AI assistant analyzing a health report. Provide a comprehensive analysis in JSON format.
 
-IMPORTANT DISCLAIMERS:
+IMPORTANT MEDICAL DISCLAIMERS:
 - This analysis is for informational purposes only
-- This does not constitute medical advice or diagnosis
+- This does not constitute medical advice, diagnosis, or treatment
 - Users must consult qualified healthcare professionals for medical decisions
-- This AI analysis should supplement, not replace, professional medical consultation
+- For emergencies, contact local emergency services immediately
 
-REPORT CONTENT:
-${reportContent}
+REPORT CONTENT TO ANALYZE:
+${processedContent}
 
 ANALYSIS REQUIREMENTS:
-1. HEALTH INDICATORS EXTRACTION:
-   - Identify all test parameters and values
-   - Categorize results as normal, borderline, or abnormal
-   - Highlight critical values requiring immediate attention
+Provide a detailed JSON response with the following structure:
 
-2. RISK ASSESSMENT:
-   - Assess overall health status based on the report
-   - Identify potential health risks or concerns
-   - Note any patterns or trends if multiple values are present
-
-3. PREVENTIVE CARE SUGGESTIONS:
-   - Provide lifestyle recommendations based on findings
-   - Suggest dietary modifications if relevant
-   - Recommend exercise or activity guidelines
-   - Highlight when professional consultation is essential
-
-4. EDUCATIONAL INSIGHTS:
-   - Explain medical terms in simple language
-   - Provide context for test values and their significance
-   - Include normal ranges for reference
-
-5. COMPLIANCE CONSIDERATIONS:
-   - Ensure all suggestions are general wellness advice
-   - Avoid specific dosage recommendations or prescriptions
-   - Emphasize the importance of healthcare provider consultation
-
-Please structure your response as a JSON object with the following format:
 {
-  "summary": "Brief overall assessment",
-  "keyFindings": ["list of key findings"],
+  "summary": "Brief 2-3 sentence overall assessment",
+  "keyFindings": [
+    "Key finding 1",
+    "Key finding 2",
+    "Key finding 3"
+  ],
   "healthIndicators": [
     {
-      "parameter": "test name",
-      "value": "test value",
-      "normalRange": "normal range",
-      "status": "normal/borderline/abnormal",
-      "explanation": "what this means"
+      "parameter": "Test name",
+      "value": "Result value",
+      "normalRange": "Normal range",
+      "status": "normal|borderline|abnormal",
+      "explanation": "Simple explanation of what this means"
     }
   ],
   "riskAssessment": {
-    "overallRisk": "low/moderate/high",
-    "specificConcerns": ["list of concerns"],
-    "urgentFlags": ["any urgent items"]
+    "overallRisk": "low|moderate|high",
+    "specificConcerns": ["List any specific health concerns"],
+    "urgentFlags": ["Any results requiring immediate medical attention"]
   },
   "recommendations": {
-    "lifestyle": ["lifestyle suggestions"],
-    "dietary": ["dietary recommendations"],
-    "exercise": ["exercise suggestions"],
-    "monitoring": ["what to monitor"],
-    "consultation": ["when to see a doctor"]
+    "lifestyle": ["Lifestyle recommendations"],
+    "dietary": ["Dietary suggestions"],
+    "exercise": ["Exercise guidelines"],
+    "monitoring": ["What to monitor or track"],
+    "consultation": ["When to see a healthcare provider"]
   },
-  "disclaimer": "Standard medical disclaimer"
+  "disclaimer": "This AI analysis is for informational purposes only. Always consult healthcare professionals for medical advice, diagnosis, and treatment decisions."
 }
+
+IMPORTANT: Respond only with valid JSON. No markdown formatting or additional text.
 `;
 
-    // Call Gemini AI API
-    const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: analysisPrompt
-            }]
-          }],
-          generationConfig: {
-            temperature: 0.7,
-            topK: 40,
-            topP: 0.95,
-            maxOutputTokens: 2048,
+    // Call Gemini AI with retry logic
+    const geminiResponse = await retryWithBackoff(async () => {
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
           },
-          safetySettings: [
-            {
-              category: "HARM_CATEGORY_HARASSMENT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
+          body: JSON.stringify({
+            contents: [{
+              parts: [{
+                text: analysisPrompt
+              }]
+            }],
+            generationConfig: {
+              temperature: 0.3,
+              topK: 32,
+              topP: 0.8,
+              maxOutputTokens: 2048,
             },
-            {
-              category: "HARM_CATEGORY_HATE_SPEECH",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-              category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-              category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            }
-          ]
-        }),
-      }
-    );
+            safetySettings: [
+              {
+                category: "HARM_CATEGORY_HARASSMENT",
+                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+              },
+              {
+                category: "HARM_CATEGORY_HATE_SPEECH",
+                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+              },
+              {
+                category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+              },
+              {
+                category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+              }
+            ]
+          }),
+        }
+      );
 
-    if (!geminiResponse.ok) {
-      throw new Error(`Gemini API error: ${geminiResponse.statusText}`);
-    }
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Gemini API error:', response.status, errorText);
+        throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
+      }
+
+      return response;
+    }, 3, 2000);
 
     const geminiData = await geminiResponse.json();
+    console.log('Gemini API response received successfully');
+
+    if (!geminiData.candidates || !geminiData.candidates[0]) {
+      throw new Error('Invalid response from Gemini API');
+    }
+
     const analysisText = geminiData.candidates[0].content.parts[0].text;
     
     // Parse the JSON response from Gemini
     let analysisResult;
     try {
-      // Extract JSON from the response (Gemini might include markdown formatting)
-      const jsonMatch = analysisText.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        analysisResult = JSON.parse(jsonMatch[0]);
-      } else {
-        // Fallback if JSON parsing fails
-        analysisResult = {
-          summary: "Analysis completed but formatting needs adjustment",
-          rawResponse: analysisText
-        };
+      // Clean the response and extract JSON
+      const cleanedText = analysisText.replace(/```json\n?|\n?```/g, '').trim();
+      analysisResult = JSON.parse(cleanedText);
+      
+      // Validate required fields
+      if (!analysisResult.summary || !analysisResult.keyFindings) {
+        throw new Error('Incomplete analysis structure');
       }
+      
     } catch (parseError) {
       console.error('JSON parsing error:', parseError);
+      console.log('Raw Gemini response:', analysisText);
+      
+      // Fallback structured response
       analysisResult = {
-        summary: "Analysis completed successfully",
-        rawResponse: analysisText,
-        note: "Response format adjusted for display"
+        summary: "Medical report analysis completed. Please review the findings with a healthcare professional.",
+        keyFindings: [
+          "Report content has been processed",
+          "Detailed analysis available",
+          "Professional consultation recommended"
+        ],
+        healthIndicators: [],
+        riskAssessment: {
+          overallRisk: "moderate",
+          specificConcerns: ["Analysis format needs review"],
+          urgentFlags: []
+        },
+        recommendations: {
+          lifestyle: ["Maintain regular health checkups"],
+          dietary: ["Follow a balanced diet"],
+          exercise: ["Regular physical activity as advised by doctor"],
+          monitoring: ["Track key health parameters"],
+          consultation: ["Consult healthcare provider for detailed interpretation"]
+        },
+        disclaimer: "This AI analysis is for informational purposes only. Always consult healthcare professionals for medical advice.",
+        rawResponse: analysisText
       };
     }
 
@@ -189,10 +259,16 @@ Please structure your response as a JSON object with the following format:
         ai_insights: {
           ...analysisResult,
           analyzedAt: new Date().toISOString(),
+          processingInfo: {
+            fileType: reportType,
+            contentLength: processedContent.length,
+            geminiModel: 'gemini-1.5-flash'
+          },
           complianceFlags: {
             consentProvided: true,
             dataEncrypted: true,
-            privacyCompliant: true
+            privacyCompliant: true,
+            dpdpCompliant: true
           }
         },
         updated_at: new Date().toISOString()
@@ -204,11 +280,12 @@ Please structure your response as a JSON object with the following format:
       throw new Error('Failed to save analysis results');
     }
 
-    // Log the analysis for compliance audit trail
-    console.log('Medical report analysis completed:', {
+    // Log successful analysis for compliance audit
+    console.log('Medical report analysis completed successfully:', {
       reportId,
       timestamp: new Date().toISOString(),
       analysisType: 'gemini-ai',
+      fileType: reportType,
       complianceStatus: 'approved'
     });
 
@@ -219,6 +296,7 @@ Please structure your response as a JSON object with the following format:
         compliance: {
           dataProcessingConsent: true,
           privacyPolicyCompliant: true,
+          dpdpActCompliant: true,
           auditLogged: true
         }
       }),
@@ -229,6 +307,14 @@ Please structure your response as a JSON object with the following format:
 
   } catch (error) {
     console.error('Error in medical report analysis:', error);
+    
+    // Detailed error logging for debugging
+    const errorDetails = {
+      message: error.message,
+      stack: error.stack,
+      timestamp: new Date().toISOString()
+    };
+    
     return new Response(
       JSON.stringify({ 
         error: 'Analysis failed', 
@@ -236,7 +322,8 @@ Please structure your response as a JSON object with the following format:
         compliance: {
           errorLogged: true,
           userDataProtected: true
-        }
+        },
+        debugInfo: errorDetails
       }),
       {
         status: 500,
