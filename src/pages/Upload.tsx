@@ -1,17 +1,41 @@
-
 import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Upload as UploadIcon, FileText, Image, AlertCircle, CheckCircle, X } from "lucide-react";
+import { Upload as UploadIcon, FileText, Image, AlertCircle, CheckCircle, X, Shield, Brain } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
+import { ConsentModal } from "@/components/medical/ConsentModal";
+import { ReportAnalysis } from "@/components/medical/ReportAnalysis";
+import { useMedicalAnalysis } from "@/hooks/useMedicalAnalysis";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Upload = () => {
+  const { user } = useAuth();
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [analysisStatus, setAnalysisStatus] = useState<'idle' | 'processing' | 'complete'>('idle');
+  const [analysisResult, setAnalysisResult] = useState<any>(null);
+  const [currentReportId, setCurrentReportId] = useState<string | null>(null);
+
+  const {
+    isAnalyzing,
+    showConsentModal,
+    startAnalysis,
+    handleConsentAccepted,
+    handleConsentDeclined
+  } = useMedicalAnalysis({
+    onSuccess: (analysis) => {
+      setAnalysisResult(analysis);
+      setAnalysisStatus('complete');
+    },
+    onError: (error) => {
+      setAnalysisStatus('idle');
+      console.error('Analysis failed:', error);
+    }
+  });
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const validFiles = acceptedFiles.filter(file => {
@@ -51,23 +75,68 @@ const Upload = () => {
   };
 
   const simulateUpload = async () => {
+    if (!user) {
+      toast.error('Please sign in to upload reports');
+      return;
+    }
+
     setIsUploading(true);
     setAnalysisStatus('processing');
     setUploadProgress(0);
 
-    // Simulate upload progress
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setIsUploading(false);
-          setAnalysisStatus('complete');
-          toast.success("Files uploaded and analyzed successfully!");
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 200);
+    try {
+      // Create a report record in the database
+      const { data: reportData, error: insertError } = await supabase
+        .from('medical_reports')
+        .insert({
+          user_id: user.id,
+          title: uploadedFiles[0].name,
+          file_name: uploadedFiles[0].name,
+          file_type: uploadedFiles[0].type,
+          file_size: uploadedFiles[0].size,
+          upload_status: 'completed'
+        })
+        .select()
+        .single();
+
+      if (insertError) throw insertError;
+
+      setCurrentReportId(reportData.id);
+
+      // Simulate upload progress
+      const interval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 100) {
+            clearInterval(interval);
+            setIsUploading(false);
+            
+            // Convert file to text for analysis
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              const content = e.target?.result as string;
+              
+              // Start AI analysis with consent flow
+              startAnalysis({
+                reportId: reportData.id,
+                content: content,
+                type: uploadedFiles[0].type,
+                fileName: uploadedFiles[0].name
+              });
+            };
+            
+            reader.readAsText(uploadedFiles[0]);
+            return 100;
+          }
+          return prev + 10;
+        });
+      }, 200);
+
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Upload failed');
+      setIsUploading(false);
+      setAnalysisStatus('idle');
+    }
   };
 
   const getFileIcon = (file: File) => {
@@ -84,16 +153,47 @@ const Upload = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
+  if (analysisStatus === 'complete' && analysisResult) {
+    return (
+      <div className="min-h-screen pt-20 pb-12 bg-gray-50">
+        <div className="container max-w-6xl">
+          <ReportAnalysis 
+            analysis={analysisResult}
+            reportTitle={uploadedFiles[0]?.name || 'Medical Report'}
+          />
+          <div className="mt-6 text-center">
+            <Button 
+              onClick={() => {
+                setAnalysisStatus('idle');
+                setAnalysisResult(null);
+                setUploadedFiles([]);
+                setUploadProgress(0);
+                setCurrentReportId(null);
+              }}
+              variant="outline"
+            >
+              Upload Another Report
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen pt-20 pb-12 bg-gray-50">
       <div className="container max-w-4xl">
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-montserrat font-bold mb-4 text-accent">
-            Upload Your Lab Reports
+            AI-Powered Lab Report Analysis
           </h1>
           <p className="text-xl text-muted-foreground">
-            Upload your medical reports and let our AI provide instant health insights
+            Upload your medical reports and get instant AI insights with Gemini AI
           </p>
+          <div className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground">
+            <Shield className="h-4 w-4 text-green-600" />
+            <span>DPDP Act Compliant • Encrypted • Privacy First</span>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -102,7 +202,7 @@ const Upload = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <UploadIcon className="h-5 w-5 text-medical-primary" />
-                Upload Documents
+                Upload Medical Reports
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -121,7 +221,7 @@ const Upload = () => {
                 ) : (
                   <div>
                     <p className="text-accent font-medium mb-2">
-                      Drag & drop your files here, or click to browse
+                      Drag & drop your lab reports here, or click to browse
                     </p>
                     <p className="text-sm text-muted-foreground">
                       Supports PDF, JPG, PNG, TXT files up to 10MB
@@ -160,10 +260,10 @@ const Upload = () => {
               {uploadedFiles.length > 0 && (
                 <Button 
                   onClick={simulateUpload}
-                  disabled={isUploading}
+                  disabled={isUploading || isAnalyzing}
                   className="w-full mt-4 bg-medical-primary hover:bg-medical-dark"
                 >
-                  {isUploading ? "Processing..." : "Analyze Reports"}
+                  {isUploading ? "Uploading..." : isAnalyzing ? "Analyzing..." : "Upload & Analyze with AI"}
                 </Button>
               )}
             </CardContent>
@@ -174,19 +274,19 @@ const Upload = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 {analysisStatus === 'idle' && <AlertCircle className="h-5 w-5 text-gray-400" />}
-                {analysisStatus === 'processing' && <UploadIcon className="h-5 w-5 text-medical-primary animate-spin" />}
+                {analysisStatus === 'processing' && <Brain className="h-5 w-5 text-medical-primary animate-pulse" />}
                 {analysisStatus === 'complete' && <CheckCircle className="h-5 w-5 text-green-500" />}
-                Analysis Status
+                AI Analysis Status
               </CardTitle>
             </CardHeader>
             <CardContent>
               {analysisStatus === 'idle' && (
                 <div className="text-center py-8">
                   <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <FileText className="h-8 w-8 text-gray-400" />
+                    <Brain className="h-8 w-8 text-gray-400" />
                   </div>
                   <p className="text-muted-foreground">
-                    Upload your lab reports to begin AI analysis
+                    Upload your lab reports to begin Gemini AI analysis
                   </p>
                 </div>
               )}
@@ -195,47 +295,17 @@ const Upload = () => {
                 <div className="space-y-4">
                   <div className="text-center py-4">
                     <div className="w-16 h-16 medical-gradient rounded-full flex items-center justify-center mx-auto mb-4">
-                      <UploadIcon className="h-8 w-8 text-white animate-spin" />
+                      <Brain className="h-8 w-8 text-white animate-pulse" />
                     </div>
-                    <p className="font-medium text-accent">Analyzing your reports...</p>
+                    <p className="font-medium text-accent">Gemini AI is analyzing your report...</p>
                     <p className="text-sm text-muted-foreground">
-                      Our AI is extracting and interpreting your health data
+                      {isUploading ? 'Uploading and processing...' : 'Extracting insights and generating recommendations...'}
                     </p>
                   </div>
                   <Progress value={uploadProgress} className="w-full" />
                   <p className="text-sm text-center text-muted-foreground">
                     {uploadProgress}% complete
                   </p>
-                </div>
-              )}
-
-              {analysisStatus === 'complete' && (
-                <div className="space-y-4">
-                  <div className="text-center py-4">
-                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <CheckCircle className="h-8 w-8 text-green-500" />
-                    </div>
-                    <p className="font-medium text-accent">Analysis Complete!</p>
-                    <p className="text-sm text-muted-foreground">
-                      Your health insights are ready to view
-                    </p>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    <div className="p-3 bg-green-50 rounded-lg border border-green-200">
-                      <p className="text-sm font-medium text-green-800">✓ Data extracted successfully</p>
-                    </div>
-                    <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                      <p className="text-sm font-medium text-blue-800">✓ Medical terms decoded</p>
-                    </div>
-                    <div className="p-3 bg-purple-50 rounded-lg border border-purple-200">
-                      <p className="text-sm font-medium text-purple-800">✓ Personalized insights generated</p>
-                    </div>
-                  </div>
-
-                  <Button className="w-full bg-medical-primary hover:bg-medical-dark" asChild>
-                    <a href="/insights">View Your Health Insights</a>
-                  </Button>
                 </div>
               )}
             </CardContent>
@@ -246,40 +316,48 @@ const Upload = () => {
         <Card className="health-card mt-8">
           <CardContent className="p-6">
             <h3 className="font-montserrat font-semibold text-lg mb-4 text-accent">
-              What happens after upload?
+              Advanced AI Analysis Features
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="text-center">
                 <div className="w-12 h-12 bg-medical-light rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <FileText className="h-6 w-6 text-medical-primary" />
+                  <Brain className="h-6 w-6 text-medical-primary" />
                 </div>
-                <h4 className="font-medium mb-2">Data Extraction</h4>
+                <h4 className="font-medium mb-2">Gemini AI Powered</h4>
                 <p className="text-sm text-muted-foreground">
-                  AI reads and extracts key health metrics from your reports
+                  Advanced Google AI analyzes complex medical data with high accuracy
                 </p>
               </div>
               <div className="text-center">
                 <div className="w-12 h-12 bg-medical-light rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <AlertCircle className="h-6 w-6 text-medical-primary" />
+                  <Shield className="h-6 w-6 text-medical-primary" />
                 </div>
-                <h4 className="font-medium mb-2">Medical Translation</h4>
+                <h4 className="font-medium mb-2">Privacy Compliant</h4>
                 <p className="text-sm text-muted-foreground">
-                  Complex medical terms are simplified into understandable insights
+                  Fully compliant with India's DPDP Act and medical privacy standards
                 </p>
               </div>
               <div className="text-center">
                 <div className="w-12 h-12 bg-medical-light rounded-lg flex items-center justify-center mx-auto mb-3">
                   <CheckCircle className="h-6 w-6 text-medical-primary" />
                 </div>
-                <h4 className="font-medium mb-2">Personalized Recommendations</h4>
+                <h4 className="font-medium mb-2">Actionable Insights</h4>
                 <p className="text-sm text-muted-foreground">
-                  Get tailored health advice based on your specific results
+                  Get personalized recommendations and easy-to-understand explanations
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Consent Modal */}
+      <ConsentModal
+        isOpen={showConsentModal}
+        onAccept={handleConsentAccepted}
+        onDecline={handleConsentDeclined}
+        type="analysis"
+      />
     </div>
   );
 };

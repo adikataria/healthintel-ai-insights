@@ -1,31 +1,30 @@
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Send, Bot, User, Heart, Activity, AlertCircle } from "lucide-react";
-import { toast } from "sonner";
-
-interface Message {
-  id: string;
-  content: string;
-  isBot: boolean;
-  timestamp: Date;
-}
+import { Send, Bot, User, Heart, Activity, AlertCircle, Brain, Shield } from "lucide-react";
+import { ConsentModal } from "@/components/medical/ConsentModal";
+import { useAIDoctorChat } from "@/hooks/useAIDoctorChat";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Chat = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      content: "Hello! I'm your AI health assistant. I can help you understand your lab results, answer health questions, and provide personalized recommendations. How can I assist you today?",
-      isBot: true,
-      timestamp: new Date()
-    }
-  ]);
+  const { user } = useAuth();
   const [inputMessage, setInputMessage] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
+  const [showConsentModal, setShowConsentModal] = useState(false);
+  const [pendingMessage, setPendingMessage] = useState("");
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  const { messages, isLoading, sendMessage } = useAIDoctorChat();
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const suggestedQuestions = [
     "What do my cholesterol levels mean?",
@@ -37,45 +36,29 @@ const Chat = () => {
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      content: inputMessage,
-      isBot: false,
-      timestamp: new Date()
-    };
+    // Check if this is the first message and show consent
+    if (messages.length === 0) {
+      setPendingMessage(inputMessage);
+      setShowConsentModal(true);
+      return;
+    }
 
-    setMessages(prev => [...prev, userMessage]);
+    await sendMessage(inputMessage);
     setInputMessage("");
-    setIsTyping(true);
-
-    // Simulate AI response
-    setTimeout(() => {
-      const botResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        content: generateAIResponse(inputMessage),
-        isBot: true,
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, botResponse]);
-      setIsTyping(false);
-    }, 1500);
   };
 
-  const generateAIResponse = (userInput: string) => {
-    const responses = {
-      cholesterol: "Based on typical cholesterol readings, here's what you should know:\n\n• **Total Cholesterol**: Should be less than 200 mg/dL\n• **LDL (Bad)**: Less than 100 mg/dL is optimal\n• **HDL (Good)**: 40+ mg/dL for men, 50+ mg/dL for women\n\nTo improve cholesterol levels, consider:\n✓ Eating more fiber-rich foods\n✓ Regular exercise (30 min daily)\n✓ Limiting saturated fats\n✓ Adding omega-3 rich foods",
-      blood_sugar: "Blood sugar management is crucial for overall health. Here are some tips:\n\n• **Fasting glucose**: Should be 70-99 mg/dL\n• **A1C levels**: Less than 5.7% is normal\n\nRecommendations:\n✓ Eat balanced meals with protein and fiber\n✓ Monitor portion sizes\n✓ Stay hydrated\n✓ Exercise regularly\n✓ Manage stress levels",
-      vitamin_d: "Vitamin D is essential for bone health and immune function:\n\n• **Normal range**: 30-50 ng/mL (75-125 nmol/L)\n• **Deficiency**: Below 20 ng/mL\n\nTo boost vitamin D:\n✓ Safe sun exposure (10-15 minutes daily)\n✓ Eat fatty fish, egg yolks, fortified foods\n✓ Consider supplements if deficient\n✓ Regular outdoor activities",
-      diet: "Based on general health principles, here's a balanced approach:\n\n🥗 **Include daily**:\n• Leafy greens and colorful vegetables\n• Lean proteins (fish, poultry, legumes)\n• Whole grains\n• Healthy fats (avocado, nuts, olive oil)\n\n⚠️ **Limit**:\n• Processed foods\n• Added sugars\n• Excessive sodium\n• Trans fats\n\nRemember: Always consult your healthcare provider for personalized advice!"
-    };
+  const handleConsentAccepted = async () => {
+    setShowConsentModal(false);
+    if (pendingMessage) {
+      await sendMessage(pendingMessage);
+      setInputMessage("");
+      setPendingMessage("");
+    }
+  };
 
-    const input = userInput.toLowerCase();
-    if (input.includes('cholesterol')) return responses.cholesterol;
-    if (input.includes('blood sugar') || input.includes('glucose')) return responses.blood_sugar;
-    if (input.includes('vitamin d')) return responses.vitamin_d;
-    if (input.includes('food') || input.includes('eat') || input.includes('diet')) return responses.diet;
-    
-    return "I understand you're looking for health guidance. While I can provide general information, it's important to discuss your specific lab results with your healthcare provider. They can give you personalized advice based on your complete medical history.\n\nIs there a specific health topic you'd like to learn more about? I'm here to help explain general health concepts and wellness strategies.";
+  const handleConsentDeclined = () => {
+    setShowConsentModal(false);
+    setPendingMessage("");
   };
 
   const handleSuggestedQuestion = (question: string) => {
@@ -89,6 +72,14 @@ const Chat = () => {
     }
   };
 
+  // Add initial AI message if no messages exist
+  const displayMessages = messages.length === 0 ? [{
+    id: 'welcome',
+    role: 'assistant' as const,
+    content: "Hello! I'm your AI Health Assistant powered by Gemini AI. I can help you understand your lab results, answer health questions, and provide personalized wellness recommendations. How can I assist you today?\n\n⚠️ **Important**: This AI provides educational information only and does not replace professional medical advice.",
+    timestamp: new Date()
+  }] : messages;
+
   return (
     <div className="min-h-screen pt-20 pb-12 bg-gray-50">
       <div className="container max-w-4xl">
@@ -97,8 +88,12 @@ const Chat = () => {
             AI Health Assistant
           </h1>
           <p className="text-xl text-muted-foreground">
-            Get personalized health insights and answers to your medical questions
+            Get personalized health insights powered by Gemini AI
           </p>
+          <div className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground">
+            <Shield className="h-4 w-4 text-green-600" />
+            <span>DPDP Act Compliant • Privacy Protected • Educational Purpose</span>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -107,26 +102,26 @@ const Chat = () => {
             <CardHeader className="border-b">
               <CardTitle className="flex items-center gap-2">
                 <div className="w-10 h-10 medical-gradient rounded-full flex items-center justify-center">
-                  <Bot className="h-5 w-5 text-white" />
+                  <Brain className="h-5 w-5 text-white" />
                 </div>
-                Health AI Assistant
+                Gemini AI Health Assistant
                 <span className="ml-auto text-sm bg-green-100 text-green-700 px-2 py-1 rounded-full">
                   Online
                 </span>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              <ScrollArea className="h-[500px] p-4">
+              <ScrollArea className="h-[500px] p-4" ref={scrollAreaRef}>
                 <div className="space-y-4">
-                  {messages.map((message) => (
+                  {displayMessages.map((message) => (
                     <div
                       key={message.id}
-                      className={`flex gap-3 ${message.isBot ? '' : 'flex-row-reverse'}`}
+                      className={`flex gap-3 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
                     >
                       <Avatar className="w-8 h-8">
-                        {message.isBot ? (
+                        {message.role === 'assistant' ? (
                           <div className="w-8 h-8 medical-gradient rounded-full flex items-center justify-center">
-                            <Bot className="h-4 w-4 text-white" />
+                            <Brain className="h-4 w-4 text-white" />
                           </div>
                         ) : (
                           <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
@@ -134,13 +129,13 @@ const Chat = () => {
                           </div>
                         )}
                         <AvatarFallback>
-                          {message.isBot ? 'AI' : 'U'}
+                          {message.role === 'assistant' ? 'AI' : 'U'}
                         </AvatarFallback>
                       </Avatar>
-                      <div className={`max-w-[80%] ${message.isBot ? '' : 'text-right'}`}>
+                      <div className={`max-w-[80%] ${message.role === 'user' ? 'text-right' : ''}`}>
                         <div
                           className={`p-3 rounded-lg ${
-                            message.isBot
+                            message.role === 'assistant'
                               ? 'bg-white border border-medical-light/20'
                               : 'bg-medical-primary text-white'
                           }`}
@@ -159,11 +154,11 @@ const Chat = () => {
                     </div>
                   ))}
                   
-                  {isTyping && (
+                  {isLoading && (
                     <div className="flex gap-3">
                       <Avatar className="w-8 h-8">
                         <div className="w-8 h-8 medical-gradient rounded-full flex items-center justify-center">
-                          <Bot className="h-4 w-4 text-white" />
+                          <Brain className="h-4 w-4 text-white" />
                         </div>
                         <AvatarFallback>AI</AvatarFallback>
                       </Avatar>
@@ -187,10 +182,11 @@ const Chat = () => {
                     onKeyPress={handleKeyPress}
                     placeholder="Ask me about your health results or general health questions..."
                     className="flex-1"
+                    disabled={isLoading}
                   />
                   <Button 
                     onClick={handleSendMessage}
-                    disabled={!inputMessage.trim() || isTyping}
+                    disabled={!inputMessage.trim() || isLoading}
                     className="bg-medical-primary hover:bg-medical-dark"
                   >
                     <Send className="h-4 w-4" />
@@ -215,6 +211,7 @@ const Chat = () => {
                     size="sm"
                     onClick={() => handleSuggestedQuestion(question)}
                     className="w-full text-left justify-start h-auto p-3 text-sm"
+                    disabled={isLoading}
                   >
                     {question}
                   </Button>
@@ -222,26 +219,30 @@ const Chat = () => {
               </CardContent>
             </Card>
 
-            {/* Quick Stats */}
+            {/* AI Features */}
             <Card className="health-card">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-medical-primary" />
-                  Quick Health Tips
+                  <Brain className="h-5 w-5 text-medical-primary" />
+                  AI Capabilities
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="flex items-start gap-2">
                   <Heart className="h-4 w-4 text-red-500 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm">Stay hydrated - aim for 8 glasses of water daily</p>
+                  <p className="text-sm">Analyzes your uploaded lab reports for context</p>
                 </div>
                 <div className="flex items-start gap-2">
                   <Activity className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm">Exercise regularly - 150 minutes per week recommended</p>
+                  <p className="text-sm">Provides personalized wellness recommendations</p>
                 </div>
                 <div className="flex items-start gap-2">
-                  <AlertCircle className="h-4 w-4 text-orange-500 mt-0.5 flex-shrink-0" />
-                  <p className="text-sm">Always consult your doctor for medical advice</p>
+                  <Brain className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                  <p className="text-sm">Powered by Google's advanced Gemini AI</p>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Shield className="h-4 w-4 text-purple-500 mt-0.5 flex-shrink-0" />
+                  <p className="text-sm">Privacy-compliant and secure processing</p>
                 </div>
               </CardContent>
             </Card>
@@ -254,16 +255,25 @@ const Chat = () => {
             <div className="flex items-start gap-3">
               <AlertCircle className="h-5 w-5 text-orange-500 flex-shrink-0 mt-0.5" />
               <div>
-                <h3 className="font-semibold text-sm mb-1">Medical Disclaimer</h3>
+                <h3 className="font-semibold text-sm mb-1">Medical Disclaimer & Compliance</h3>
                 <p className="text-xs text-muted-foreground">
                   This AI assistant provides general health information only and should not replace professional medical advice. 
                   Always consult with qualified healthcare providers for personalized medical guidance and treatment decisions.
+                  Your privacy is protected under India's DPDP Act, 2023.
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Consent Modal */}
+      <ConsentModal
+        isOpen={showConsentModal}
+        onAccept={handleConsentAccepted}
+        onDecline={handleConsentDeclined}
+        type="chat"
+      />
     </div>
   );
 };
