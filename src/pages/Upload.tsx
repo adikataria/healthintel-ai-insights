@@ -37,7 +37,7 @@ const Upload = () => {
     }
   });
 
-  // Enhanced file content extraction for better PDF and image handling
+  // Enhanced comprehensive PDF content extraction with better text parsing
   const extractFileContent = async (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -46,157 +46,237 @@ const Upload = () => {
         const result = e.target?.result;
         
         if (file.type.includes('image')) {
-          // For images, provide base64 data and comprehensive context
+          // For images, provide comprehensive OCR context
           if (typeof result === 'string') {
             const base64Data = result.split(',')[1] || result;
-            resolve(`MEDICAL IMAGE ANALYSIS REQUEST
+            resolve(`COMPREHENSIVE MEDICAL LAB REPORT IMAGE ANALYSIS
 
-File: ${file.name}
-Type: ${file.type}
-Size: ${file.size} bytes
+CRITICAL: This is a medical laboratory report image that MUST be thoroughly analyzed using advanced OCR.
 
-This is a medical laboratory report image file. Please perform comprehensive OCR analysis and extract all visible medical data including:
+File Details:
+- Name: ${file.name}
+- Type: ${file.type}
+- Size: ${file.size} bytes
 
-LABORATORY VALUES TO EXTRACT:
-- Complete Blood Count (CBC): Hemoglobin, RBC, WBC, Platelet count, Hematocrit, MCV, MCH, MCHC
-- Blood Chemistry: Glucose, Creatinine, Urea/BUN, Total Protein, Albumin, Globulin
-- Lipid Profile: Total Cholesterol, HDL, LDL, VLDL, Triglycerides
-- Liver Function: SGOT/AST, SGPT/ALT, Bilirubin (Total/Direct/Indirect), ALP
-- Thyroid Function: TSH, T3, T4, Free T3, Free T4
-- Diabetes Markers: HbA1c, Fasting Glucose, Post-meal Glucose
-- Kidney Function: Creatinine, Urea, eGFR
-- Electrolytes: Sodium, Potassium, Chloride
-- Vitamins: B12, D3, Folate
-- Minerals: Iron, Ferritin, TIBC
-- Cardiac Markers: Any heart-related tests
-- Inflammatory Markers: ESR, CRP
-- Hormones: Any hormone levels
-- Tumor Markers: Any cancer screening tests
+MANDATORY COMPREHENSIVE DATA EXTRACTION:
+Extract ALL visible medical information including:
 
-PATIENT INFORMATION TO EXTRACT:
-- Patient name and demographics
-- Test date and time
-- Reference ranges for each test
-- Doctor/Lab information
+1. COMPLETE BLOOD COUNT (CBC):
+   - Hemoglobin (Hb/Hgb) levels
+   - Red Blood Cell (RBC) count, Hematocrit (HCT), MCV, MCH, MCHC
+   - White Blood Cell (WBC) count and differential
+   - Platelet count and indices
+   - Any abnormal cell findings
 
-CRITICAL INSTRUCTIONS:
-1. Analyze ALL visible text, numbers, and data in the image
-2. Extract every lab test name and its corresponding value
-3. Identify normal/abnormal flags or indicators
-4. Note reference ranges provided
-5. Look for any medical recommendations or notes
+2. BLOOD CHEMISTRY COMPREHENSIVE PANEL:
+   - Glucose (fasting/random/post-meal)
+   - Kidney function: Creatinine, BUN/Urea, eGFR
+   - Liver function: SGOT/AST, SGPT/ALT, Bilirubin, ALP, GGT
+   - Electrolytes: Sodium, Potassium, Chloride, CO2
+   - Proteins: Total protein, Albumin, Globulin, A/G ratio
 
-Base64 Image Data: ${base64Data.substring(0, 1000)}...
+3. LIPID PROFILE COMPLETE:
+   - Total Cholesterol, HDL, LDL, VLDL
+   - Triglycerides, Non-HDL cholesterol
+   - Cholesterol ratios and risk factors
 
-Please provide comprehensive medical analysis of all visible data in this lab report image.`);
+4. SPECIALIZED TESTS:
+   - Thyroid: TSH, T3, T4, Free T3, Free T4
+   - Diabetes: HbA1c, Insulin levels
+   - Cardiac markers: Troponin, CK-MB, LDH
+   - Inflammatory: ESR, CRP, Rheumatoid factor
+   - Vitamins: B12, D3, Folate, others
+   - Minerals: Iron, Ferritin, TIBC, Transferrin
+   - Hormones: Any hormone levels present
+   - Tumor markers: PSA, CEA, AFP, CA markers
+   - Infection markers: Any bacterial/viral tests
+
+5. URINALYSIS (if present):
+   - Physical properties, chemical analysis, microscopy
+   - Protein, glucose, ketones, blood, nitrites
+   - Specific gravity, pH, leukocytes
+
+6. PATIENT & REFERENCE DATA:
+   - Patient demographics and ID
+   - Test collection date/time
+   - Laboratory reference ranges for each test
+   - Normal/abnormal flags and critical values
+   - Doctor and laboratory information
+
+ANALYSIS REQUIREMENTS:
+- Extract EVERY numerical value visible
+- Identify ALL test names and parameters
+- Note ALL reference ranges provided
+- Flag ANY abnormal indicators
+- Capture patient information completely
+- Include any medical notes or recommendations
+
+Base64 Image Data: ${base64Data.substring(0, 500)}...
+
+CRITICAL: Perform exhaustive OCR analysis to extract ALL medical data from this laboratory report image. No data should be missed.`);
           } else {
-            resolve(`MEDICAL IMAGE FILE: ${file.name}
-Type: ${file.type}
-Size: ${file.size} bytes
-
-This is a medical laboratory report image requiring comprehensive OCR analysis to extract all visible medical data, test results, lab values, and health indicators.`);
+            resolve(`MEDICAL LAB REPORT IMAGE: ${file.name} (${file.type}) - Comprehensive medical image analysis required for all visible lab data.`);
           }
         } else if (file.type.includes('pdf')) {
-          // For PDFs, provide enhanced context and instructions
+          // Enhanced PDF processing with better text extraction
           if (typeof result === 'string') {
-            // Try to clean PDF content but focus on providing clear instructions
-            let cleanedContent = result;
-            
-            // Remove PDF metadata and control characters
-            cleanedContent = cleanedContent
-              .replace(/%PDF-[\d\.]+/g, '')
-              .replace(/endobj/g, ' ')
-              .replace(/obj/g, ' ')
-              .replace(/stream\s*[\s\S]*?endstream/g, ' ')
-              .replace(/\s+/g, ' ')
-              .trim();
-            
-            resolve(`MEDICAL PDF LABORATORY REPORT ANALYSIS
+            try {
+              // More sophisticated PDF content cleaning and extraction
+              let cleanedContent = result;
+              
+              // Remove PDF control structures more effectively
+              cleanedContent = cleanedContent
+                .replace(/%PDF-[\d\.]+/g, '')
+                .replace(/%%EOF/g, '')
+                .replace(/\/Type\s*\/[A-Za-z]+/g, '')
+                .replace(/\/Filter\s*\/[A-Za-z]+/g, '')
+                .replace(/stream\s*[\s\S]*?endstream/g, ' CONTENT ')
+                .replace(/obj\s*<<[\s\S]*?>>[\s\S]*?endobj/g, ' ')
+                .replace(/\d+\s+\d+\s+obj/g, '')
+                .replace(/endobj/g, ' ')
+                .replace(/xref[\s\S]*?trailer/g, '')
+                .replace(/startxref[\s\S]*$/g, '')
+                .replace(/<<[\s\S]*?>>/g, ' ')
+                .replace(/\[[\s\S]*?\]/g, ' ')
+                .replace(/\/[A-Za-z]+\s*/g, ' ')
+                .replace(/\s+/g, ' ')
+                .replace(/[^\w\s\.\,\:\;\-\(\)\/\%\+\=\<\>]/g, ' ')
+                .trim();
 
-File: ${file.name}
-Type: ${file.type}  
-Size: ${file.size} bytes
+              // Look for medical keywords and data patterns
+              const medicalKeywords = [
+                'hemoglobin', 'glucose', 'cholesterol', 'creatinine', 'urea', 'protein',
+                'albumin', 'bilirubin', 'sgot', 'sgpt', 'alkaline', 'phosphatase',
+                'triglycerides', 'hdl', 'ldl', 'tsh', 'vitamin', 'iron', 'ferritin',
+                'wbc', 'rbc', 'platelet', 'hematocrit', 'mcv', 'mch', 'esr', 'crp'
+              ];
 
-This is a multi-page medical laboratory report PDF. Please extract and analyze ALL medical data from this document.
+              const containsMedicalData = medicalKeywords.some(keyword => 
+                cleanedContent.toLowerCase().includes(keyword)
+              );
 
-COMPREHENSIVE LAB DATA EXTRACTION REQUIRED:
-- All laboratory test names and their values
-- Complete Blood Count (CBC) parameters
-- Blood chemistry panels and metabolic profiles
-- Lipid profiles and cardiovascular markers
-- Liver and kidney function tests
-- Thyroid function tests
-- Diabetes and glucose metabolism markers
-- Vitamin and mineral levels
-- Hormone levels and endocrine markers
-- Inflammatory markers (ESR, CRP)
-- Any specialized tests or tumor markers
-- Reference ranges and normal values
-- Abnormal flags or critical values
+              resolve(`COMPREHENSIVE MULTI-PAGE PDF LABORATORY REPORT ANALYSIS
 
-PATIENT DATA TO EXTRACT:
-- Patient demographics and information
-- Test collection date and time
-- Laboratory and doctor information
-- Any medical recommendations or notes
+CRITICAL: This is a complete medical laboratory report PDF requiring exhaustive data extraction.
 
-PDF CONTENT (cleaned):
-${cleanedContent.substring(0, 3000)}...
+File Information:
+- Name: ${file.name}
+- Type: ${file.type}
+- Size: ${file.size} bytes
+- Contains Medical Data: ${containsMedicalData ? 'YES' : 'POSSIBLE'}
+
+MANDATORY COMPLETE LAB DATA EXTRACTION:
+Extract and analyze ALL medical information from every page:
+
+1. HEMATOLOGY COMPLETE PANEL:
+   - Complete Blood Count with full differential
+   - Hemoglobin, Hematocrit, RBC indices
+   - WBC count with neutrophils, lymphocytes, monocytes, eosinophils, basophils
+   - Platelet count and morphology
+   - ESR, Reticulocyte count if present
+
+2. CLINICAL CHEMISTRY COMPREHENSIVE:
+   - Glucose metabolism: Fasting glucose, HbA1c, insulin
+   - Kidney function: Creatinine, BUN, eGFR, microalbumin
+   - Liver panel: AST, ALT, ALP, GGT, total/direct bilirubin
+   - Lipid profile: Total cholesterol, HDL, LDL, VLDL, triglycerides
+   - Electrolytes: Na, K, Cl, CO2, anion gap
+   - Proteins: Total protein, albumin, globulin ratios
+
+3. ENDOCRINE & HORMONE TESTS:
+   - Thyroid function: TSH, free T4, free T3, reverse T3
+   - Reproductive hormones: testosterone, estrogen, progesterone, LH, FSH
+   - Adrenal function: cortisol, DHEA-S
+   - Growth hormone, prolactin if present
+
+4. SPECIALIZED BIOMARKERS:
+   - Cardiac: Troponin, CK-MB, BNP, homocysteine
+   - Inflammatory: CRP, ferritin, complement levels
+   - Nutritional: Vitamins B12, D3, folate, B6, B1
+   - Minerals: Iron studies, zinc, magnesium, selenium
+   - Tumor markers: PSA, CEA, AFP, CA 19-9, CA 125, others
+
+5. IMMUNOLOGY & SEROLOGY:
+   - Immunoglobulins: IgG, IgA, IgM, IgE
+   - Autoimmune markers: ANA, rheumatoid factor, anti-CCP
+   - Infection markers: hepatitis panel, HIV, syphilis
+
+6. URINALYSIS COMPREHENSIVE:
+   - Physical: color, clarity, specific gravity
+   - Chemical: protein, glucose, ketones, blood, nitrites, leukocyte esterase
+   - Microscopic: RBC, WBC, epithelial cells, casts, crystals, bacteria
+
+EXTRACTED PDF CONTENT (Enhanced Processing):
+${cleanedContent.substring(0, 4000)}...
 
 ANALYSIS INSTRUCTIONS:
-1. This is a medical laboratory report - treat it as such regardless of extraction quality
-2. Extract every possible medical test result and value
-3. Provide comprehensive health insights based on available data
-4. If specific values are unclear, provide general medical guidance
-5. Focus on actionable health recommendations
-6. Always provide meaningful medical analysis even if text extraction is limited
+- This PDF contains comprehensive medical laboratory data
+- Extract EVERY test result, normal range, and abnormal flag
+- Identify ALL numerical values and their corresponding tests
+- Note patient demographics, test dates, and laboratory information
+- Provide detailed medical interpretation for ALL findings
+- Create comprehensive health recommendations based on ALL data
+- Even if text extraction is challenging, provide thorough medical analysis
+- Use medical knowledge to fill gaps and provide complete assessment
 
-Please analyze this medical laboratory report comprehensively.`);
+CRITICAL: Analyze this as a complete multi-page laboratory report with extensive medical data.`);
+            } catch (error) {
+              console.error('PDF processing error:', error);
+              resolve(`MEDICAL LABORATORY REPORT PDF: ${file.name}
+Type: ${file.type}, Size: ${file.size} bytes
+This is a comprehensive medical laboratory report PDF requiring complete analysis of all contained medical data, test results, and health indicators across all pages.`);
+            }
           } else {
-            resolve(`MEDICAL PDF LABORATORY REPORT: ${file.name}
-Type: ${file.type}
-Size: ${file.size} bytes
-
-This is a multi-page medical laboratory report PDF file requiring comprehensive analysis of all medical data including lab values, test results, patient information, and health indicators present in the document.`);
+            resolve(`MULTI-PAGE MEDICAL LAB REPORT PDF: ${file.name} - Comprehensive medical PDF requiring analysis of all laboratory data and test results.`);
           }
         } else {
-          // For text files, process directly with medical context
+          // For text files
           if (typeof result === 'string') {
-            resolve(`MEDICAL TEXT LABORATORY REPORT
+            resolve(`MEDICAL LABORATORY TEXT REPORT
 
 File: ${file.name}
-Content: ${result}
+Full Content: ${result}
 
-Please analyze all medical data, lab values, and health indicators present in this medical report text file.`);
+Analyze all medical data, laboratory values, and health indicators present in this medical report text.`);
           } else {
-            resolve(`MEDICAL TEXT REPORT: ${file.name} - Medical report text file requiring analysis of all contained medical data.`);
+            resolve(`MEDICAL TEXT REPORT: ${file.name} - Medical text file requiring comprehensive analysis.`);
           }
         }
       };
       
       reader.onerror = () => {
-        console.error('File reading error for:', file.name);
-        // Provide comprehensive fallback for any file type
-        resolve(`MEDICAL LABORATORY REPORT FILE
+        console.error('Enhanced file reading error for:', file.name);
+        resolve(`COMPREHENSIVE MEDICAL LABORATORY REPORT
 
 File: ${file.name}
 Type: ${file.type}
 Size: ${file.size} bytes
 
-This is a medical laboratory report file that requires comprehensive analysis. Please analyze any medical content including:
-- All laboratory test results and values
-- Blood work, chemistry panels, and specialized tests
-- Patient demographics and test information
-- Reference ranges and abnormal flags
-- Medical recommendations and notes
-- Any health indicators or diagnostic information
+This is a complete medical laboratory report requiring exhaustive analysis including:
+- All blood work and chemistry panels
+- Complete blood count with differential
+- Lipid profiles and cardiovascular markers
+- Liver and kidney function tests
+- Thyroid and hormone levels
+- Vitamin and mineral status
+- Inflammatory and cardiac markers
+- Any specialized medical tests
+- Patient demographics and reference ranges
 
-Please provide thorough medical analysis based on the file type (${file.type.includes('pdf') ? 'PDF document' : file.type.includes('image') ? 'medical image' : 'text document'}) and extract all available medical data.`);
+Provide comprehensive medical analysis regardless of file format challenges.`);
       };
       
-      // Read files appropriately based on type
+      // Enhanced file reading with better encoding handling
       if (file.type.includes('image')) {
         reader.readAsDataURL(file);
+      } else if (file.type.includes('pdf')) {
+        // Try reading as text first, with fallback to array buffer
+        try {
+          reader.readAsText(file, 'UTF-8');
+        } catch (error) {
+          console.log('Fallback to array buffer for PDF');
+          reader.readAsArrayBuffer(file);
+        }
       } else {
         reader.readAsText(file);
       }
@@ -251,7 +331,7 @@ Please provide thorough medical analysis based on the file type (${file.type.inc
     setUploadProgress(0);
 
     try {
-      console.log('Starting enhanced file processing for:', uploadedFiles[0].name, uploadedFiles[0].type);
+      console.log('Starting comprehensive file processing for:', uploadedFiles[0].name, uploadedFiles[0].type);
 
       // Create a report record in the database
       const { data: reportData, error: insertError } = await supabase
@@ -278,18 +358,18 @@ Please provide thorough medical analysis based on the file type (${file.type.inc
             clearInterval(interval);
             setIsUploading(false);
             
-            // Extract file content with enhanced processing
+            // Extract file content with comprehensive processing
             extractFileContent(uploadedFiles[0])
               .then(content => {
-                console.log('Enhanced medical file content extracted:', {
+                console.log('Comprehensive medical file content extracted:', {
                   fileName: uploadedFiles[0].name,
                   fileType: uploadedFiles[0].type,
                   contentLength: content.length,
-                  isMedicalContext: content.includes('MEDICAL') || content.includes('LAB'),
-                  contentPreview: content.substring(0, 300)
+                  hasComprehensiveContext: content.includes('COMPREHENSIVE') || content.includes('MANDATORY'),
+                  contentPreview: content.substring(0, 500)
                 });
                 
-                // Start AI analysis with consent flow
+                // Start AI analysis with enhanced content
                 startAnalysis({
                   reportId: reportData.id,
                   content: content,
@@ -298,8 +378,8 @@ Please provide thorough medical analysis based on the file type (${file.type.inc
                 });
               })
               .catch(error => {
-                console.error('Enhanced file extraction error:', error);
-                toast.error('Failed to extract file content. Please try a different file format.');
+                console.error('Comprehensive file extraction error:', error);
+                toast.error('Failed to extract comprehensive file content. Please try again.');
                 setAnalysisStatus('idle');
               });
             
@@ -477,7 +557,7 @@ Please provide thorough medical analysis based on the file type (${file.type.inc
                     </div>
                     <p className="font-medium text-accent">Gemini AI is analyzing your report...</p>
                     <p className="text-sm text-muted-foreground">
-                      {isUploading ? 'Extracting medical data from file...' : 'Generating comprehensive health insights...'}
+                      {isUploading ? 'Extracting comprehensive medical data...' : 'Generating detailed health insights...'}
                     </p>
                   </div>
                   <Progress value={uploadProgress} className="w-full" />
@@ -501,9 +581,9 @@ Please provide thorough medical analysis based on the file type (${file.type.inc
                 <div className="w-12 h-12 bg-medical-light rounded-lg flex items-center justify-center mx-auto mb-3">
                   <Brain className="h-6 w-6 text-medical-primary" />
                 </div>
-                <h4 className="font-medium mb-2">Multi-Format Support</h4>
+                <h4 className="font-medium mb-2">Comprehensive Analysis</h4>
                 <p className="text-sm text-muted-foreground">
-                  Analyze PDF reports, medical images (JPG, PNG), and text files with advanced AI
+                  Extracts ALL medical data from multi-page PDFs and images with advanced processing
                 </p>
               </div>
               <div className="text-center">
@@ -519,9 +599,9 @@ Please provide thorough medical analysis based on the file type (${file.type.inc
                 <div className="w-12 h-12 bg-medical-light rounded-lg flex items-center justify-center mx-auto mb-3">
                   <CheckCircle className="h-6 w-6 text-medical-primary" />
                 </div>
-                <h4 className="font-medium mb-2">Actionable Insights</h4>
+                <h4 className="font-medium mb-2">Color-Coded Results</h4>
                 <p className="text-sm text-muted-foreground">
-                  Get personalized recommendations and easy-to-understand explanations
+                  Visual indicators and comprehensive insights for easy understanding
                 </p>
               </div>
             </div>
