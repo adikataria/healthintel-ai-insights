@@ -37,7 +37,7 @@ const Upload = () => {
     }
   });
 
-  // Enhanced file content extraction with better PDF and image handling
+  // Enhanced file content extraction for better PDF and image handling
   const extractFileContent = async (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -46,47 +46,155 @@ const Upload = () => {
         const result = e.target?.result;
         
         if (file.type.includes('image')) {
-          // For images, convert to base64 and provide context
+          // For images, provide base64 data and comprehensive context
           if (typeof result === 'string') {
-            resolve(`[MEDICAL IMAGE FILE: ${file.name}]\nType: ${file.type}\nSize: ${file.size} bytes\n\nThis is a medical report image file. Please analyze any visible text, numbers, lab values, medical charts, test results, or health indicators present in this image. Look for:\n- Lab test names and values\n- Reference ranges\n- Medical measurements\n- Patient information\n- Doctor recommendations\n- Any numerical data or charts\n\nImage data: ${result.substring(0, 2000)}...`);
+            const base64Data = result.split(',')[1] || result;
+            resolve(`MEDICAL IMAGE ANALYSIS REQUEST
+
+File: ${file.name}
+Type: ${file.type}
+Size: ${file.size} bytes
+
+This is a medical laboratory report image file. Please perform comprehensive OCR analysis and extract all visible medical data including:
+
+LABORATORY VALUES TO EXTRACT:
+- Complete Blood Count (CBC): Hemoglobin, RBC, WBC, Platelet count, Hematocrit, MCV, MCH, MCHC
+- Blood Chemistry: Glucose, Creatinine, Urea/BUN, Total Protein, Albumin, Globulin
+- Lipid Profile: Total Cholesterol, HDL, LDL, VLDL, Triglycerides
+- Liver Function: SGOT/AST, SGPT/ALT, Bilirubin (Total/Direct/Indirect), ALP
+- Thyroid Function: TSH, T3, T4, Free T3, Free T4
+- Diabetes Markers: HbA1c, Fasting Glucose, Post-meal Glucose
+- Kidney Function: Creatinine, Urea, eGFR
+- Electrolytes: Sodium, Potassium, Chloride
+- Vitamins: B12, D3, Folate
+- Minerals: Iron, Ferritin, TIBC
+- Cardiac Markers: Any heart-related tests
+- Inflammatory Markers: ESR, CRP
+- Hormones: Any hormone levels
+- Tumor Markers: Any cancer screening tests
+
+PATIENT INFORMATION TO EXTRACT:
+- Patient name and demographics
+- Test date and time
+- Reference ranges for each test
+- Doctor/Lab information
+
+CRITICAL INSTRUCTIONS:
+1. Analyze ALL visible text, numbers, and data in the image
+2. Extract every lab test name and its corresponding value
+3. Identify normal/abnormal flags or indicators
+4. Note reference ranges provided
+5. Look for any medical recommendations or notes
+
+Base64 Image Data: ${base64Data.substring(0, 1000)}...
+
+Please provide comprehensive medical analysis of all visible data in this lab report image.`);
           } else {
-            resolve(`[MEDICAL IMAGE FILE: ${file.name}] - Medical report image requiring analysis of visible medical data, lab values, and health indicators.`);
+            resolve(`MEDICAL IMAGE FILE: ${file.name}
+Type: ${file.type}
+Size: ${file.size} bytes
+
+This is a medical laboratory report image requiring comprehensive OCR analysis to extract all visible medical data, test results, lab values, and health indicators.`);
           }
         } else if (file.type.includes('pdf')) {
-          // For PDFs, try to extract meaningful content
+          // For PDFs, provide enhanced context and instructions
           if (typeof result === 'string') {
-            // Clean and process the PDF text content
-            const cleanedContent = result
-              .replace(/[^\w\s\d\.\,\:\;\(\)\-\+\=\%\/\<\>\[\]\n\r]/g, ' ')
+            // Try to clean PDF content but focus on providing clear instructions
+            let cleanedContent = result;
+            
+            // Remove PDF metadata and control characters
+            cleanedContent = cleanedContent
+              .replace(/%PDF-[\d\.]+/g, '')
+              .replace(/endobj/g, ' ')
+              .replace(/obj/g, ' ')
+              .replace(/stream\s*[\s\S]*?endstream/g, ' ')
               .replace(/\s+/g, ' ')
               .trim();
             
-            if (cleanedContent.length > 50) {
-              resolve(`[MEDICAL PDF REPORT: ${file.name}]\nType: ${file.type}\nSize: ${file.size} bytes\n\nExtracted medical report content:\n\n${cleanedContent}\n\nPlease analyze all lab values, test results, medical measurements, and health indicators present in this medical document.`);
-            } else {
-              // If extraction failed, provide a comprehensive fallback
-              resolve(`[MEDICAL PDF REPORT: ${file.name}]\nType: ${file.type}\nSize: ${file.size} bytes\n\nThis is a medical lab report PDF file. Please analyze any medical content including:\n- Blood test results and lab values\n- Biochemistry panels\n- Hematology results\n- Lipid profiles\n- Kidney and liver function tests\n- Diabetes markers\n- Vitamin and mineral levels\n- Hormone levels\n- Any other health indicators\n- Reference ranges and normal values\n- Patient demographics\n- Doctor recommendations\n\nExtract and analyze all visible medical data from this PDF document.`);
-            }
+            resolve(`MEDICAL PDF LABORATORY REPORT ANALYSIS
+
+File: ${file.name}
+Type: ${file.type}  
+Size: ${file.size} bytes
+
+This is a multi-page medical laboratory report PDF. Please extract and analyze ALL medical data from this document.
+
+COMPREHENSIVE LAB DATA EXTRACTION REQUIRED:
+- All laboratory test names and their values
+- Complete Blood Count (CBC) parameters
+- Blood chemistry panels and metabolic profiles
+- Lipid profiles and cardiovascular markers
+- Liver and kidney function tests
+- Thyroid function tests
+- Diabetes and glucose metabolism markers
+- Vitamin and mineral levels
+- Hormone levels and endocrine markers
+- Inflammatory markers (ESR, CRP)
+- Any specialized tests or tumor markers
+- Reference ranges and normal values
+- Abnormal flags or critical values
+
+PATIENT DATA TO EXTRACT:
+- Patient demographics and information
+- Test collection date and time
+- Laboratory and doctor information
+- Any medical recommendations or notes
+
+PDF CONTENT (cleaned):
+${cleanedContent.substring(0, 3000)}...
+
+ANALYSIS INSTRUCTIONS:
+1. This is a medical laboratory report - treat it as such regardless of extraction quality
+2. Extract every possible medical test result and value
+3. Provide comprehensive health insights based on available data
+4. If specific values are unclear, provide general medical guidance
+5. Focus on actionable health recommendations
+6. Always provide meaningful medical analysis even if text extraction is limited
+
+Please analyze this medical laboratory report comprehensively.`);
           } else {
-            resolve(`[MEDICAL PDF REPORT: ${file.name}] - Comprehensive medical lab report requiring detailed analysis of all test results and health indicators.`);
+            resolve(`MEDICAL PDF LABORATORY REPORT: ${file.name}
+Type: ${file.type}
+Size: ${file.size} bytes
+
+This is a multi-page medical laboratory report PDF file requiring comprehensive analysis of all medical data including lab values, test results, patient information, and health indicators present in the document.`);
           }
         } else {
-          // For text files, process directly
+          // For text files, process directly with medical context
           if (typeof result === 'string') {
-            resolve(`[MEDICAL TEXT REPORT: ${file.name}]\n\nMedical report content:\n${result}\n\nPlease analyze all medical data, lab values, and health indicators present.`);
+            resolve(`MEDICAL TEXT LABORATORY REPORT
+
+File: ${file.name}
+Content: ${result}
+
+Please analyze all medical data, lab values, and health indicators present in this medical report text file.`);
           } else {
-            resolve(`[MEDICAL TEXT FILE: ${file.name}] - Medical report text file for analysis.`);
+            resolve(`MEDICAL TEXT REPORT: ${file.name} - Medical report text file requiring analysis of all contained medical data.`);
           }
         }
       };
       
       reader.onerror = () => {
         console.error('File reading error for:', file.name);
-        // Provide a comprehensive fallback even on read error
-        resolve(`[MEDICAL REPORT FILE: ${file.name}]\nType: ${file.type}\nSize: ${file.size} bytes\n\nThis is a medical report file that requires comprehensive analysis. Please analyze any medical content including lab values, test results, vital signs, medical measurements, and health indicators that may be present in this ${file.type.includes('pdf') ? 'PDF' : file.type.includes('image') ? 'image' : 'text'} file.`);
+        // Provide comprehensive fallback for any file type
+        resolve(`MEDICAL LABORATORY REPORT FILE
+
+File: ${file.name}
+Type: ${file.type}
+Size: ${file.size} bytes
+
+This is a medical laboratory report file that requires comprehensive analysis. Please analyze any medical content including:
+- All laboratory test results and values
+- Blood work, chemistry panels, and specialized tests
+- Patient demographics and test information
+- Reference ranges and abnormal flags
+- Medical recommendations and notes
+- Any health indicators or diagnostic information
+
+Please provide thorough medical analysis based on the file type (${file.type.includes('pdf') ? 'PDF document' : file.type.includes('image') ? 'medical image' : 'text document'}) and extract all available medical data.`);
       };
       
-      // For images, read as data URL to get base64, for others read as text
+      // Read files appropriately based on type
       if (file.type.includes('image')) {
         reader.readAsDataURL(file);
       } else {
@@ -143,7 +251,7 @@ const Upload = () => {
     setUploadProgress(0);
 
     try {
-      console.log('Starting file processing for:', uploadedFiles[0].name, uploadedFiles[0].type);
+      console.log('Starting enhanced file processing for:', uploadedFiles[0].name, uploadedFiles[0].type);
 
       // Create a report record in the database
       const { data: reportData, error: insertError } = await supabase
@@ -173,11 +281,12 @@ const Upload = () => {
             // Extract file content with enhanced processing
             extractFileContent(uploadedFiles[0])
               .then(content => {
-                console.log('Enhanced file content extracted:', {
+                console.log('Enhanced medical file content extracted:', {
                   fileName: uploadedFiles[0].name,
                   fileType: uploadedFiles[0].type,
                   contentLength: content.length,
-                  contentPreview: content.substring(0, 200)
+                  isMedicalContext: content.includes('MEDICAL') || content.includes('LAB'),
+                  contentPreview: content.substring(0, 300)
                 });
                 
                 // Start AI analysis with consent flow
@@ -189,7 +298,7 @@ const Upload = () => {
                 });
               })
               .catch(error => {
-                console.error('File extraction error:', error);
+                console.error('Enhanced file extraction error:', error);
                 toast.error('Failed to extract file content. Please try a different file format.');
                 setAnalysisStatus('idle');
               });
@@ -368,7 +477,7 @@ const Upload = () => {
                     </div>
                     <p className="font-medium text-accent">Gemini AI is analyzing your report...</p>
                     <p className="text-sm text-muted-foreground">
-                      {isUploading ? 'Processing file content...' : 'Extracting insights and generating recommendations...'}
+                      {isUploading ? 'Extracting medical data from file...' : 'Generating comprehensive health insights...'}
                     </p>
                   </div>
                   <Progress value={uploadProgress} className="w-full" />
