@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,7 +15,8 @@ import {
   Clock,
   FileText,
   BarChart3,
-  Target
+  Target,
+  Sparkles
 } from 'lucide-react';
 
 interface HealthIndicator {
@@ -119,24 +119,30 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
     <div className="space-y-6 max-w-6xl mx-auto">
       {/* Header Section */}
       <Card className="health-card border-medical-primary/20">
-        <CardHeader className="bg-gradient-to-r from-medical-light/20 to-medical-primary/10">
+        <CardHeader className="bg-gradient-to-r from-blue-500 via-teal-500 to-green-500 text-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-medical-primary/10">
-                <Brain className="h-6 w-6 text-medical-primary" />
+              <div className="p-2 rounded-lg bg-white/20">
+                <Brain className="h-6 w-6 text-white" />
               </div>
               <div>
-                <CardTitle className="text-xl">AI Lab Report Analysis</CardTitle>
-                <p className="text-sm text-muted-foreground">{reportTitle}</p>
+                <CardTitle className="text-xl text-white">Doclumen AI Lab Report Analysis</CardTitle>
+                <div className="flex items-center gap-2 mt-1">
+                  <p className="text-sm text-white/90">{reportTitle}</p>
+                  <div className="flex items-center gap-1 text-xs text-white/80">
+                    <Sparkles className="h-3 w-3" />
+                    <span>Powered by Gemini</span>
+                  </div>
+                </div>
               </div>
             </div>
             {analysis.analyzedAt && (
               <div className="text-right">
-                <p className="text-sm text-muted-foreground flex items-center gap-1">
+                <p className="text-sm text-white/90 flex items-center gap-1">
                   <Clock className="h-4 w-4" />
                   {new Date(analysis.analyzedAt).toLocaleDateString()}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-white/80">
                   {new Date(analysis.analyzedAt).toLocaleTimeString()}
                 </p>
               </div>
@@ -144,12 +150,12 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
           </div>
         </CardHeader>
         <CardContent className="pt-6">
-          <div className="bg-medical-light/10 p-6 rounded-xl border border-medical-primary/20">
+          <div className="bg-gradient-to-br from-blue-50 to-teal-50 p-6 rounded-xl border border-blue-200">
             <div className="flex items-start gap-3">
-              <FileText className="h-5 w-5 text-medical-primary mt-1 flex-shrink-0" />
+              <FileText className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
               <div>
-                <h3 className="font-semibold text-accent mb-2">Report Summary</h3>
-                <p className="text-gray-700 leading-relaxed">{analysis.summary}</p>
+                <h3 className="font-semibold text-blue-900 mb-2">Report Summary</h3>
+                <p className="text-blue-800 leading-relaxed">{analysis.summary}</p>
               </div>
             </div>
           </div>
@@ -160,17 +166,17 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
       <Card className="health-card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Lightbulb className="h-5 w-5 text-medical-primary" />
+            <Lightbulb className="h-5 w-5 text-yellow-500" />
             Key Findings at a Glance
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {analysis.keyFindings?.slice(0, 3).map((finding, index) => (
-              <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <div key={index} className="p-4 bg-gradient-to-br from-green-50 to-blue-50 rounded-lg border border-green-200">
                 <div className="flex items-start gap-3">
-                  <div className="p-1 rounded-full bg-medical-primary/10">
-                    <CheckCircle className="h-4 w-4 text-medical-primary" />
+                  <div className="p-1 rounded-full bg-green-500/20">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
                   </div>
                   <p className="text-sm font-medium text-gray-700">{finding}</p>
                 </div>
@@ -205,7 +211,7 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
           <Card className="health-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5 text-medical-primary" />
+                <Activity className="h-5 w-5 text-blue-500" />
                 Your Test Results Explained
               </CardTitle>
             </CardHeader>
@@ -227,7 +233,7 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-1">
                           <p className="text-sm font-medium text-gray-600">Your Result</p>
-                          <p className="text-xl font-bold text-medical-primary">{indicator.value}</p>
+                          <p className="text-xl font-bold text-blue-600">{indicator.value}</p>
                         </div>
                         <div className="space-y-1">
                           <p className="text-sm font-medium text-gray-600">Normal Range</p>
@@ -235,9 +241,9 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
                         </div>
                       </div>
                       
-                      <div className="bg-gray-50 p-4 rounded-lg border">
-                        <h5 className="font-medium text-gray-800 mb-2">What this means:</h5>
-                        <p className="text-sm text-gray-700 leading-relaxed">{indicator.explanation}</p>
+                      <div className="bg-gradient-to-r from-blue-50 to-teal-50 p-4 rounded-lg border border-blue-200">
+                        <h5 className="font-medium text-blue-900 mb-2">What this means:</h5>
+                        <p className="text-sm text-blue-800 leading-relaxed">{indicator.explanation}</p>
                       </div>
                     </div>
                   ))}
