@@ -42,7 +42,7 @@ const AppContent = () => {
   if (loading || profileLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-medical-primary"></div>
       </div>
     );
   }
@@ -61,6 +61,11 @@ const AppContent = () => {
           <Route path="/dashboard" element={
             <ProtectedRoute>
               <Index />
+            </ProtectedRoute>
+          } />
+          <Route path="/profile" element={
+            <ProtectedRoute>
+              <Settings />
             </ProtectedRoute>
           } />
           <Route path="/upload" element={
