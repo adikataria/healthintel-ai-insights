@@ -1,363 +1,439 @@
 
-import { useState, useCallback, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload as UploadIcon, TrendingUp, Lightbulb, Shield, Zap, Heart, FileText, Image, CheckCircle, ArrowRight, Users, Star } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
-import { useDropzone } from "react-dropzone";
-import { toast } from "sonner";
-import { useAuth } from "@/contexts/AuthContext";
+import React from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Brain, 
+  Shield, 
+  Smartphone, 
+  TrendingUp, 
+  Users, 
+  FileText,
+  Heart,
+  Target,
+  Bell,
+  Download,
+  CheckCircle,
+  ArrowRight,
+  Star
+} from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Landing = () => {
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
-  const { user } = useAuth();
-  const navigate = useNavigate();
-
-  // Redirect authenticated users to home
-  useEffect(() => {
-    if (user) {
-      navigate('/home');
-    }
-  }, [user, navigate]);
-
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const validFiles = acceptedFiles.filter(file => {
-      const isValidType = file.type.includes('pdf') || file.type.includes('image') || file.type.includes('text');
-      const isValidSize = file.size <= 10 * 1024 * 1024; // 10MB limit
-      
-      if (!isValidType) {
-        toast.error(`${file.name} is not a supported file type`);
-        return false;
-      }
-      if (!isValidSize) {
-        toast.error(`${file.name} is too large. Maximum size is 10MB`);
-        return false;
-      }
-      return true;
-    });
-
-    if (validFiles.length > 0) {
-      setUploadedFiles(validFiles);
-      setShowAuthPrompt(true);
-      toast.success(`${validFiles.length} file(s) ready for analysis`);
-    }
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      'application/pdf': ['.pdf'],
-      'image/*': ['.png', '.jpg', '.jpeg'],
-      'text/*': ['.txt']
-    },
-    maxSize: 10 * 1024 * 1024, // 10MB
-  });
-
-  const getFileIcon = (file: File) => {
-    if (file.type.includes('pdf')) return <FileText className="h-4 w-4 text-red-500" />;
-    if (file.type.includes('image')) return <Image className="h-4 w-4 text-blue-500" />;
-    return <FileText className="h-4 w-4 text-gray-500" />;
-  };
-
-  const features = [
-    {
-      title: "AI-Powered Analysis",
-      description: "Our advanced AI decodes complex medical terminology into simple, understandable insights",
-      icon: Zap,
-      color: "bg-blue-50 text-blue-600"
-    },
-    {
-      title: "Secure & Private",
-      description: "HIPAA-compliant security ensures your health data remains private and protected",
-      icon: Shield,
-      color: "bg-green-50 text-green-600"
-    },
-    {
-      title: "Personalized Insights",
-      description: "Get tailored health recommendations based on your specific lab results",
-      icon: Heart,
-      color: "bg-red-50 text-red-600"
-    },
-    {
-      title: "Trend Tracking",
-      description: "Monitor your health progress over time with beautiful charts and graphs",
-      icon: TrendingUp,
-      color: "bg-purple-50 text-purple-600"
-    }
-  ];
-
-  const testimonials = [
-    {
-      name: "Sarah M.",
-      role: "Healthcare Professional",
-      content: "HealthIntel AI has revolutionized how I understand my patients' lab results. The insights are incredibly valuable.",
-      rating: 5
-    },
-    {
-      name: "Dr. Michael Chen",
-      role: "Internal Medicine",
-      content: "Finally, a tool that makes complex medical data accessible to everyone. Highly recommended!",
-      rating: 5
-    },
-    {
-      name: "Jennifer K.",
-      role: "Patient",
-      content: "I no longer feel confused about my lab results. This app explains everything in terms I can understand.",
-      rating: 5
-    }
-  ];
-
   return (
     <div className="min-h-screen">
-      {/* Hero Section - Mobile Optimized */}
-      <section className="pt-16 md:pt-20 pb-12 md:pb-16 bg-gradient-to-br from-medical-light/10 via-white to-blue-50">
-        <div className="container max-w-6xl text-center px-4">
-          <h1 className="text-3xl md:text-4xl lg:text-6xl font-montserrat font-bold mb-4 md:mb-6 text-accent">
-            Understand Your Health
-            <span className="block text-medical-primary">Like Never Before</span>
-          </h1>
-          <p className="text-lg md:text-xl lg:text-2xl text-muted-foreground mb-6 md:mb-8 max-w-3xl mx-auto px-4">
-            Upload your lab reports and get instant AI-powered insights that decode complex medical terminology into simple, actionable health advice.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center mb-8 md:mb-12 px-4">
-            <Button size="lg" className="bg-medical-primary hover:bg-medical-dark text-white h-12 px-6" asChild>
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-20 sm:py-32">
+        <div className="container mx-auto px-4">
+          <div className="text-center max-w-4xl mx-auto">
+            <Badge className="mb-6 bg-blue-100 text-blue-800 hover:bg-blue-200">
+              ✨ Introducing DocLumen AI Phase 2
+            </Badge>
+            
+            <h1 className="text-4xl sm:text-6xl font-bold text-gray-900 mb-6">
+              Your Personal
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+                {" "}AI Health{" "}
+              </span>
+              Intelligence Platform
+            </h1>
+            
+            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+              Transform your health management with AI-powered insights, personalized recommendations, 
+              and comprehensive tracking tools designed for the modern lifestyle.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/auth">
-                Get Started Free
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3">
+                  Get Started Free
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
               </Link>
-            </Button>
-            <Button size="lg" variant="outline" className="border-medical-primary text-medical-primary h-12 px-6">
-              Watch Demo
+              <Button size="lg" variant="outline" className="px-8 py-3">
+                Watch Demo
+              </Button>
+            </div>
+            
+            <div className="flex items-center justify-center gap-4 mt-8 text-sm text-gray-500">
+              <div className="flex items-center gap-1">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                No credit card required
+              </div>
+              <div className="flex items-center gap-1">
+                <Shield className="h-4 w-4 text-green-600" />
+                HIPAA Compliant
+              </div>
+              <div className="flex items-center gap-1">
+                <Star className="h-4 w-4 text-yellow-500" />
+                4.9/5 User Rating
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              Comprehensive Health Management
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Everything you need to take control of your health journey, powered by advanced AI
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* AI Health Analysis */}
+            <Card className="border-2 hover:border-blue-200 transition-colors">
+              <CardHeader>
+                <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
+                  <Brain className="h-6 w-6 text-blue-600" />
+                </div>
+                <CardTitle>AI Health Analysis</CardTitle>
+                <CardDescription>
+                  Advanced AI analysis of your medical reports with personalized insights and recommendations
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Instant report analysis
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Risk assessment
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Personalized recommendations
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Health Goals & Tracking */}
+            <Card className="border-2 hover:border-green-200 transition-colors">
+              <CardHeader>
+                <div className="h-12 w-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                  <Target className="h-6 w-6 text-green-600" />
+                </div>
+                <CardTitle>Health Goals & Tracking</CardTitle>
+                <CardDescription>
+                  Set, track, and achieve your health goals with intelligent progress monitoring
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Custom goal setting
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Progress visualization
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Milestone celebrations
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Interactive Dashboard */}
+            <Card className="border-2 hover:border-purple-200 transition-colors">
+              <CardHeader>
+                <div className="h-12 w-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                  <TrendingUp className="h-6 w-6 text-purple-600" />
+                </div>
+                <CardTitle>Interactive Dashboard</CardTitle>
+                <CardDescription>
+                  Comprehensive health insights with interactive charts and trend analysis
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Visual health trends
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Metric comparisons
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Export capabilities
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Smart Alerts */}
+            <Card className="border-2 hover:border-orange-200 transition-colors">
+              <CardHeader>
+                <div className="h-12 w-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
+                  <Bell className="h-6 w-6 text-orange-600" />
+                </div>
+                <CardTitle>Smart Health Alerts</CardTitle>
+                <CardDescription>
+                  Proactive notifications for critical health changes and reminders
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Critical value alerts
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Checkup reminders
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Custom notifications
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Family Profiles */}
+            <Card className="border-2 hover:border-red-200 transition-colors">
+              <CardHeader>
+                <div className="h-12 w-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
+                  <Users className="h-6 w-6 text-red-600" />
+                </div>
+                <CardTitle>Family Health Management</CardTitle>
+                <CardDescription>
+                  Manage health profiles for your entire family in one secure platform
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Multiple profiles
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Shared insights
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Emergency contacts
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+
+            {/* Mobile-First Design */}
+            <Card className="border-2 hover:border-indigo-200 transition-colors">
+              <CardHeader>
+                <div className="h-12 w-12 bg-indigo-100 rounded-lg flex items-center justify-center mb-4">
+                  <Smartphone className="h-6 w-6 text-indigo-600" />
+                </div>
+                <CardTitle>Mobile-First Experience</CardTitle>
+                <CardDescription>
+                  Seamlessly designed for mobile devices with app-like functionality
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Responsive design
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Touch-optimized
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    Offline capabilities
+                  </li>
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* AI Doctor Assistant Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <Badge className="mb-4 bg-blue-100 text-blue-800">
+                AI-Powered Assistant
+              </Badge>
+              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
+                Meet Your AI Health Companion
+              </h2>
+              <p className="text-lg text-gray-600 mb-6">
+                Get instant, personalized health guidance with our advanced AI doctor assistant. 
+                Ask questions, get symptom analysis, and receive medically validated recommendations 
+                available 24/7.
+              </p>
+              
+              <div className="space-y-4 mb-8">
+                <div className="flex items-start gap-3">
+                  <div className="h-6 w-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <CheckCircle className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">Symptom Analysis</h4>
+                    <p className="text-gray-600">Describe your symptoms and get AI-powered insights</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <div className="h-6 w-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <CheckCircle className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">Personalized Recommendations</h4>
+                    <p className="text-gray-600">Get tailored advice based on your health profile</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <div className="h-6 w-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <CheckCircle className="h-4 w-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">24/7 Availability</h4>
+                    <p className="text-gray-600">Access health guidance whenever you need it</p>
+                  </div>
+                </div>
+              </div>
+
+              <Link to="/auth">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                  Try AI Assistant
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+            
+            <div className="bg-white rounded-2xl shadow-xl p-6">
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center">
+                    <Brain className="h-4 w-4 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="bg-blue-50 rounded-lg p-3">
+                      <p className="text-sm text-gray-700">
+                        Hello! I'm your AI health assistant. How can I help you today?
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-3 justify-end">
+                  <div className="flex-1">
+                    <div className="bg-gray-100 rounded-lg p-3 ml-8">
+                      <p className="text-sm text-gray-700">
+                        I've been feeling tired lately and my recent blood test shows low vitamin D. What should I do?
+                      </p>
+                    </div>
+                  </div>
+                  <div className="h-8 w-8 bg-gray-300 rounded-full"></div>
+                </div>
+                
+                <div className="flex items-start gap-3">
+                  <div className="h-8 w-8 bg-blue-600 rounded-full flex items-center justify-center">
+                    <Brain className="h-4 w-4 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="bg-blue-50 rounded-lg p-3">
+                      <p className="text-sm text-gray-700">
+                        Based on your profile and test results, I recommend increasing vitamin D intake through supplements (2000-4000 IU daily) and getting 15-20 minutes of sunlight exposure. Would you like me to create a personalized plan?
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Security & Compliance */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
+            Your Health Data is Secure
+          </h2>
+          <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
+            We follow the highest standards for data protection and medical privacy
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Shield className="h-8 w-8 text-green-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">HIPAA Compliant</h3>
+              <p className="text-gray-600">
+                Full compliance with healthcare privacy regulations
+              </p>
+            </div>
+            
+            <div className="text-center">
+              <div className="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <FileText className="h-8 w-8 text-blue-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">End-to-End Encryption</h3>
+              <p className="text-gray-600">
+                Your data is encrypted both in transit and at rest
+              </p>
+            </div>
+            
+            <div className="text-center">
+              <div className="h-16 w-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Users className="h-8 w-8 text-purple-600" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">You Own Your Data</h3>
+              <p className="text-gray-600">
+                Full control over your health information and data export
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+            Ready to Transform Your Health Journey?
+          </h2>
+          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+            Join thousands of users who have already taken control of their health with DocLumen AI
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/auth">
+              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3">
+                Start Your Free Trial
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
+            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600 px-8 py-3">
+              Schedule a Demo
             </Button>
           </div>
           
-          {/* Stats - Mobile Responsive Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-8 max-w-2xl mx-auto px-4">
-            <div className="text-center">
-              <div className="text-2xl md:text-3xl font-bold text-medical-primary mb-2">10,000+</div>
-              <div className="text-sm md:text-base text-muted-foreground">Reports Analyzed</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl md:text-3xl font-bold text-medical-primary mb-2">95%</div>
-              <div className="text-sm md:text-base text-muted-foreground">Accuracy Rate</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl md:text-3xl font-bold text-medical-primary mb-2">5,000+</div>
-              <div className="text-sm md:text-base text-muted-foreground">Happy Users</div>
-            </div>
+          <div className="mt-8 text-blue-100 text-sm">
+            No credit card required • Free forever plan available
           </div>
-        </div>
-      </section>
-
-      {/* Interactive Upload Section - Mobile Optimized */}
-      <section className="py-12 md:py-16 bg-white">
-        <div className="container max-w-4xl px-4">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-montserrat font-bold mb-3 md:mb-4 text-accent">
-              Try It Now - Upload Your Report
-            </h2>
-            <p className="text-lg md:text-xl text-muted-foreground px-4">
-              See how our AI transforms your lab data into meaningful insights
-            </p>
-          </div>
-
-          <Card className="health-card">
-            <CardContent className="p-4 md:p-8">
-              <div
-                {...getRootProps()}
-                className={`border-2 border-dashed rounded-lg p-8 md:p-12 text-center cursor-pointer transition-all duration-300 ${
-                  isDragActive 
-                    ? 'border-medical-primary bg-medical-light/10' 
-                    : 'border-gray-300 hover:border-medical-primary hover:bg-gray-50'
-                }`}
-              >
-                <input {...getInputProps()} />
-                <UploadIcon className="h-12 md:h-16 w-12 md:w-16 text-medical-primary mx-auto mb-4 md:mb-6" />
-                {isDragActive ? (
-                  <p className="text-medical-primary font-medium text-lg">Drop your files here...</p>
-                ) : (
-                  <div>
-                    <p className="text-accent font-medium text-lg md:text-xl mb-2 md:mb-3">
-                      Drag & drop your lab reports here
-                    </p>
-                    <p className="text-muted-foreground mb-4 md:mb-6 text-sm md:text-base">
-                      or click to browse • Supports PDF, JPG, PNG files up to 10MB
-                    </p>
-                    <Button className="bg-medical-primary hover:bg-medical-dark">
-                      Choose Files
-                    </Button>
-                  </div>
-                )}
-              </div>
-
-              {uploadedFiles.length > 0 && (
-                <div className="mt-6 md:mt-8 p-4 md:p-6 bg-green-50 rounded-lg border border-green-200">
-                  <div className="flex items-center gap-3 mb-4">
-                    <CheckCircle className="h-6 w-6 text-green-600" />
-                    <h3 className="font-semibold text-green-800">Files Ready for Analysis!</h3>
-                  </div>
-                  <div className="space-y-2 mb-6">
-                    {uploadedFiles.map((file, index) => (
-                      <div key={index} className="flex items-center gap-3 p-3 bg-white rounded border">
-                        {getFileIcon(file)}
-                        <span className="font-medium text-sm">{file.name}</span>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {showAuthPrompt && (
-                    <div className="text-center">
-                      <p className="text-green-700 mb-4">Sign up to analyze your reports and get instant health insights!</p>
-                      <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                        <Button className="bg-medical-primary hover:bg-medical-dark" asChild>
-                          <Link to="/auth">
-                            Sign Up & Analyze
-                            <ArrowRight className="ml-2 h-4 w-4" />
-                          </Link>
-                        </Button>
-                        <Button variant="outline" asChild>
-                          <Link to="/auth">Already have an account? Login</Link>
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* Features Section - Mobile Responsive Grid */}
-      <section className="py-12 md:py-16 bg-gray-50">
-        <div className="container max-w-6xl px-4">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-montserrat font-bold mb-3 md:mb-4 text-accent">
-              Powerful Features for Better Health
-            </h2>
-            <p className="text-lg md:text-xl text-muted-foreground">
-              Everything you need to understand and improve your health
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-            {features.map((feature, index) => (
-              <Card key={index} className="health-card text-center">
-                <CardHeader className="pb-4">
-                  <div className={`w-14 h-14 md:w-16 md:h-16 ${feature.color.split(' ')[0]} rounded-lg flex items-center justify-center mx-auto mb-3 md:mb-4`}>
-                    <feature.icon className={`h-7 w-7 md:h-8 md:w-8 ${feature.color.split(' ')[1]}`} />
-                  </div>
-                  <CardTitle className="text-lg">{feature.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <p className="text-muted-foreground text-sm md:text-base">{feature.description}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works Section - Mobile Optimized */}
-      <section className="py-12 md:py-16 bg-white">
-        <div className="container max-w-6xl px-4">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-montserrat font-bold mb-3 md:mb-4 text-accent">
-              How It Works
-            </h2>
-            <p className="text-lg md:text-xl text-muted-foreground">
-              Get health insights in 3 simple steps
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-8">
-            {[
-              {
-                step: "01",
-                title: "Upload Report",
-                description: "Upload your lab reports in PDF, image, or text format",
-                icon: UploadIcon
-              },
-              {
-                step: "02", 
-                title: "AI Analysis",
-                description: "Our AI processes and decodes complex medical terminology",
-                icon: Zap
-              },
-              {
-                step: "03",
-                title: "Get Insights",
-                description: "Receive personalized, easy-to-understand health insights",
-                icon: Lightbulb
-              }
-            ].map((item, index) => (
-              <div key={index} className="text-center">
-                <div className="w-16 h-16 md:w-20 md:h-20 medical-gradient rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
-                  <item.icon className="h-8 w-8 md:h-10 md:w-10 text-white" />
-                </div>
-                <div className="text-medical-primary font-bold text-lg mb-2">Step {item.step}</div>
-                <h3 className="font-montserrat font-semibold text-xl mb-3 text-accent">{item.title}</h3>
-                <p className="text-muted-foreground">{item.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section - Mobile Responsive */}
-      <section className="py-12 md:py-16 bg-gray-50">
-        <div className="container max-w-6xl px-4">
-          <div className="text-center mb-8 md:mb-12">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-montserrat font-bold mb-3 md:mb-4 text-accent">
-              What Our Users Say
-            </h2>
-            <p className="text-lg md:text-xl text-muted-foreground">
-              Trusted by healthcare professionals and patients alike
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="health-card">
-                <CardContent className="p-4 md:p-6">
-                  <div className="flex mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 text-yellow-400 fill-current" />
-                    ))}
-                  </div>
-                  <p className="text-muted-foreground mb-4 italic text-sm md:text-base">"{testimonial.content}"</p>
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-medical-primary rounded-full flex items-center justify-center">
-                      <Users className="h-5 w-5 text-white" />
-                    </div>
-                    <div>
-                      <div className="font-semibold text-accent">{testimonial.name}</div>
-                      <div className="text-sm text-muted-foreground">{testimonial.role}</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section - Mobile Optimized */}
-      <section className="py-12 md:py-16 bg-medical-primary text-white">
-        <div className="container max-w-4xl text-center px-4">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-montserrat font-bold mb-3 md:mb-4">
-            Ready to Take Control of Your Health?
-          </h2>
-          <p className="text-lg md:text-xl mb-6 md:mb-8 opacity-90">
-            Join thousands of users who are already making informed health decisions with HealthIntel AI
-          </p>
-          <Button size="lg" className="bg-white text-medical-primary hover:bg-gray-100 h-12 px-6" asChild>
-            <Link to="/auth">
-              Start Your Health Journey Today
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
-          </Button>
         </div>
       </section>
     </div>

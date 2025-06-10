@@ -65,6 +65,194 @@ export type Database = {
           },
         ]
       }
+      family_profiles: {
+        Row: {
+          created_at: string
+          date_of_birth: string | null
+          gender: string | null
+          id: string
+          is_active: boolean | null
+          medical_notes: string | null
+          name: string
+          relationship: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date_of_birth?: string | null
+          gender?: string | null
+          id?: string
+          is_active?: boolean | null
+          medical_notes?: string | null
+          name: string
+          relationship?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date_of_birth?: string | null
+          gender?: string | null
+          id?: string
+          is_active?: boolean | null
+          medical_notes?: string | null
+          name?: string
+          relationship?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      health_alerts: {
+        Row: {
+          action_taken: boolean | null
+          alert_type: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_dismissed: boolean | null
+          is_read: boolean | null
+          message: string
+          metadata: Json | null
+          metric_name: string | null
+          metric_value: number | null
+          severity: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          action_taken?: boolean | null
+          alert_type: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_dismissed?: boolean | null
+          is_read?: boolean | null
+          message: string
+          metadata?: Json | null
+          metric_name?: string | null
+          metric_value?: number | null
+          severity?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          action_taken?: boolean | null
+          alert_type?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_dismissed?: boolean | null
+          is_read?: boolean | null
+          message?: string
+          metadata?: Json | null
+          metric_name?: string | null
+          metric_value?: number | null
+          severity?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      health_goals: {
+        Row: {
+          created_at: string
+          current_value: number | null
+          description: string | null
+          id: string
+          metric_type: string | null
+          priority: string | null
+          status: string | null
+          target_date: string | null
+          target_value: number | null
+          title: string
+          unit: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_value?: number | null
+          description?: string | null
+          id?: string
+          metric_type?: string | null
+          priority?: string | null
+          status?: string | null
+          target_date?: string | null
+          target_value?: number | null
+          title: string
+          unit?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_value?: number | null
+          description?: string | null
+          id?: string
+          metric_type?: string | null
+          priority?: string | null
+          status?: string | null
+          target_date?: string | null
+          target_value?: number | null
+          title?: string
+          unit?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      health_milestones: {
+        Row: {
+          achieved_at: string
+          celebration_shown: boolean | null
+          description: string | null
+          goal_id: string | null
+          id: string
+          is_shared: boolean | null
+          milestone_type: string | null
+          percentage_improvement: number | null
+          title: string
+          user_id: string
+          value_achieved: number | null
+        }
+        Insert: {
+          achieved_at?: string
+          celebration_shown?: boolean | null
+          description?: string | null
+          goal_id?: string | null
+          id?: string
+          is_shared?: boolean | null
+          milestone_type?: string | null
+          percentage_improvement?: number | null
+          title: string
+          user_id: string
+          value_achieved?: number | null
+        }
+        Update: {
+          achieved_at?: string
+          celebration_shown?: boolean | null
+          description?: string | null
+          goal_id?: string | null
+          id?: string
+          is_shared?: boolean | null
+          milestone_type?: string | null
+          percentage_improvement?: number | null
+          title?: string
+          user_id?: string
+          value_achieved?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "health_milestones_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "health_goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       medical_reports: {
         Row: {
           ai_insights: Json | null
@@ -140,6 +328,138 @@ export type Database = {
           id?: string
           phone?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      report_exports: {
+        Row: {
+          created_at: string
+          date_range_end: string | null
+          date_range_start: string | null
+          download_count: number | null
+          expires_at: string | null
+          export_type: string
+          file_name: string
+          file_url: string | null
+          id: string
+          report_ids: string[] | null
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date_range_end?: string | null
+          date_range_start?: string | null
+          download_count?: number | null
+          expires_at?: string | null
+          export_type: string
+          file_name: string
+          file_url?: string | null
+          id?: string
+          report_ids?: string[] | null
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date_range_end?: string | null
+          date_range_start?: string | null
+          download_count?: number | null
+          expires_at?: string | null
+          export_type?: string
+          file_name?: string
+          file_url?: string | null
+          id?: string
+          report_ids?: string[] | null
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_health_profiles: {
+        Row: {
+          allergies: string[] | null
+          blood_type: string | null
+          created_at: string
+          date_of_birth: string | null
+          emergency_contact: Json | null
+          family_history: Json | null
+          gender: string | null
+          height: number | null
+          id: string
+          lifestyle_data: Json | null
+          medical_history: Json | null
+          medications: string[] | null
+          updated_at: string
+          user_id: string
+          weight: number | null
+        }
+        Insert: {
+          allergies?: string[] | null
+          blood_type?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          emergency_contact?: Json | null
+          family_history?: Json | null
+          gender?: string | null
+          height?: number | null
+          id?: string
+          lifestyle_data?: Json | null
+          medical_history?: Json | null
+          medications?: string[] | null
+          updated_at?: string
+          user_id: string
+          weight?: number | null
+        }
+        Update: {
+          allergies?: string[] | null
+          blood_type?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          emergency_contact?: Json | null
+          family_history?: Json | null
+          gender?: string | null
+          height?: number | null
+          id?: string
+          lifestyle_data?: Json | null
+          medical_history?: Json | null
+          medications?: string[] | null
+          updated_at?: string
+          user_id?: string
+          weight?: number | null
+        }
+        Relationships: []
+      }
+      user_preferences: {
+        Row: {
+          ai_preferences: Json | null
+          created_at: string
+          display_preferences: Json | null
+          id: string
+          notification_settings: Json | null
+          privacy_settings: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_preferences?: Json | null
+          created_at?: string
+          display_preferences?: Json | null
+          id?: string
+          notification_settings?: Json | null
+          privacy_settings?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_preferences?: Json | null
+          created_at?: string
+          display_preferences?: Json | null
+          id?: string
+          notification_settings?: Json | null
+          privacy_settings?: Json | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
