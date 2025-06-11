@@ -32,6 +32,7 @@ export const Footer = () => {
               <li><Link to="/chat" className="hover:text-white transition-colors">AI Assistant</Link></li>
               <li><Link to="/insights" className="hover:text-white transition-colors">Health Insights</Link></li>
               <li><Link to="/goals" className="hover:text-white transition-colors">Health Goals</Link></li>
+              <li><Link to="/health-history" className="hover:text-white transition-colors">Health History</Link></li>
             </ul>
           </div>
 
@@ -41,6 +42,7 @@ export const Footer = () => {
               <li><Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
               <li><Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
               <li><Link to="/disclaimer" className="hover:text-white transition-colors">Medical Disclaimer</Link></li>
+              <li><Link to="/compliance" className="hover:text-white transition-colors">Compliance</Link></li>
               <li><Link to="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
             </ul>
           </div>

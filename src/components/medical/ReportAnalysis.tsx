@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,8 +16,7 @@ import {
   Clock,
   FileText,
   BarChart3,
-  Target,
-  Sparkles
+  Target
 } from 'lucide-react';
 
 interface HealthIndicator {
@@ -79,13 +79,13 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'normal':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return 'bg-green-50 text-green-800 border-green-200';
       case 'borderline':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+        return 'bg-yellow-50 text-yellow-800 border-yellow-200';
       case 'abnormal':
-        return 'bg-red-100 text-red-800 border-red-200';
+        return 'bg-red-50 text-red-800 border-red-200';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-gray-50 text-gray-800 border-gray-200';
     }
   };
 
@@ -119,21 +119,15 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
     <div className="space-y-6 max-w-6xl mx-auto">
       {/* Header Section */}
       <Card className="health-card border-medical-primary/20">
-        <CardHeader className="bg-gradient-to-r from-blue-500 via-teal-500 to-green-500 text-white">
+        <CardHeader className="bg-medical-primary text-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-white/20">
                 <Brain className="h-6 w-6 text-white" />
               </div>
               <div>
-                <CardTitle className="text-xl text-white">Doclumen AI Lab Report Analysis</CardTitle>
-                <div className="flex items-center gap-2 mt-1">
-                  <p className="text-sm text-white/90">{reportTitle}</p>
-                  <div className="flex items-center gap-1 text-xs text-white/80">
-                    <Sparkles className="h-3 w-3" />
-                    <span>Powered by Gemini</span>
-                  </div>
-                </div>
+                <CardTitle className="text-xl text-white">DocLumen AI Lab Report Analysis</CardTitle>
+                <p className="text-sm text-white/90">{reportTitle}</p>
               </div>
             </div>
             {analysis.analyzedAt && (
@@ -150,12 +144,12 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
           </div>
         </CardHeader>
         <CardContent className="pt-6">
-          <div className="bg-gradient-to-br from-blue-50 to-teal-50 p-6 rounded-xl border border-blue-200">
+          <div className="bg-medical-light/10 p-6 rounded-xl border border-medical-primary/20">
             <div className="flex items-start gap-3">
-              <FileText className="h-5 w-5 text-blue-600 mt-1 flex-shrink-0" />
+              <FileText className="h-5 w-5 text-medical-primary mt-1 flex-shrink-0" />
               <div>
-                <h3 className="font-semibold text-blue-900 mb-2">Report Summary</h3>
-                <p className="text-blue-800 leading-relaxed">{analysis.summary}</p>
+                <h3 className="font-semibold text-medical-dark mb-2">Report Summary</h3>
+                <p className="text-accent leading-relaxed">{analysis.summary}</p>
               </div>
             </div>
           </div>
@@ -166,19 +160,19 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
       <Card className="health-card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Lightbulb className="h-5 w-5 text-yellow-500" />
+            <Lightbulb className="h-5 w-5 text-medical-primary" />
             Key Findings at a Glance
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {analysis.keyFindings?.slice(0, 3).map((finding, index) => (
-              <div key={index} className="p-4 bg-gradient-to-br from-green-50 to-blue-50 rounded-lg border border-green-200">
+              <div key={index} className="p-4 bg-medical-light/10 rounded-lg border border-medical-primary/20">
                 <div className="flex items-start gap-3">
-                  <div className="p-1 rounded-full bg-green-500/20">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
+                  <div className="p-1 rounded-full bg-medical-primary/20">
+                    <CheckCircle className="h-4 w-4 text-medical-primary" />
                   </div>
-                  <p className="text-sm font-medium text-gray-700">{finding}</p>
+                  <p className="text-sm font-medium text-accent">{finding}</p>
                 </div>
               </div>
             ))}
@@ -211,7 +205,7 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
           <Card className="health-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5 text-blue-500" />
+                <Activity className="h-5 w-5 text-medical-primary" />
                 Your Test Results Explained
               </CardTitle>
             </CardHeader>
@@ -233,7 +227,7 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-1">
                           <p className="text-sm font-medium text-gray-600">Your Result</p>
-                          <p className="text-xl font-bold text-blue-600">{indicator.value}</p>
+                          <p className="text-xl font-bold text-medical-primary">{indicator.value}</p>
                         </div>
                         <div className="space-y-1">
                           <p className="text-sm font-medium text-gray-600">Normal Range</p>
@@ -241,9 +235,9 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
                         </div>
                       </div>
                       
-                      <div className="bg-gradient-to-r from-blue-50 to-teal-50 p-4 rounded-lg border border-blue-200">
-                        <h5 className="font-medium text-blue-900 mb-2">What this means:</h5>
-                        <p className="text-sm text-blue-800 leading-relaxed">{indicator.explanation}</p>
+                      <div className="bg-medical-light/10 p-4 rounded-lg border border-medical-primary/20">
+                        <h5 className="font-medium text-medical-dark mb-2">What this means:</h5>
+                        <p className="text-sm text-accent leading-relaxed">{indicator.explanation}</p>
                       </div>
                     </div>
                   ))}
@@ -331,14 +325,14 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
             <Card className="health-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Heart className="h-5 w-5 text-red-500" />
+                  <Heart className="h-5 w-5 text-medical-primary" />
                   Lifestyle & Diet
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-5">
                 {analysis.recommendations?.lifestyle?.length > 0 && (
                   <div>
-                    <h5 className="font-semibold mb-3 text-gray-800">Lifestyle Changes</h5>
+                    <h5 className="font-semibold mb-3 text-accent">Lifestyle Changes</h5>
                     <div className="space-y-2">
                       {analysis.recommendations.lifestyle.map((item, index) => (
                         <div key={index} className="flex items-start gap-3 p-3 bg-green-50 rounded-lg">
@@ -352,7 +346,7 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
 
                 {analysis.recommendations?.dietary?.length > 0 && (
                   <div>
-                    <h5 className="font-semibold mb-3 text-gray-800">Dietary Recommendations</h5>
+                    <h5 className="font-semibold mb-3 text-accent">Dietary Recommendations</h5>
                     <div className="space-y-2">
                       {analysis.recommendations.dietary.map((item, index) => (
                         <div key={index} className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
@@ -370,14 +364,14 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
             <Card className="health-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-blue-500" />
+                  <Activity className="h-5 w-5 text-medical-primary" />
                   Exercise & Monitoring
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-5">
                 {analysis.recommendations?.exercise?.length > 0 && (
                   <div>
-                    <h5 className="font-semibold mb-3 text-gray-800">Exercise Guidelines</h5>
+                    <h5 className="font-semibold mb-3 text-accent">Exercise Guidelines</h5>
                     <div className="space-y-2">
                       {analysis.recommendations.exercise.map((item, index) => (
                         <div key={index} className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg">
@@ -391,7 +385,7 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
 
                 {analysis.recommendations?.monitoring?.length > 0 && (
                   <div>
-                    <h5 className="font-semibold mb-3 text-gray-800">Health Monitoring</h5>
+                    <h5 className="font-semibold mb-3 text-accent">Health Monitoring</h5>
                     <div className="space-y-2">
                       {analysis.recommendations.monitoring.map((item, index) => (
                         <div key={index} className="flex items-start gap-3 p-3 bg-indigo-50 rounded-lg">
