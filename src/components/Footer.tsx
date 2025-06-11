@@ -13,7 +13,7 @@ export const Footer = () => {
                 <Cross className="h-5 w-5 text-white" />
               </div>
               <span className="font-montserrat font-bold text-xl">
-                HealthIntel AI
+                DocLumen
               </span>
             </div>
             <p className="text-gray-300 mb-4 max-w-md">
@@ -21,7 +21,7 @@ export const Footer = () => {
               intelligent lab report analysis and personalized preventative care recommendations.
             </p>
             <p className="text-sm text-gray-400">
-              © 2024 HealthIntel AI. All rights reserved.
+              © 2024 DocLumen. All rights reserved.
             </p>
           </div>
 
@@ -31,17 +31,17 @@ export const Footer = () => {
               <li><Link to="/upload" className="hover:text-white transition-colors">Upload Reports</Link></li>
               <li><Link to="/chat" className="hover:text-white transition-colors">AI Assistant</Link></li>
               <li><Link to="/insights" className="hover:text-white transition-colors">Health Insights</Link></li>
-              <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
+              <li><Link to="/goals" className="hover:text-white transition-colors">Health Goals</Link></li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-montserrat font-semibold mb-4">Support</h3>
+            <h3 className="font-montserrat font-semibold mb-4">Legal</h3>
             <ul className="space-y-2 text-gray-300">
-              <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
+              <li><Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
+              <li><Link to="/disclaimer" className="hover:text-white transition-colors">Medical Disclaimer</Link></li>
+              <li><Link to="/contact" className="hover:text-white transition-colors">Contact Us</Link></li>
             </ul>
           </div>
         </div>

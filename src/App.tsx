@@ -16,6 +16,11 @@ import Chat from "@/pages/Chat";
 import Insights from "@/pages/Insights";
 import Settings from "@/pages/Settings";
 import Trends from "@/pages/Trends";
+import Goals from "@/pages/Goals";
+import Privacy from "@/pages/Privacy";
+import Terms from "@/pages/Terms";
+import Disclaimer from "@/pages/Disclaimer";
+import Contact from "@/pages/Contact";
 import NotFound from "@/pages/NotFound";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import { useHealthProfile } from "@/hooks/useHealthProfile";
@@ -93,11 +98,21 @@ const AppContent = () => {
               <Trends />
             </ProtectedRoute>
           } />
+          <Route path="/goals" element={
+            <ProtectedRoute>
+              <Goals />
+            </ProtectedRoute>
+          } />
           <Route path="/settings" element={
             <ProtectedRoute>
               <Settings />
             </ProtectedRoute>
           } />
+          {/* Legal Pages */}
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/disclaimer" element={<Disclaimer />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

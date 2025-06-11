@@ -31,6 +31,7 @@ export const Header = () => {
     { name: "AI Chat", href: "/chat" },
     { name: "Insights", href: "/insights" },
     { name: "Trends", href: "/trends" },
+    { name: "Goals", href: "/goals" },
     { name: "Profile", href: "/profile" }
   ];
 
@@ -57,7 +58,7 @@ export const Header = () => {
             <Cross className="h-6 w-6 text-white" />
           </div>
           <span className="font-montserrat font-bold text-xl text-accent">
-            HealthIntel AI
+            DocLumen
           </span>
         </Link>
 
@@ -135,7 +136,7 @@ export const Header = () => {
                 <Cross className="h-5 w-5 text-white" />
               </div>
               <span className="font-montserrat font-bold text-lg text-accent">
-                HealthIntel AI
+                DocLumen
               </span>
             </div>
             
