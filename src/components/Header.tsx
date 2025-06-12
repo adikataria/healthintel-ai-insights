@@ -28,6 +28,12 @@ export const Header = () => {
     { href: '/trends', label: 'Trends' },
   ];
 
+  const publicLinks = [
+    { href: '/ai-lab-analyzer', label: 'AI Lab Analyzer' },
+    { href: '/ai-doctor', label: 'AI Doctor' },
+    { href: '/pricing', label: 'Pricing' },
+  ];
+
   const isActive = (path: string) => location.pathname === path;
 
   return (
@@ -45,6 +51,21 @@ export const Header = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center space-x-1">
+          {/* Public Links (always visible) */}
+          {publicLinks.map((link) => (
+            <Link
+              key={link.href}
+              to={link.href}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                isActive(link.href)
+                  ? 'bg-medical-primary text-white'
+                  : 'text-accent hover:text-medical-primary hover:bg-medical-light/10'
+              }`}
+            >
+              {link.label}
+            </Link>
+          ))}
+
           {/* User Navigation Links */}
           {user && (
             <>
@@ -137,6 +158,24 @@ export const Header = () => {
         <div className="lg:hidden glass-effect border-t border-medical-light/20">
           <nav className="container py-4">
             <div className="space-y-2">
+              {/* Public links for mobile */}
+              <div className="grid grid-cols-1 gap-2 mb-4">
+                {publicLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    to={link.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      isActive(link.href)
+                        ? 'bg-medical-primary text-white'
+                        : 'text-accent hover:text-medical-primary hover:bg-medical-light/10'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+
               {/* User navigation for mobile */}
               {user && (
                 <div className="grid grid-cols-1 gap-2">

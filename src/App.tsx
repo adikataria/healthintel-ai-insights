@@ -26,6 +26,7 @@ import Contact from "@/pages/Contact";
 import NotFound from "@/pages/NotFound";
 import AILabAnalyzer from "@/pages/AILabAnalyzer";
 import AIDoctor from "@/pages/AIDoctor";
+import Pricing from "@/pages/Pricing";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -45,6 +46,7 @@ const App = () => (
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/ai-lab-analyzer" element={<AILabAnalyzer />} />
                 <Route path="/ai-doctor" element={<AIDoctor />} />
+                <Route path="/pricing" element={<Pricing />} />
                 <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
                 <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
                 <Route path="/upload" element={<ProtectedRoute><Upload /></ProtectedRoute>} />
