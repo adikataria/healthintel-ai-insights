@@ -1,8 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Bell, X, Check, AlertTriangle, Info, Award } from 'lucide-react';
 import { useHealthAlerts } from '@/hooks/useHealthAlerts';
 
@@ -33,97 +34,119 @@ export const NotificationCenter = () => {
     }
   };
 
-  if (alerts.length === 0) {
-    return (
-      <Card>
-        <CardContent className="p-8 text-center">
-          <Bell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No notifications</h3>
-          <p className="text-gray-600">You're all caught up!</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-gray-900">Notifications</h2>
-        {unreadCount > 0 && (
-          <Badge variant="secondary" className="bg-red-100 text-red-800">
-            {unreadCount} unread
-          </Badge>
-        )}
-      </div>
-
-      <div className="space-y-3">
-        {alerts.map((alert) => {
-          const Icon = getAlertIcon(alert.alert_type);
-          
-          return (
-            <Card
-              key={alert.id}
-              className={`border-l-4 ${getAlertColor(alert.severity)} ${
-                !alert.is_read ? 'ring-2 ring-blue-100' : ''
-              }`}
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button variant="ghost" className="relative p-2">
+          <Bell className="h-5 w-5" />
+          {unreadCount > 0 && (
+            <Badge 
+              variant="destructive" 
+              className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
             >
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <Icon className="h-5 w-5 text-gray-600" />
-                    <div>
-                      <CardTitle className="text-base">{alert.title}</CardTitle>
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge
-                          variant={alert.severity === 'critical' ? 'destructive' : 'secondary'}
-                          className="text-xs"
-                        >
-                          {alert.severity}
-                        </Badge>
-                        <span className="text-xs text-gray-500">
-                          {new Date(alert.created_at).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-center gap-1">
-                    {!alert.is_read && (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => markAsRead.mutate(alert.id)}
-                        className="h-8 w-8 p-0"
-                      >
-                        <Check className="h-4 w-4" />
-                      </Button>
-                    )}
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => dismissAlert.mutate(alert.id)}
-                      className="h-8 w-8 p-0"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
+              {unreadCount > 9 ? '9+' : unreadCount}
+            </Badge>
+          )}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-80 max-h-96 overflow-y-auto" align="end">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Notifications</h3>
+            {unreadCount > 0 && (
+              <Badge variant="secondary" className="bg-red-100 text-red-800">
+                {unreadCount} unread
+              </Badge>
+            )}
+          </div>
 
-              <CardContent className="pt-0">
-                <CardDescription>{alert.message}</CardDescription>
+          {alerts.length === 0 ? (
+            <div className="text-center py-6">
+              <Bell className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground">No notifications</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {alerts.slice(0, 5).map((alert) => {
+                const Icon = getAlertIcon(alert.alert_type);
                 
-                {alert.metric_name && alert.metric_value && (
-                  <div className="mt-2 p-2 bg-white rounded border">
-                    <span className="text-sm font-medium">{alert.metric_name}: </span>
-                    <span className="text-sm">{alert.metric_value}</span>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-    </div>
+                return (
+                  <Card
+                    key={alert.id}
+                    className={`border-l-4 ${getAlertColor(alert.severity)} ${
+                      !alert.is_read ? 'ring-1 ring-blue-200' : ''
+                    }`}
+                  >
+                    <CardHeader className="pb-2">
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-2 flex-1">
+                          <Icon className="h-4 w-4 text-gray-600 flex-shrink-0" />
+                          <div className="min-w-0 flex-1">
+                            <CardTitle className="text-sm leading-tight">{alert.title}</CardTitle>
+                            <div className="flex items-center gap-2 mt-1">
+                              <Badge
+                                variant={alert.severity === 'critical' ? 'destructive' : 'secondary'}
+                                className="text-xs"
+                              >
+                                {alert.severity}
+                              </Badge>
+                              <span className="text-xs text-gray-500">
+                                {new Date(alert.created_at).toLocaleDateString()}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="flex items-center gap-1 flex-shrink-0 ml-2">
+                          {!alert.is_read && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => markAsRead.mutate(alert.id)}
+                              className="h-6 w-6 p-0"
+                            >
+                              <Check className="h-3 w-3" />
+                            </Button>
+                          )}
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => dismissAlert.mutate(alert.id)}
+                            className="h-6 w-6 p-0"
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="pt-0">
+                      <CardDescription className="text-xs leading-relaxed">
+                        {alert.message}
+                      </CardDescription>
+                      
+                      {alert.metric_name && alert.metric_value && (
+                        <div className="mt-2 p-2 bg-white rounded border text-xs">
+                          <span className="font-medium">{alert.metric_name}: </span>
+                          <span>{alert.metric_value}</span>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
+              
+              {alerts.length > 5 && (
+                <div className="text-center pt-2">
+                  <Button variant="ghost" size="sm" className="text-xs">
+                    View all notifications
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 };
