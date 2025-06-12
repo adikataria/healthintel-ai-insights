@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Cross, Menu, X, User, LogOut, Settings, Bell } from "lucide-react";
+import { Cross, Menu, X, User, LogOut, Settings, Bell, ChevronDown } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
@@ -28,6 +28,19 @@ export const Header = () => {
     { href: '/trends', label: 'Trends' },
   ];
 
+  const aiToolsLinks = [
+    { 
+      href: '/ai-lab-analyzer', 
+      label: 'AI Lab Report Analyzer',
+      description: 'Decode your lab reports with instant AI analysis'
+    },
+    { 
+      href: '/ai-doctor', 
+      label: 'AI Doctor',
+      description: 'Your virtual health advisor, available 24/7'
+    }
+  ];
+
   const isActive = (path: string) => location.pathname === path;
 
   return (
@@ -44,23 +57,49 @@ export const Header = () => {
         </Link>
 
         {/* Desktop Navigation */}
-        {user && (
-          <nav className="hidden md:flex items-center space-x-1">
-            {navigationLinks.map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive(link.href)
-                    ? 'bg-medical-primary text-white'
-                    : 'text-accent hover:text-medical-primary hover:bg-medical-light/10'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-        )}
+        <nav className="hidden lg:flex items-center space-x-1">
+          {/* AI Tools Dropdown - Always visible */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="text-accent hover:text-medical-primary hover:bg-medical-light/10">
+                AI Tools
+                <ChevronDown className="ml-1 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-80" align="start">
+              {aiToolsLinks.map((tool) => (
+                <DropdownMenuItem key={tool.href} asChild>
+                  <Link 
+                    to={tool.href}
+                    className="flex flex-col items-start p-3 hover:bg-medical-light/10"
+                  >
+                    <span className="font-medium text-accent">{tool.label}</span>
+                    <span className="text-sm text-muted-foreground mt-1">{tool.description}</span>
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* User Navigation Links */}
+          {user && (
+            <>
+              {navigationLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    isActive(link.href)
+                      ? 'bg-medical-primary text-white'
+                      : 'text-accent hover:text-medical-primary hover:bg-medical-light/10'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </>
+          )}
+        </nav>
 
         {/* Right Side - Auth & User Menu */}
         <div className="flex items-center space-x-4">
@@ -106,7 +145,7 @@ export const Header = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                className="md:hidden"
+                className="lg:hidden"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
                 {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -114,6 +153,19 @@ export const Header = () => {
             </div>
           ) : (
             <div className="flex items-center space-x-4">
+              {/* AI Tools for non-authenticated users */}
+              <div className="hidden md:flex items-center space-x-2">
+                {aiToolsLinks.map((tool) => (
+                  <Link 
+                    key={tool.href}
+                    to={tool.href}
+                    className="text-accent hover:text-medical-primary transition-colors text-sm font-medium"
+                  >
+                    {tool.label.replace('AI ', '')}
+                  </Link>
+                ))}
+              </div>
+              
               <Link to="/compliance">
                 <Button variant="ghost" size="sm">
                   Compliance
@@ -130,24 +182,44 @@ export const Header = () => {
       </div>
 
       {/* Mobile Navigation */}
-      {user && isMobileMenuOpen && (
-        <div className="md:hidden glass-effect border-t border-medical-light/20">
+      {isMobileMenuOpen && (
+        <div className="lg:hidden glass-effect border-t border-medical-light/20">
           <nav className="container py-4">
-            <div className="grid grid-cols-2 gap-2">
-              {navigationLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  to={link.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    isActive(link.href)
-                      ? 'bg-medical-primary text-white'
-                      : 'text-accent hover:text-medical-primary hover:bg-medical-light/10'
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
+            <div className="space-y-2">
+              {/* AI Tools for mobile */}
+              <div className="border-b border-medical-light/20 pb-4 mb-4">
+                <h3 className="font-semibold text-accent mb-2">AI Tools</h3>
+                {aiToolsLinks.map((tool) => (
+                  <Link
+                    key={tool.href}
+                    to={tool.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block px-3 py-2 rounded-md text-sm font-medium text-accent hover:text-medical-primary hover:bg-medical-light/10 transition-colors"
+                  >
+                    {tool.label}
+                  </Link>
+                ))}
+              </div>
+              
+              {/* User navigation for mobile */}
+              {user && (
+                <div className="grid grid-cols-1 gap-2">
+                  {navigationLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      to={link.href}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                        isActive(link.href)
+                          ? 'bg-medical-primary text-white'
+                          : 'text-accent hover:text-medical-primary hover:bg-medical-light/10'
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
           </nav>
         </div>
