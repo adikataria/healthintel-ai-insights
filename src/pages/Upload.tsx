@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Upload as UploadIcon, FileText, Image, AlertCircle, CheckCircle, X, Shield, Brain } from "lucide-react";
+import { Upload as UploadIcon, FileText, Image, AlertCircle, CheckCircle, X, Shield, Brain, Sparkles, Zap, Target } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 import { ConsentModal } from "@/components/medical/ConsentModal";
@@ -326,7 +326,7 @@ ANALYSIS REQUIRED: Extract all medical laboratory data, test results, and provid
 
   if (analysisStatus === 'complete' && analysisResult) {
     return (
-      <div className="min-h-screen pt-20 pb-12 bg-gray-50">
+      <div className="min-h-screen pt-20 pb-12 bg-gradient-to-br from-medical-light/20 via-white to-medical-secondary/10">
         <div className="container max-w-6xl">
           <ReportAnalysis 
             analysis={analysisResult}
@@ -342,6 +342,7 @@ ANALYSIS REQUIRED: Extract all medical laboratory data, test results, and provid
                 setCurrentReportId(null);
               }}
               variant="outline"
+              className="border-medical-primary text-medical-primary hover:bg-medical-primary hover:text-white"
             >
               Upload Another Report
             </Button>
@@ -352,65 +353,110 @@ ANALYSIS REQUIRED: Extract all medical laboratory data, test results, and provid
   }
 
   return (
-    <div className="min-h-screen pt-20 pb-12 bg-gray-50">
-      <div className="container max-w-4xl">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-montserrat font-bold mb-4 text-accent">
-            DocLumen AI-Powered Lab Report Analysis
+    <div className="min-h-screen pt-20 pb-12 bg-gradient-to-br from-medical-light/20 via-white to-medical-secondary/10">
+      <div className="container max-w-6xl">
+        {/* Hero Section */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-2 bg-medical-light/30 text-medical-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
+            <Sparkles className="h-4 w-4" />
+            Powered by DocLumen AI
+          </div>
+          <h1 className="text-4xl md:text-6xl font-montserrat font-bold mb-6 text-accent">
+            Transform Your 
+            <span className="bg-gradient-to-r from-medical-primary to-medical-secondary bg-clip-text text-transparent">
+              {" "}Lab Reports
+            </span>
           </h1>
-          <p className="text-xl text-muted-foreground">
-            Upload your medical reports and get instant AI insights with comprehensive data extraction
+          <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+            Upload your medical reports and get instant AI-powered insights with professional analysis
           </p>
-          <div className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground">
-            <Shield className="h-4 w-4 text-green-600" />
-            <span>Advanced OCR • Complete Data Extraction • Professional Medical Analysis</span>
+          <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <Shield className="h-5 w-5 text-medical-primary" />
+              <span>HIPAA Compliant</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Brain className="h-5 w-5 text-medical-secondary" />
+              <span>AI-Powered Analysis</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Zap className="h-5 w-5 text-medical-primary" />
+              <span>Instant Results</span>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-12">
           {/* Upload Area */}
-          <Card className="health-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <UploadIcon className="h-5 w-5 text-medical-primary" />
+          <Card className="relative overflow-hidden border-2 border-medical-light/30 shadow-xl hover:shadow-2xl transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-br from-medical-light/10 to-medical-secondary/5"></div>
+            <CardHeader className="relative">
+              <CardTitle className="flex items-center gap-3 text-xl">
+                <div className="w-10 h-10 medical-gradient rounded-lg flex items-center justify-center">
+                  <UploadIcon className="h-5 w-5 text-white" />
+                </div>
                 Upload Medical Reports
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative">
               <div
                 {...getRootProps()}
-                className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all duration-300 ${
+                className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all duration-300 relative overflow-hidden ${
                   isDragActive 
-                    ? 'border-medical-primary bg-medical-light/10' 
-                    : 'border-gray-300 hover:border-medical-primary hover:bg-gray-50'
+                    ? 'border-medical-primary bg-medical-light/20 scale-105' 
+                    : 'border-medical-light/50 hover:border-medical-primary hover:bg-medical-light/10'
                 }`}
               >
                 <input {...getInputProps()} />
-                <UploadIcon className="h-12 w-12 text-medical-primary mx-auto mb-4" />
-                {isDragActive ? (
-                  <p className="text-medical-primary font-medium">Drop the files here...</p>
-                ) : (
-                  <div>
-                    <p className="text-accent font-medium mb-2">
-                      Drag & drop your lab reports here, or click to browse
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Enhanced processing for PDF, JPG, PNG files up to 10MB
-                    </p>
+                <div className="relative z-10">
+                  <div className="w-16 h-16 medical-gradient rounded-full flex items-center justify-center mx-auto mb-6">
+                    <UploadIcon className="h-8 w-8 text-white" />
                   </div>
+                  {isDragActive ? (
+                    <div>
+                      <p className="text-medical-primary font-semibold text-lg mb-2">Drop your files here!</p>
+                      <p className="text-medical-primary/70">We'll analyze them instantly</p>
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="text-accent font-semibold text-lg mb-2">
+                        Drag & drop your lab reports here
+                      </p>
+                      <p className="text-muted-foreground mb-4">
+                        or click to browse files
+                      </p>
+                      <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <FileText className="h-3 w-3" />
+                          PDF
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Image className="h-3 w-3" />
+                          JPG, PNG
+                        </span>
+                        <span>Up to 10MB</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {isDragActive && (
+                  <div className="absolute inset-0 bg-gradient-to-br from-medical-primary/10 to-medical-secondary/10 animate-pulse"></div>
                 )}
               </div>
 
               {uploadedFiles.length > 0 && (
-                <div className="mt-6">
-                  <h3 className="font-semibold mb-3">Uploaded Files ({uploadedFiles.length})</h3>
-                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                <div className="mt-8">
+                  <h3 className="font-semibold mb-4 flex items-center gap-2">
+                    <CheckCircle className="h-5 w-5 text-medical-primary" />
+                    Ready for Analysis ({uploadedFiles.length})
+                  </h3>
+                  <div className="space-y-3 max-h-48 overflow-y-auto">
                     {uploadedFiles.map((file, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div key={index} className="flex items-center justify-between p-4 bg-gradient-to-r from-medical-light/20 to-medical-secondary/10 rounded-lg border border-medical-light/30">
                         <div className="flex items-center gap-3">
                           {getFileIcon(file)}
                           <div>
-                            <p className="font-medium text-sm">{file.name}</p>
+                            <p className="font-medium text-sm text-accent">{file.name}</p>
                             <p className="text-xs text-muted-foreground">{formatFileSize(file.size)}</p>
                           </div>
                         </div>
@@ -418,7 +464,7 @@ ANALYSIS REQUIRED: Extract all medical laboratory data, test results, and provid
                           variant="ghost"
                           size="sm"
                           onClick={() => removeFile(index)}
-                          className="text-red-500 hover:text-red-700"
+                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
                         >
                           <X className="h-4 w-4" />
                         </Button>
@@ -432,89 +478,131 @@ ANALYSIS REQUIRED: Extract all medical laboratory data, test results, and provid
                 <Button 
                   onClick={simulateUpload}
                   disabled={isUploading || isAnalyzing}
-                  className="w-full mt-4 bg-medical-primary hover:bg-medical-dark"
+                  className="w-full mt-6 h-12 medical-gradient hover:opacity-90 text-white font-medium text-lg"
                 >
-                  {isUploading ? "Processing File..." : isAnalyzing ? "Analyzing with DocLumen AI..." : "Upload & Analyze with DocLumen AI"}
+                  {isUploading ? (
+                    <span className="flex items-center gap-2">
+                      <Brain className="h-5 w-5 animate-pulse" />
+                      Processing File...
+                    </span>
+                  ) : isAnalyzing ? (
+                    <span className="flex items-center gap-2">
+                      <Sparkles className="h-5 w-5 animate-pulse" />
+                      Analyzing with DocLumen AI...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      <Zap className="h-5 w-5" />
+                      Start AI Analysis
+                    </span>
+                  )}
                 </Button>
               )}
             </CardContent>
           </Card>
 
           {/* Analysis Status */}
-          <Card className="health-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                {analysisStatus === 'idle' && <AlertCircle className="h-5 w-5 text-gray-400" />}
-                {analysisStatus === 'processing' && <Brain className="h-5 w-5 text-medical-primary animate-pulse" />}
-                {analysisStatus === 'complete' && <CheckCircle className="h-5 w-5 text-green-500" />}
-                DocLumen AI Analysis Status
+          <Card className="relative overflow-hidden border-2 border-medical-light/30 shadow-xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-medical-secondary/5 to-medical-light/10"></div>
+            <CardHeader className="relative">
+              <CardTitle className="flex items-center gap-3 text-xl">
+                {analysisStatus === 'idle' && (
+                  <div className="w-10 h-10 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
+                    <Brain className="h-5 w-5 text-gray-400" />
+                  </div>
+                )}
+                {analysisStatus === 'processing' && (
+                  <div className="w-10 h-10 medical-gradient rounded-lg flex items-center justify-center">
+                    <Brain className="h-5 w-5 text-white animate-pulse" />
+                  </div>
+                )}
+                {analysisStatus === 'complete' && (
+                  <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center">
+                    <CheckCircle className="h-5 w-5 text-white" />
+                  </div>
+                )}
+                DocLumen AI Analysis
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative">
               {analysisStatus === 'idle' && (
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Brain className="h-8 w-8 text-gray-400" />
+                <div className="text-center py-12">
+                  <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Brain className="h-10 w-10 text-gray-400" />
                   </div>
-                  <p className="text-muted-foreground">
-                    Upload your lab reports to begin DocLumen AI analysis with complete data extraction
+                  <p className="text-muted-foreground text-lg mb-4">
+                    Ready to analyze your medical reports
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Upload your lab reports to begin comprehensive AI analysis
                   </p>
                 </div>
               )}
 
               {analysisStatus === 'processing' && (
-                <div className="space-y-4">
-                  <div className="text-center py-4">
-                    <div className="w-16 h-16 medical-gradient rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Brain className="h-8 w-8 text-white animate-pulse" />
+                <div className="space-y-6">
+                  <div className="text-center py-8">
+                    <div className="w-20 h-20 medical-gradient rounded-full flex items-center justify-center mx-auto mb-6">
+                      <Brain className="h-10 w-10 text-white animate-pulse" />
                     </div>
-                    <p className="font-medium text-accent">DocLumen AI is analyzing your report...</p>
-                    <p className="text-sm text-muted-foreground">
-                      {isUploading ? 'Extracting all medical data with advanced processing...' : 'Generating comprehensive health insights with professional analysis...'}
+                    <p className="font-semibold text-accent text-lg mb-2">DocLumen AI is analyzing...</p>
+                    <p className="text-muted-foreground">
+                      {isUploading ? 'Extracting medical data with advanced processing...' : 'Generating comprehensive health insights...'}
                     </p>
                   </div>
-                  <Progress value={uploadProgress} className="w-full" />
-                  <p className="text-sm text-center text-muted-foreground">
-                    {uploadProgress}% complete
-                  </p>
+                  <div className="space-y-3">
+                    <Progress value={uploadProgress} className="w-full h-3" />
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-muted-foreground">{uploadProgress}% complete</span>
+                      <span className="text-medical-primary font-medium">
+                        {uploadProgress < 50 ? 'Processing...' : uploadProgress < 100 ? 'Analyzing...' : 'Almost done!'}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               )}
             </CardContent>
           </Card>
         </div>
 
-        {/* Info Section */}
-        <Card className="health-card mt-8">
-          <CardContent className="p-6">
-            <h3 className="font-montserrat font-semibold text-lg mb-4 text-accent">
-              DocLumen AI Analysis Features
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-medical-light rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <Brain className="h-6 w-6 text-medical-primary" />
+        {/* Features Section */}
+        <Card className="border-2 border-medical-light/30 shadow-xl overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-medical-light/5 to-medical-secondary/5"></div>
+          <CardContent className="p-8 relative">
+            <div className="text-center mb-8">
+              <h3 className="font-montserrat font-bold text-2xl mb-3 text-accent">
+                Why Choose DocLumen AI?
+              </h3>
+              <p className="text-muted-foreground">
+                Experience the future of medical report analysis with cutting-edge AI technology
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="text-center group">
+                <div className="w-16 h-16 medical-gradient rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <Brain className="h-8 w-8 text-white" />
                 </div>
-                <h4 className="font-medium mb-2">Professional Medical Analysis</h4>
-                <p className="text-sm text-muted-foreground">
-                  Advanced AI trained on medical data to provide accurate, comprehensive analysis of all lab values
+                <h4 className="font-semibold text-lg mb-3 text-accent">Advanced AI Analysis</h4>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Our state-of-the-art AI extracts and interprets every detail from your medical reports with 99% accuracy
                 </p>
               </div>
-              <div className="text-center">
-                <div className="w-12 h-12 bg-medical-light rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <CheckCircle className="h-6 w-6 text-medical-primary" />
+              <div className="text-center group">
+                <div className="w-16 h-16 bg-gradient-to-br from-medical-secondary to-medical-primary rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <Target className="h-8 w-8 text-white" />
                 </div>
-                <h4 className="font-medium mb-2">Intelligent Data Extraction</h4>
-                <p className="text-sm text-muted-foreground">
-                  State-of-the-art OCR technology extracts ALL medical data from any format with 99% accuracy
+                <h4 className="font-semibold text-lg mb-3 text-accent">Personalized Insights</h4>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Get tailored health recommendations and actionable insights based on your unique health profile
                 </p>
               </div>
-              <div className="text-center">
-                <div className="w-12 h-12 bg-medical-light rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <Shield className="h-6 w-6 text-medical-primary" />
+              <div className="text-center group">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-medical-primary rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                  <Shield className="h-8 w-8 text-white" />
                 </div>
-                <h4 className="font-medium mb-2">Personalized Health Insights</h4>
-                <p className="text-sm text-muted-foreground">
-                  Tailored recommendations and actionable insights based on your complete health profile
+                <h4 className="font-semibold text-lg mb-3 text-accent">HIPAA Compliant & Secure</h4>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Your medical data is protected with enterprise-grade security and full HIPAA compliance
                 </p>
               </div>
             </div>
