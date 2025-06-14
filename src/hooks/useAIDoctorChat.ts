@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -196,8 +197,7 @@ export const useAIDoctorChat = ({ conversationId }: UseAIDoctorChatProps = {}) =
           userReports,
           userProfile,
           symptoms: symptoms || []
-        },
-        signal: abortControllerRef.current.signal
+        }
       });
 
       if (error) {
