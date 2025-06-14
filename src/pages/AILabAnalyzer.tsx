@@ -16,6 +16,30 @@ const AILabAnalyzer = () => {
   const [showFeedback, setShowFeedback] = useState(false);
   const isMobile = useIsMobile();
 
+  // Demo steps configuration
+  const demoSteps = [
+    {
+      title: "Upload",
+      description: "Upload lab report",
+      icon: Upload
+    },
+    {
+      title: "Analyze",
+      description: "AI processing",
+      icon: Brain
+    },
+    {
+      title: "Categorize",
+      description: "Health categorization",
+      icon: BarChart3
+    },
+    {
+      title: "Results",
+      description: "Comprehensive insights",
+      icon: Target
+    }
+  ];
+
   // Enhanced sample health metrics with comprehensive coverage
   const comprehensiveHealthMetrics = {
     critical: [
