@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -47,8 +46,8 @@ const App = () => (
                 <Route path="/ai-lab-analyzer" element={<AILabAnalyzer />} />
                 <Route path="/ai-doctor" element={<AIDoctor />} />
                 <Route path="/pricing" element={<Pricing />} />
-                <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-                <Route path="/dashboard" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+                {/* Changed /home to /dashboard */}
+                <Route path="/dashboard" element={<ProtectedRoute><Home /></ProtectedRoute>} />
                 <Route path="/upload" element={<ProtectedRoute><Upload /></ProtectedRoute>} />
                 <Route path="/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />
                 <Route path="/goals" element={<ProtectedRoute><Goals /></ProtectedRoute>} />
@@ -72,5 +71,4 @@ const App = () => (
     </TooltipProvider>
   </QueryClientProvider>
 );
-
 export default App;

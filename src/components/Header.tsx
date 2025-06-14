@@ -17,8 +17,9 @@ export const Header = () => {
     navigate('/');
   };
 
+  // Update dashboard navigation link
   const navigationLinks = [
-    { href: '/home', label: 'Home' },
+    { href: '/dashboard', label: 'Dashboard' },
     { href: '/upload', label: 'Upload' },
     { href: '/insights', label: 'Insights' },
     { href: '/goals', label: 'Goals' },
@@ -40,7 +41,7 @@ export const Header = () => {
     <header className="fixed top-0 left-0 right-0 z-50 glass-effect border-b border-medical-light/20">
       <div className="container flex items-center justify-between h-16">
         {/* Logo */}
-        <Link to={user ? "/home" : "/"} className="flex items-center space-x-2">
+        <Link to={user ? "/dashboard" : "/"} className="flex items-center space-x-2">
           <div className="w-8 h-8 medical-gradient rounded-lg flex items-center justify-center">
             <Cross className="h-5 w-5 text-white" />
           </div>
