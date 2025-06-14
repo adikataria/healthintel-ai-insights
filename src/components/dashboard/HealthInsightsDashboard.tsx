@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { useHealthGoals } from '@/hooks/useHealthGoals';
 import { useHealthAlerts } from '@/hooks/useHealthAlerts';
 import { useMedicalReports } from '@/hooks/useMedicalReports';
+import { useSubscription } from '@/hooks/useSubscription';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -16,15 +17,20 @@ import {
   Droplets,
   Zap,
   Eye,
-  MessageSquare
+  MessageSquare,
+  Crown
 } from 'lucide-react';
 
 const HealthInsightsDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { currentSubscription } = useSubscription();
   const { goals, activeGoals, completedGoals } = useHealthGoals();
   const { alerts, unreadCount, criticalAlerts } = useHealthAlerts();
   const { reports } = useMedicalReports();
+
+  // Check if user has an active subscription
+  const hasActiveSubscription = currentSubscription?.status === 'active' && currentSubscription?.subscription_plans?.name !== 'Free';
 
   // Get current time for greeting
   const currentHour = new Date().getHours();
@@ -55,12 +61,27 @@ const HealthInsightsDashboard = () => {
       <div className="container mx-auto p-0 sm:p-6 max-w-5xl">
         {/* Greeting Header */}
         <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2 font-montserrat">
-            {getGreeting()}, {getFirstName()}!
-          </h1>
-          <p className="text-gray-600 text-lg">
-            Your health trends are steady. Here's your latest overview.
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2 font-montserrat">
+                {getGreeting()}, {getFirstName()}!
+              </h1>
+              <p className="text-gray-600 text-lg">
+                Your health trends are steady. Here's your latest overview.
+              </p>
+            </div>
+            
+            {/* Upgrade Button - Show only if user doesn't have active subscription */}
+            {!hasActiveSubscription && (
+              <Button 
+                onClick={() => navigate('/pricing')}
+                className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
+              >
+                <Crown className="h-5 w-5" />
+                UPGRADE
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Quick Actions */}
