@@ -51,7 +51,7 @@ const HealthInsightsDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10">
+    <div className="min-h-screen bg-gray-50 pt-24 pb-10">
       <div className="container mx-auto p-0 sm:p-6 max-w-5xl">
         {/* Greeting Header */}
         <div className="mb-8">
