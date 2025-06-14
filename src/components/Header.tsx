@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Cross, Menu, X, User, LogOut, Settings, Bell } from "lucide-react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -44,12 +43,11 @@ export const Header = () => {
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo */}
           <Link to={user ? "/dashboard" : "/"} className="flex items-center space-x-2 flex-shrink-0">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 medical-gradient rounded-lg flex items-center justify-center">
-              <Cross className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-            </div>
-            <span className="font-montserrat font-bold text-lg sm:text-xl text-accent">
-              DocLumen
-            </span>
+            <img 
+              src="/lovable-uploads/44728863-0abf-4af4-92cf-72a0eed7c40a.png" 
+              alt="DocLumen Logo" 
+              className="h-7 w-auto sm:h-8"
+            />
           </Link>
 
           {/* Desktop Navigation */}
