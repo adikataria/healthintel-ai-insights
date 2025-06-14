@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Send, Bot, User, Heart, Activity, AlertCircle, Brain, Shield, Sparkles, MessageCircle, Plus, Stethoscope } from "lucide-react";
+import { Send, Bot, User, Heart, Activity, AlertCircle, Brain, Shield, Sparkles, MessageCircle, Plus, Stethoscope, Zap } from "lucide-react";
 import { ConsentModal } from "@/components/medical/ConsentModal";
 import { SymptomChecker } from "@/components/medical/SymptomChecker";
 import { useAIDoctorChat } from "@/hooks/useAIDoctorChat";
@@ -111,7 +110,8 @@ ${userProfile ? 'âœ… Your health profile is loaded for personalized insights' : 
 ${userReports > 0 ? `âœ… ${userReports} lab reports available for analysis` : 'ðŸ“‹ Upload lab reports for comprehensive analysis'}
 
 âš ï¸ **Important**: This AI provides educational information only and does not replace professional medical advice.`,
-    timestamp: new Date()
+    timestamp: new Date(),
+    isStreaming: false
   }] : messages;
 
   return (
@@ -120,12 +120,17 @@ ${userReports > 0 ? `âœ… ${userReports} lab reports available for analysis` : 'ð
       <div className="bg-white border-b border-gray-200 px-3 sm:px-4 py-2 sm:py-3">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-teal-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-teal-100 rounded-lg flex items-center justify-center flex-shrink-0 relative">
               <Brain className="h-3 w-3 sm:h-4 sm:w-4 text-teal-600" />
+              {/* Real-time indicator */}
+              <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             </div>
             <div className="min-w-0">
-              <h1 className="font-semibold text-sm sm:text-base text-gray-900 truncate">DocLumen AI - Enhanced</h1>
-              <p className="text-xs text-gray-500 hidden sm:block">Advanced Health Assistant</p>
+              <h1 className="font-semibold text-sm sm:text-base text-gray-900 truncate flex items-center gap-1">
+                DocLumen AI - Enhanced
+                <Zap className="h-3 w-3 text-yellow-500" />
+              </h1>
+              <p className="text-xs text-gray-500 hidden sm:block">Fast & Real-time Health Assistant</p>
             </div>
           </div>
           <Button variant="outline" size="sm" className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
@@ -165,23 +170,28 @@ ${userReports > 0 ? `âœ… ${userReports} lab reports available for analysis` : 'ð
               {/* AI Avatar Section - Mobile Optimized */}
               {messages.length === 0 && (
                 <div className="text-center py-6 sm:py-16 px-3 sm:px-6">
-                  <div className="w-16 h-16 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6 bg-gradient-to-br from-teal-100 to-blue-100 rounded-full flex items-center justify-center">
+                  <div className="w-16 h-16 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6 bg-gradient-to-br from-teal-100 to-blue-100 rounded-full flex items-center justify-center relative">
                     <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center shadow-sm relative">
                       <Brain className="h-6 w-6 sm:h-8 sm:w-8 text-teal-600" />
                       <div className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 w-4 h-4 sm:w-6 sm:h-6 bg-green-500 rounded-full flex items-center justify-center">
                         <Sparkles className="h-2 w-2 sm:h-3 sm:w-3 text-white" />
                       </div>
                     </div>
+                    {/* Fast response indicator */}
+                    <div className="absolute -bottom-1 -right-1 bg-yellow-500 rounded-full p-1">
+                      <Zap className="h-2 w-2 text-white" />
+                    </div>
                   </div>
                   
-                  <h2 className="text-lg sm:text-2xl font-semibold text-gray-900 mb-1 sm:mb-2">
+                  <h2 className="text-lg sm:text-2xl font-semibold text-gray-900 mb-1 sm:mb-2 flex items-center justify-center gap-2">
                     DocLumen AI - Enhanced
+                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">FAST</span>
                   </h2>
                   <p className="text-sm sm:text-base text-gray-600 mb-1">
-                    Your advanced health assistant with personalized insights
+                    Your advanced health assistant with real-time responses
                   </p>
                   <p className="text-xs sm:text-sm text-gray-500 mb-4 sm:mb-8">
-                    Now with symptom analysis, risk assessment & lab integration
+                    Now with ultra-fast symptom analysis & instant insights
                   </p>
 
                   {/* Fixed Mobile-Optimized Suggested Questions */}
@@ -220,8 +230,11 @@ ${userReports > 0 ? `âœ… ${userReports} lab reports available for analysis` : 'ð
                       >
                         <Avatar className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0">
                           {message.role === 'assistant' ? (
-                            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-teal-100 rounded-full flex items-center justify-center">
+                            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-teal-100 rounded-full flex items-center justify-center relative">
                               <Brain className="h-3 w-3 sm:h-4 sm:w-4 text-teal-600" />
+                              {message.isStreaming && (
+                                <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                              )}
                             </div>
                           ) : (
                             <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-100 rounded-full flex items-center justify-center">
@@ -242,13 +255,25 @@ ${userReports > 0 ? `âœ… ${userReports} lab reports available for analysis` : 'ð
                           >
                             <p className="text-xs sm:text-sm whitespace-pre-line leading-relaxed">
                               {message.content}
+                              {message.isStreaming && (
+                                <span className="inline-flex items-center ml-2">
+                                  <div className="flex space-x-1">
+                                    <div className="w-1 h-1 bg-teal-500 rounded-full animate-bounce"></div>
+                                    <div className="w-1 h-1 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                                    <div className="w-1 h-1 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                                  </div>
+                                </span>
+                              )}
                             </p>
                           </div>
-                          <p className="text-xs text-gray-500 mt-1 sm:mt-2">
+                          <p className="text-xs text-gray-500 mt-1 sm:mt-2 flex items-center gap-1">
                             {message.timestamp.toLocaleTimeString([], { 
                               hour: '2-digit', 
                               minute: '2-digit' 
                             })}
+                            {message.role === 'assistant' && message.metadata?.optimizedForSpeed && (
+                              <Zap className="h-3 w-3 text-yellow-500" />
+                            )}
                           </p>
                         </div>
                       </div>
@@ -257,17 +282,19 @@ ${userReports > 0 ? `âœ… ${userReports} lab reports available for analysis` : 'ð
                     {isLoading && (
                       <div className="flex gap-2 sm:gap-4">
                         <Avatar className="w-6 h-6 sm:w-8 sm:h-8">
-                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-teal-100 rounded-full flex items-center justify-center">
+                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-teal-100 rounded-full flex items-center justify-center relative">
                             <Brain className="h-3 w-3 sm:h-4 sm:w-4 text-teal-600" />
+                            <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                           </div>
                           <AvatarFallback>AI</AvatarFallback>
                         </Avatar>
-                        <div className="bg-gray-50 border border-gray-100 p-3 sm:p-4 rounded-xl sm:rounded-2xl">
+                        <div className="bg-gray-50 border border-gray-100 p-3 sm:p-4 rounded-xl sm:rounded-2xl flex items-center gap-2">
                           <div className="flex space-x-1">
                             <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-teal-500 rounded-full animate-bounce"></div>
                             <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                             <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                           </div>
+                          <span className="text-xs text-gray-500">Analyzing...</span>
                         </div>
                       </div>
                     )}
@@ -287,6 +314,11 @@ ${userReports > 0 ? `âœ… ${userReports} lab reports available for analysis` : 'ð
                       className="h-10 sm:h-12 border-gray-200 focus:border-teal-300 rounded-lg sm:rounded-xl text-sm"
                       disabled={isLoading}
                     />
+                    {!isLoading && (
+                      <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                        <Zap className="h-3 w-3 text-yellow-500" />
+                      </div>
+                    )}
                   </div>
                   <Button 
                     onClick={handleSendMessage}
@@ -309,6 +341,7 @@ ${userReports > 0 ? `âœ… ${userReports} lab reports available for analysis` : 'ð
               <CardTitle className="text-base sm:text-lg flex items-center gap-2 text-gray-900">
                 <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
                 Enhanced AI Capabilities
+                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full ml-auto">FAST</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 sm:space-y-4">

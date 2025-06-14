@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
@@ -10,6 +9,7 @@ interface Message {
   content: string;
   timestamp: Date;
   metadata?: any;
+  isStreaming?: boolean;
 }
 
 interface Symptom {
@@ -30,6 +30,7 @@ export const useAIDoctorChat = ({ conversationId }: UseAIDoctorChatProps = {}) =
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(conversationId || null);
   const [userReports, setUserReports] = useState([]);
   const [userProfile, setUserProfile] = useState(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   // Load user's health profile for personalized insights
   useEffect(() => {
@@ -107,7 +108,8 @@ export const useAIDoctorChat = ({ conversationId }: UseAIDoctorChatProps = {}) =
           role: msg.role as 'user' | 'assistant',
           content: msg.content,
           timestamp: new Date(msg.created_at),
-          metadata: (msg as any).metadata || null
+          metadata: (msg as any).metadata || null,
+          isStreaming: false
         }));
 
         setMessages(formattedMessages);
@@ -151,44 +153,64 @@ export const useAIDoctorChat = ({ conversationId }: UseAIDoctorChatProps = {}) =
       if (!newConversationId) return;
     }
 
+    // Cancel any ongoing request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
       content,
       timestamp: new Date(),
-      metadata: { symptoms: symptoms || [] }
+      metadata: { symptoms: symptoms || [] },
+      isStreaming: false
     };
 
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
 
-    try {
-      console.log('Sending enhanced message to AI Doctor...');
+    // Create AI message placeholder for streaming
+    const aiMessageId = (Date.now() + 1).toString();
+    const aiMessage: Message = {
+      id: aiMessageId,
+      role: 'assistant',
+      content: '',
+      timestamp: new Date(),
+      metadata: {},
+      isStreaming: true
+    };
 
-      const { data, error } = await supabase.functions.invoke('ai-doctor-chat', {
+    setMessages(prev => [...prev, aiMessage]);
+
+    try {
+      console.log('Sending streaming message to AI Doctor...');
+
+      // Create abort controller for this request
+      abortControllerRef.current = new AbortController();
+
+      const { data, error } = await supabase.functions.invoke('ai-doctor-chat-stream', {
         body: {
           message: content,
           conversationId: currentConversationId,
           userReports,
           userProfile,
           symptoms: symptoms || []
-        }
+        },
+        signal: abortControllerRef.current.signal
       });
 
       if (error) {
-        console.error('AI Doctor chat error:', error);
+        console.error('AI Doctor streaming error:', error);
         throw new Error(error.message || 'Chat service error');
       }
 
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: data.response,
-        timestamp: new Date(),
-        metadata: data.metadata
-      };
-
-      setMessages(prev => [...prev, aiMessage]);
+      // Update the streaming message with final content
+      setMessages(prev => prev.map(msg => 
+        msg.id === aiMessageId 
+          ? { ...msg, content: data.response, isStreaming: false, metadata: data.metadata }
+          : msg
+      ));
 
       // Show success toast for enhanced features
       if (data.compliance?.enhancedAnalysis) {
@@ -196,21 +218,30 @@ export const useAIDoctorChat = ({ conversationId }: UseAIDoctorChatProps = {}) =
       }
 
     } catch (error) {
+      if (error.name === 'AbortError') {
+        console.log('Request was cancelled');
+        // Remove the streaming message if request was cancelled
+        setMessages(prev => prev.filter(msg => msg.id !== aiMessageId));
+        return;
+      }
+
       console.error('Error sending message:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to send message';
       toast.error(errorMessage);
 
-      // Add fallback message
-      const fallbackMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: 'I apologize, but I\'m currently experiencing technical difficulties. Please consult with a healthcare provider for your medical questions.',
-        timestamp: new Date()
-      };
-
-      setMessages(prev => [...prev, fallbackMessage]);
+      // Update streaming message with error
+      setMessages(prev => prev.map(msg => 
+        msg.id === aiMessageId 
+          ? { 
+              ...msg, 
+              content: 'I apologize, but I\'m currently experiencing technical difficulties. Please consult with a healthcare provider for your medical questions.',
+              isStreaming: false 
+            }
+          : msg
+      ));
     } finally {
       setIsLoading(false);
+      abortControllerRef.current = null;
     }
   };
 
@@ -223,6 +254,15 @@ export const useAIDoctorChat = ({ conversationId }: UseAIDoctorChatProps = {}) =
     
     await sendMessage(message, symptoms);
   };
+
+  // Cleanup abort controller on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   return {
     messages,
