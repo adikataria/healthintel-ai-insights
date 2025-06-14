@@ -107,7 +107,7 @@ export const useAIDoctorChat = ({ conversationId }: UseAIDoctorChatProps = {}) =
           role: msg.role as 'user' | 'assistant',
           content: msg.content,
           timestamp: new Date(msg.created_at),
-          metadata: msg.metadata
+          metadata: (msg as any).metadata || null
         }));
 
         setMessages(formattedMessages);
