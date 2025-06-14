@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,6 +7,7 @@ import { useHealthGoals } from '@/hooks/useHealthGoals';
 import { useHealthAlerts } from '@/hooks/useHealthAlerts';
 import { useMedicalReports } from '@/hooks/useMedicalReports';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { 
   Upload, 
   TrendingUp, 
@@ -19,6 +21,7 @@ import {
 
 const HealthInsightsDashboard = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const { goals, activeGoals, completedGoals } = useHealthGoals();
   const { alerts, unreadCount, criticalAlerts } = useHealthAlerts();
   const { reports } = useMedicalReports();
@@ -65,7 +68,10 @@ const HealthInsightsDashboard = () => {
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">Quick Actions</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Upload Report */}
-            <div className="rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white p-6 transition-shadow shadow-md cursor-pointer flex flex-col justify-between">
+            <div 
+              className="rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white p-6 transition-shadow shadow-md cursor-pointer flex flex-col justify-between"
+              onClick={() => navigate('/upload')}
+            >
               <div className="flex items-center gap-4 mb-2">
                 <Upload className="h-7 w-7" />
                 <div>
@@ -75,7 +81,10 @@ const HealthInsightsDashboard = () => {
               </div>
             </div>
             {/* View Trends */}
-            <div className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white p-6 transition-shadow shadow-md cursor-pointer flex flex-col justify-between">
+            <div 
+              className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white p-6 transition-shadow shadow-md cursor-pointer flex flex-col justify-between"
+              onClick={() => navigate('/trends')}
+            >
               <div className="flex items-center gap-4 mb-2">
                 <TrendingUp className="h-7 w-7" />
                 <div>
@@ -85,7 +94,10 @@ const HealthInsightsDashboard = () => {
               </div>
             </div>
             {/* Preventative Tips */}
-            <div className="rounded-xl bg-green-600 hover:bg-green-700 text-white p-6 transition-shadow shadow-md cursor-pointer flex flex-col justify-between">
+            <div 
+              className="rounded-xl bg-green-600 hover:bg-green-700 text-white p-6 transition-shadow shadow-md cursor-pointer flex flex-col justify-between"
+              onClick={() => navigate('/insights')}
+            >
               <div className="flex items-center gap-4 mb-2">
                 <Lightbulb className="h-7 w-7" />
                 <div>
@@ -154,11 +166,18 @@ const HealthInsightsDashboard = () => {
             Get detailed explanations and personalized recommendations for your health data.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button className="bg-emerald-700 hover:bg-emerald-800 text-white flex items-center justify-center min-w-[220px]">
+            <Button 
+              className="bg-emerald-700 hover:bg-emerald-800 text-white flex items-center justify-center min-w-[220px]"
+              onClick={() => navigate('/insights')}
+            >
               <Eye className="h-4 w-4 mr-2" />
               Learn What This Means
             </Button>
-            <Button variant="outline" className="border-gray-400 flex items-center justify-center min-w-[160px]">
+            <Button 
+              variant="outline" 
+              className="border-gray-400 flex items-center justify-center min-w-[160px]"
+              onClick={() => navigate('/chat')}
+            >
               <MessageSquare className="h-4 w-4 mr-2" />
               Ask AI Doctor
             </Button>
