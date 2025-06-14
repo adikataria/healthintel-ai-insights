@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,6 +18,8 @@ import {
   Star
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import HowItWorks from '@/components/landing/HowItWorks';
+import TestimonialsCarousel from '@/components/landing/TestimonialsCarousel';
 
 const Landing = () => {
   return (
@@ -73,6 +74,9 @@ const Landing = () => {
           </div>
         </div>
       </section>
+
+      {/* How It Works Section */}
+      <HowItWorks />
 
       {/* Features Section */}
       <section className="py-20 bg-background">
@@ -364,6 +368,9 @@ const Landing = () => {
           </div>
         </div>
       </section>
+
+      {/* Testimonials Section */}
+      <TestimonialsCarousel />
 
       {/* Security & Compliance */}
       <section className="py-20 bg-background">
