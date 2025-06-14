@@ -2,32 +2,12 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Brain, 
-  Shield, 
-  Smartphone, 
-  TrendingUp, 
-  Users, 
-  FileText,
-  Heart,
-  Target,
-  Bell,
-  Download,
-  CheckCircle,
-  ArrowRight,
-  Star,
-  BarChart3,
-  Activity,
-  Zap,
-  Calendar
-} from 'lucide-react';
+import { Brain, Shield, Smartphone, TrendingUp, Users, FileText, Heart, Target, Bell, Download, CheckCircle, ArrowRight, Star, BarChart3, Activity, Zap, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import HowItWorks from '@/components/landing/HowItWorks';
 import TestimonialsCarousel from '@/components/landing/TestimonialsCarousel';
-
 const Landing = () => {
-  return (
-    <div className="min-h-screen">
+  return <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-medical-light via-medical-secondary/20 to-medical-primary/10 py-20 sm:py-32">
         <div className="container mx-auto px-4">
@@ -83,11 +63,7 @@ const Landing = () => {
             <div className="hidden lg:block">
               <div className="relative">
                 <div className="bg-white rounded-2xl shadow-2xl p-4 transform rotate-2 hover:rotate-0 transition-transform duration-300">
-                  <img 
-                    src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=600&h=400&fit=crop&crop=center" 
-                    alt="DocLumen AI Health Dashboard"
-                    className="w-full h-auto rounded-xl"
-                  />
+                  <img alt="DocLumen AI Health Dashboard" className="w-full h-auto rounded-xl" src="/lovable-uploads/2394627b-6c26-456d-9d85-a689e412b93d.png" />
                 </div>
                 {/* Floating elements */}
                 <div className="absolute -top-4 -right-4 bg-medical-primary text-white p-3 rounded-full shadow-lg animate-bounce">
@@ -143,11 +119,7 @@ const Landing = () => {
               </CardHeader>
               <CardContent className="pt-0">
                 <div className="bg-gray-50 rounded-lg p-4 mb-4 h-32 flex items-center justify-center overflow-hidden">
-                  <img 
-                    src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=300&h=200&fit=crop&crop=center" 
-                    alt="AI Health Analysis Dashboard"
-                    className="w-full h-full object-cover rounded-md"
-                  />
+                  <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=300&h=200&fit=crop&crop=center" alt="AI Health Analysis Dashboard" className="w-full h-full object-cover rounded-md" />
                 </div>
               </CardContent>
             </Card>
@@ -170,11 +142,7 @@ const Landing = () => {
               </CardHeader>
               <CardContent className="pt-0">
                 <div className="bg-gray-50 rounded-lg p-4 mb-4 h-32 flex items-center justify-center overflow-hidden">
-                  <img 
-                    src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=300&h=200&fit=crop&crop=center" 
-                    alt="AI Doctor Assistant Interface"
-                    className="w-full h-full object-cover rounded-md"
-                  />
+                  <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=300&h=200&fit=crop&crop=center" alt="AI Doctor Assistant Interface" className="w-full h-full object-cover rounded-md" />
                 </div>
               </CardContent>
             </Card>
@@ -197,11 +165,7 @@ const Landing = () => {
               </CardHeader>
               <CardContent className="pt-0">
                 <div className="bg-gray-50 rounded-lg p-4 mb-4 h-32 flex items-center justify-center overflow-hidden">
-                  <img 
-                    src="https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=300&h=200&fit=crop&crop=center" 
-                    alt="Health Tracking Dashboard"
-                    className="w-full h-full object-cover rounded-md"
-                  />
+                  <img src="https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=300&h=200&fit=crop&crop=center" alt="Health Tracking Dashboard" className="w-full h-full object-cover rounded-md" />
                 </div>
               </CardContent>
             </Card>
@@ -498,10 +462,7 @@ const Landing = () => {
                     Connect with a specialist to see how DocLumen can work for your health needs.
                   </p>
                 </div>
-                <Button 
-                  variant="outline" 
-                  className="bg-white text-medical-primary hover:bg-gray-100 border-white px-8 py-3 rounded-xl"
-                >
+                <Button variant="outline" className="bg-white text-medical-primary hover:bg-gray-100 border-white px-8 py-3 rounded-xl">
                   Request a demo
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -526,8 +487,6 @@ const Landing = () => {
           </div>
         </div>
       </section>
-    </div>
-  );
+    </div>;
 };
-
 export default Landing;
