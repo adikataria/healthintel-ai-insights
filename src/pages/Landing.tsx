@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -32,48 +31,71 @@ const Landing = () => {
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-medical-light via-medical-secondary/20 to-medical-primary/10 py-20 sm:py-32">
         <div className="container mx-auto px-4">
-          <div className="text-center max-w-4xl mx-auto">
-            <Badge className="mb-6 bg-medical-primary/10 text-medical-primary hover:bg-medical-primary/20">
-              ✨ Introducing DocLumen AI Phase 2
-            </Badge>
-            
-            <h1 className="text-4xl sm:text-6xl font-bold text-foreground mb-6">
-              Your Personal
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-medical-primary to-medical-secondary">
-                {" "}AI Health{" "}
-              </span>
-              Intelligence Platform
-            </h1>
-            
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Transform your health management with AI-powered insights, personalized recommendations, 
-              and comprehensive tracking tools designed for the modern lifestyle.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/auth">
-                <Button size="lg" className="bg-medical-primary hover:bg-medical-dark text-white px-8 py-3">
-                  Get Started Free
-                  <ArrowRight className="ml-2 h-5 w-5" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
+            {/* Left Content */}
+            <div className="text-center lg:text-left">
+              <Badge className="mb-6 bg-medical-primary/10 text-medical-primary hover:bg-medical-primary/20">
+                ✨ Introducing DocLumen AI Phase 2
+              </Badge>
+              
+              <h1 className="text-4xl sm:text-6xl font-bold text-foreground mb-6">
+                Your Personal
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-medical-primary to-medical-secondary">
+                  {" "}AI Health{" "}
+                </span>
+                Intelligence Platform
+              </h1>
+              
+              <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto lg:mx-0">
+                Transform your health management with AI-powered insights, personalized recommendations, 
+                and comprehensive tracking tools designed for the modern lifestyle.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <Link to="/auth">
+                  <Button size="lg" className="bg-medical-primary hover:bg-medical-dark text-white px-8 py-3">
+                    Get Started Free
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+                <Button size="lg" variant="outline" className="border-medical-primary text-medical-primary hover:bg-medical-primary hover:text-white px-8 py-3">
+                  Watch Demo
                 </Button>
-              </Link>
-              <Button size="lg" variant="outline" className="border-medical-primary text-medical-primary hover:bg-medical-primary hover:text-white px-8 py-3">
-                Watch Demo
-              </Button>
+              </div>
+              
+              <div className="flex items-center justify-center lg:justify-start gap-4 mt-8 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <CheckCircle className="h-4 w-4 text-medical-secondary" />
+                  No credit card required
+                </div>
+                <div className="flex items-center gap-1">
+                  <Shield className="h-4 w-4 text-medical-secondary" />
+                  HIPAA Compliant
+                </div>
+                <div className="flex items-center gap-1">
+                  <Star className="h-4 w-4 text-yellow-500" />
+                  4.9/5 User Rating
+                </div>
+              </div>
             </div>
-            
-            <div className="flex items-center justify-center gap-4 mt-8 text-sm text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <CheckCircle className="h-4 w-4 text-medical-secondary" />
-                No credit card required
-              </div>
-              <div className="flex items-center gap-1">
-                <Shield className="h-4 w-4 text-medical-secondary" />
-                HIPAA Compliant
-              </div>
-              <div className="flex items-center gap-1">
-                <Star className="h-4 w-4 text-yellow-500" />
-                4.9/5 User Rating
+
+            {/* Right Image */}
+            <div className="hidden lg:block">
+              <div className="relative">
+                <div className="bg-white rounded-2xl shadow-2xl p-4 transform rotate-2 hover:rotate-0 transition-transform duration-300">
+                  <img 
+                    src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=600&h=400&fit=crop&crop=center" 
+                    alt="DocLumen AI Health Dashboard"
+                    className="w-full h-auto rounded-xl"
+                  />
+                </div>
+                {/* Floating elements */}
+                <div className="absolute -top-4 -right-4 bg-medical-primary text-white p-3 rounded-full shadow-lg animate-bounce">
+                  <Heart className="h-6 w-6" />
+                </div>
+                <div className="absolute -bottom-4 -left-4 bg-medical-secondary text-white p-3 rounded-full shadow-lg animate-pulse">
+                  <Brain className="h-6 w-6" />
+                </div>
               </div>
             </div>
           </div>
@@ -104,7 +126,7 @@ const Landing = () => {
           {/* Top Row - 3 Cards with Images */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             {/* AI Health Analysis */}
-            <Card className="bg-white border-gray-200 hover:border-medical-primary/50 transition-all duration-300 group shadow-lg">
+            <Card className="bg-white border-medical-light/30 hover:border-medical-primary/50 transition-all duration-300 group shadow-lg hover:shadow-xl">
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="h-12 w-12 bg-medical-primary/10 rounded-lg flex items-center justify-center">
@@ -122,7 +144,7 @@ const Landing = () => {
               <CardContent className="pt-0">
                 <div className="bg-gray-50 rounded-lg p-4 mb-4 h-32 flex items-center justify-center overflow-hidden">
                   <img 
-                    src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=300&h=200&fit=crop&crop=center" 
+                    src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=300&h=200&fit=crop&crop=center" 
                     alt="AI Health Analysis Dashboard"
                     className="w-full h-full object-cover rounded-md"
                   />
@@ -131,7 +153,7 @@ const Landing = () => {
             </Card>
 
             {/* AI Doctor Assistant */}
-            <Card className="bg-white border-gray-200 hover:border-medical-secondary/50 transition-all duration-300 group shadow-lg">
+            <Card className="bg-white border-medical-light/30 hover:border-medical-secondary/50 transition-all duration-300 group shadow-lg hover:shadow-xl">
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="h-12 w-12 bg-medical-secondary/10 rounded-lg flex items-center justify-center">
@@ -149,7 +171,7 @@ const Landing = () => {
               <CardContent className="pt-0">
                 <div className="bg-gray-50 rounded-lg p-4 mb-4 h-32 flex items-center justify-center overflow-hidden">
                   <img 
-                    src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=300&h=200&fit=crop&crop=center" 
+                    src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=300&h=200&fit=crop&crop=center" 
                     alt="AI Doctor Assistant Interface"
                     className="w-full h-full object-cover rounded-md"
                   />
@@ -158,7 +180,7 @@ const Landing = () => {
             </Card>
 
             {/* Health Goals & Tracking */}
-            <Card className="bg-white border-gray-200 hover:border-medical-primary/50 transition-all duration-300 group shadow-lg">
+            <Card className="bg-white border-medical-light/30 hover:border-medical-primary/50 transition-all duration-300 group shadow-lg hover:shadow-xl">
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="h-12 w-12 bg-medical-primary/10 rounded-lg flex items-center justify-center">
@@ -176,7 +198,7 @@ const Landing = () => {
               <CardContent className="pt-0">
                 <div className="bg-gray-50 rounded-lg p-4 mb-4 h-32 flex items-center justify-center overflow-hidden">
                   <img 
-                    src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=300&h=200&fit=crop&crop=center" 
+                    src="https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=300&h=200&fit=crop&crop=center" 
                     alt="Health Tracking Dashboard"
                     className="w-full h-full object-cover rounded-md"
                   />
@@ -188,7 +210,7 @@ const Landing = () => {
           {/* Bottom Row - 2 Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Smart Health Alerts */}
-            <Card className="bg-white border-gray-200 hover:border-medical-primary/50 transition-all duration-300 shadow-lg">
+            <Card className="bg-white border-medical-light/30 hover:border-medical-primary/50 transition-all duration-300 shadow-lg hover:shadow-xl">
               <CardHeader>
                 <div className="flex items-center gap-3 mb-4">
                   <div className="h-12 w-12 bg-medical-primary/10 rounded-lg flex items-center justify-center">
@@ -203,21 +225,21 @@ const Landing = () => {
                   Seamlessly connect all your existing health apps.
                 </CardDescription>
                 <div className="grid grid-cols-3 gap-3">
-                  <div className="bg-gray-50 rounded-lg p-2 flex items-center justify-center">
+                  <div className="bg-medical-light/30 rounded-lg p-2 flex items-center justify-center">
                     <Activity className="h-6 w-6 text-medical-secondary" />
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-2 flex items-center justify-center">
-                    <Heart className="h-6 w-6 text-red-400" />
+                  <div className="bg-medical-light/30 rounded-lg p-2 flex items-center justify-center">
+                    <Heart className="h-6 w-6 text-medical-primary" />
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-2 flex items-center justify-center">
-                    <Zap className="h-6 w-6 text-yellow-400" />
+                  <div className="bg-medical-light/30 rounded-lg p-2 flex items-center justify-center">
+                    <Zap className="h-6 w-6 text-medical-secondary" />
                   </div>
                 </div>
               </CardHeader>
             </Card>
 
             {/* Family Health Management */}
-            <Card className="bg-white border-gray-200 hover:border-medical-secondary/50 transition-all duration-300 shadow-lg">
+            <Card className="bg-white border-medical-light/30 hover:border-medical-secondary/50 transition-all duration-300 shadow-lg hover:shadow-xl">
               <CardHeader>
                 <div className="flex items-center gap-3 mb-4">
                   <div className="h-12 w-12 bg-medical-secondary/10 rounded-lg flex items-center justify-center">
@@ -429,7 +451,7 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* CTA Section - Redesigned like the attached image */}
+      {/* CTA Section - Redesigned */}
       <section className="py-20 bg-gray-900">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
