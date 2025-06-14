@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { PlanManagement } from "@/components/subscription/PlanManagement";
+import { Link } from "react-router-dom";
 import { User, Bell, Shield, CreditCard, Palette, Globe, Users } from "lucide-react";
 
 const Settings = () => {

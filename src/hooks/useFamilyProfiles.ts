@@ -40,14 +40,19 @@ export const useFamilyProfiles = () => {
   });
 
   const createProfile = useMutation({
-    mutationFn: async (profileData: Partial<FamilyProfile>) => {
+    mutationFn: async (profileData: Omit<FamilyProfile, 'id' | 'user_id' | 'created_at' | 'updated_at'> & { name: string }) => {
       if (!user?.id) throw new Error('User not authenticated');
 
       const { data, error } = await supabase
         .from('family_profiles')
         .insert({
           user_id: user.id,
-          ...profileData,
+          name: profileData.name,
+          relationship: profileData.relationship,
+          date_of_birth: profileData.date_of_birth,
+          gender: profileData.gender,
+          medical_notes: profileData.medical_notes,
+          is_active: profileData.is_active,
         })
         .select()
         .single();
