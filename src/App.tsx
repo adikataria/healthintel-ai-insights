@@ -46,7 +46,7 @@ const App = () => (
                 <Route path="/ai-lab-analyzer" element={<AILabAnalyzer />} />
                 <Route path="/ai-doctor" element={<AIDoctor />} />
                 <Route path="/pricing" element={<Pricing />} />
-                {/* Changed /home to /dashboard */}
+                {/* Main dashboard route for signed-in users */}
                 <Route path="/dashboard" element={<ProtectedRoute><Home /></ProtectedRoute>} />
                 <Route path="/upload" element={<ProtectedRoute><Upload /></ProtectedRoute>} />
                 <Route path="/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />

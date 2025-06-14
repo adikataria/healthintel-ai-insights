@@ -36,7 +36,7 @@ export const AuthForm = () => {
       toast.error(error.message);
     } else {
       toast.success('Welcome back!');
-      navigate('/home');
+      navigate('/dashboard');
     }
 
     setIsLoading(false);
