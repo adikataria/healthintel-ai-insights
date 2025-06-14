@@ -164,7 +164,7 @@ ${userReports > 0 ? `âœ… ${userReports} lab reports available for analysis` : 'ð
             <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200 mb-3 sm:mb-6">
               {/* AI Avatar Section - Mobile Optimized */}
               {messages.length === 0 && (
-                <div className="text-center py-8 sm:py-16 px-3 sm:px-6">
+                <div className="text-center py-6 sm:py-16 px-3 sm:px-6">
                   <div className="w-16 h-16 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6 bg-gradient-to-br from-teal-100 to-blue-100 rounded-full flex items-center justify-center">
                     <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center shadow-sm relative">
                       <Brain className="h-6 w-6 sm:h-8 sm:w-8 text-teal-600" />
@@ -180,27 +180,27 @@ ${userReports > 0 ? `âœ… ${userReports} lab reports available for analysis` : 'ð
                   <p className="text-sm sm:text-base text-gray-600 mb-1">
                     Your advanced health assistant with personalized insights
                   </p>
-                  <p className="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-8">
+                  <p className="text-xs sm:text-sm text-gray-500 mb-4 sm:mb-8">
                     Now with symptom analysis, risk assessment & lab integration
                   </p>
 
-                  {/* Mobile-Optimized Suggested Questions */}
-                  <div className="mb-6 sm:mb-8">
+                  {/* Fixed Mobile-Optimized Suggested Questions */}
+                  <div className="mb-4 sm:mb-8">
                     <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4">Pick a suggested question or ask your own</p>
-                    <div className="grid grid-cols-1 gap-2 sm:gap-3 max-w-4xl mx-auto">
+                    <div className="space-y-2 sm:space-y-3 max-w-4xl mx-auto px-2 sm:px-0">
                       {suggestedQuestions.map((question, index) => (
                         <Button
                           key={index}
                           variant="outline"
                           onClick={() => handleSuggestedQuestion(question)}
-                          className="h-auto p-3 sm:p-4 text-left justify-start bg-gray-50 hover:bg-teal-50 border border-gray-200 hover:border-teal-200 transition-all duration-200"
+                          className="w-full h-auto p-3 sm:p-4 text-left justify-start bg-gray-50 hover:bg-teal-50 border border-gray-200 hover:border-teal-200 transition-all duration-200"
                           disabled={isLoading}
                         >
-                          <div className="flex items-center gap-2 sm:gap-3 w-full">
-                            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-teal-500 flex items-center justify-center flex-shrink-0">
+                          <div className="flex items-start gap-2 sm:gap-3 w-full">
+                            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-teal-500 flex items-center justify-center flex-shrink-0 mt-0.5">
                               <span className="text-white text-xs">â†’</span>
                             </div>
-                            <span className="text-gray-700 text-xs sm:text-sm text-left">{question}</span>
+                            <span className="text-gray-700 text-xs sm:text-sm text-left leading-relaxed break-words">{question}</span>
                           </div>
                         </Button>
                       ))}
