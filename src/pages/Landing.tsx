@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,7 +16,10 @@ import {
   Download,
   CheckCircle,
   ArrowRight,
-  Star
+  Star,
+  BarChart3,
+  Activity,
+  Zap
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import HowItWorks from '@/components/landing/HowItWorks';
@@ -78,192 +82,197 @@ const Landing = () => {
       {/* How It Works Section */}
       <HowItWorks />
 
-      {/* Features Section */}
-      <section className="py-20 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-              Comprehensive Health Management
-            </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Everything you need to take control of your health journey, powered by advanced AI
-            </p>
-          </div>
+      {/* What You'll Get Badge and Title */}
+      <section className="py-4 bg-gray-900">
+        <div className="container mx-auto px-4 text-center">
+          <Badge className="mb-6 bg-medical-secondary/20 text-medical-secondary border-medical-secondary/30">
+            <CheckCircle className="h-4 w-4 mr-2" />
+            What you'll get
+          </Badge>
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+            We resolve problems associated with
+            <br />
+            <span className="text-medical-secondary">health management procedures.</span>
+          </h2>
+        </div>
+      </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {/* Enhanced Features Section - Dark Theme */}
+      <section className="py-20 bg-gray-900">
+        <div className="container mx-auto px-4">
+          {/* Top Row - 3 Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             {/* AI Health Analysis */}
-            <Card className="border-2 hover:border-medical-primary transition-colors">
-              <CardHeader>
-                <div className="h-12 w-12 bg-medical-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <Brain className="h-6 w-6 text-medical-primary" />
+            <Card className="bg-gray-800 border-gray-700 hover:border-medical-primary/50 transition-all duration-300 group">
+              <CardHeader className="pb-4">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-12 w-12 bg-medical-primary/20 rounded-lg flex items-center justify-center">
+                    <Brain className="h-6 w-6 text-medical-primary" />
+                  </div>
+                  <Badge className="bg-medical-secondary/20 text-medical-secondary text-xs">
+                    Cost effective solution
+                  </Badge>
                 </div>
-                <CardTitle>AI Health Analysis</CardTitle>
-                <CardDescription>
-                  Advanced AI analysis of your medical reports with personalized insights and recommendations
+                <CardTitle className="text-white text-xl mb-2">AI Health Analysis</CardTitle>
+                <CardDescription className="text-gray-400">
+                  Get high-quality health insights at a fraction of the cost.
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-medical-secondary" />
-                    Instant report analysis
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-medical-secondary" />
-                    Risk assessment
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-medical-secondary" />
-                    Personalized recommendations
-                  </li>
-                </ul>
+              <CardContent className="pt-0">
+                <div className="bg-gray-700 rounded-lg p-4 mb-4 h-32 flex items-center justify-center">
+                  <div className="text-medical-secondary">
+                    <BarChart3 className="h-16 w-16 mx-auto mb-2" />
+                    <div className="text-xs text-center">Health Analytics</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* AI Doctor Assistant */}
+            <Card className="bg-gray-800 border-gray-700 hover:border-medical-secondary/50 transition-all duration-300 group">
+              <CardHeader className="pb-4">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-12 w-12 bg-medical-secondary/20 rounded-lg flex items-center justify-center">
+                    <Heart className="h-6 w-6 text-medical-secondary" />
+                  </div>
+                  <Badge className="bg-medical-primary/20 text-medical-primary text-xs">
+                    Tailor-made design
+                  </Badge>
+                </div>
+                <CardTitle className="text-white text-xl mb-2">AI Doctor Assistant</CardTitle>
+                <CardDescription className="text-gray-400">
+                  We've got the expertise to make your health vision a reality.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="bg-gray-700 rounded-lg p-4 mb-4 h-32 flex items-center justify-center">
+                  <div className="text-medical-primary">
+                    <Brain className="h-16 w-16 mx-auto mb-2" />
+                    <div className="text-xs text-center text-medical-secondary">Latest AI Technology</div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
             {/* Health Goals & Tracking */}
-            <Card className="border-2 hover:border-medical-secondary transition-colors">
-              <CardHeader>
-                <div className="h-12 w-12 bg-medical-secondary/10 rounded-lg flex items-center justify-center mb-4">
-                  <Target className="h-6 w-6 text-medical-secondary" />
+            <Card className="bg-gray-800 border-gray-700 hover:border-accent/50 transition-all duration-300 group">
+              <CardHeader className="pb-4">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-12 w-12 bg-accent/20 rounded-lg flex items-center justify-center">
+                    <Target className="h-6 w-6 text-accent" />
+                  </div>
+                  <Badge className="bg-accent/20 text-accent text-xs">
+                    Scalable as you grow
+                  </Badge>
                 </div>
-                <CardTitle>Health Goals & Tracking</CardTitle>
-                <CardDescription>
-                  Set, track, and achieve your health goals with intelligent progress monitoring
+                <CardTitle className="text-white text-xl mb-2">Health Goals & Tracking</CardTitle>
+                <CardDescription className="text-gray-400">
+                  We're ready to meet your evolving health needs.
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-medical-secondary" />
-                    Custom goal setting
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-medical-secondary" />
-                    Progress visualization
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-medical-secondary" />
-                    Milestone celebrations
-                  </li>
-                </ul>
+              <CardContent className="pt-0">
+                <div className="bg-gray-700 rounded-lg p-4 mb-4 h-32 flex items-center justify-center">
+                  <div className="text-accent">
+                    <TrendingUp className="h-16 w-16 mx-auto mb-2" />
+                    <div className="text-xs text-center">Growth Tracking</div>
+                  </div>
+                </div>
               </CardContent>
+            </Card>
+          </div>
+
+          {/* Bottom Row - 2 Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Smart Health Alerts */}
+            <Card className="bg-gray-800 border-gray-700 hover:border-medical-primary/50 transition-all duration-300">
+              <CardHeader>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-12 w-12 bg-medical-primary/20 rounded-lg flex items-center justify-center">
+                    <Bell className="h-6 w-6 text-medical-primary" />
+                  </div>
+                  <Badge className="bg-medical-primary/20 text-medical-primary text-xs">
+                    Workflow integration
+                  </Badge>
+                </div>
+                <CardTitle className="text-white text-xl mb-2">Smart Health Alerts</CardTitle>
+                <CardDescription className="text-gray-400 mb-4">
+                  Seamlessly connect all your existing health apps.
+                </CardDescription>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="bg-gray-700 rounded-lg p-2 flex items-center justify-center">
+                    <Activity className="h-6 w-6 text-medical-secondary" />
+                  </div>
+                  <div className="bg-gray-700 rounded-lg p-2 flex items-center justify-center">
+                    <Heart className="h-6 w-6 text-red-400" />
+                  </div>
+                  <div className="bg-gray-700 rounded-lg p-2 flex items-center justify-center">
+                    <Zap className="h-6 w-6 text-yellow-400" />
+                  </div>
+                </div>
+              </CardHeader>
             </Card>
 
-            {/* Interactive Dashboard */}
-            <Card className="border-2 hover:border-accent transition-colors">
+            {/* Family Health Management */}
+            <Card className="bg-gray-800 border-gray-700 hover:border-medical-secondary/50 transition-all duration-300">
               <CardHeader>
-                <div className="h-12 w-12 bg-accent/10 rounded-lg flex items-center justify-center mb-4">
-                  <TrendingUp className="h-6 w-6 text-accent" />
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-12 w-12 bg-medical-secondary/20 rounded-lg flex items-center justify-center">
+                    <Users className="h-6 w-6 text-medical-secondary" />
+                  </div>
+                  <Badge className="bg-medical-secondary/20 text-medical-secondary text-xs">
+                    Collaborate real-time
+                  </Badge>
                 </div>
-                <CardTitle>Interactive Dashboard</CardTitle>
-                <CardDescription>
-                  Comprehensive health insights with interactive charts and trend analysis
+                <CardTitle className="text-white text-xl mb-2">Family Health Management</CardTitle>
+                <CardDescription className="text-gray-400 mb-4">
+                  Seamlessly connect all your family health profiles.
                 </CardDescription>
+                <div className="flex items-center gap-2">
+                  <div className="flex -space-x-2">
+                    <div className="w-8 h-8 bg-medical-primary rounded-full border-2 border-gray-800 flex items-center justify-center">
+                      <span className="text-xs text-white">M</span>
+                    </div>
+                    <div className="w-8 h-8 bg-medical-secondary rounded-full border-2 border-gray-800 flex items-center justify-center">
+                      <span className="text-xs text-white">D</span>
+                    </div>
+                    <div className="w-8 h-8 bg-accent rounded-full border-2 border-gray-800 flex items-center justify-center">
+                      <span className="text-xs text-white">K</span>
+                    </div>
+                  </div>
+                  <Badge className="bg-medical-secondary text-white text-xs ml-2">
+                    Family
+                  </Badge>
+                </div>
               </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-medical-secondary" />
-                    Visual health trends
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-medical-secondary" />
-                    Metric comparisons
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-medical-secondary" />
-                    Export capabilities
-                  </li>
-                </ul>
-              </CardContent>
             </Card>
+          </div>
 
-            {/* Smart Alerts */}
-            <Card className="border-2 hover:border-destructive transition-colors">
-              <CardHeader>
-                <div className="h-12 w-12 bg-destructive/10 rounded-lg flex items-center justify-center mb-4">
-                  <Bell className="h-6 w-6 text-destructive" />
-                </div>
-                <CardTitle>Smart Health Alerts</CardTitle>
-                <CardDescription>
-                  Proactive notifications for critical health changes and reminders
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-medical-secondary" />
-                    Critical value alerts
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-medical-secondary" />
-                    Checkup reminders
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-medical-secondary" />
-                    Custom notifications
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            {/* Family Profiles */}
-            <Card className="border-2 hover:border-medical-primary transition-colors">
-              <CardHeader>
-                <div className="h-12 w-12 bg-medical-primary/10 rounded-lg flex items-center justify-center mb-4">
-                  <Users className="h-6 w-6 text-medical-primary" />
-                </div>
-                <CardTitle>Family Health Management</CardTitle>
-                <CardDescription>
-                  Manage health profiles for your entire family in one secure platform
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-medical-secondary" />
-                    Multiple profiles
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-medical-secondary" />
-                    Shared insights
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-medical-secondary" />
-                    Emergency contacts
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
-
-            {/* Mobile-First Design */}
-            <Card className="border-2 hover:border-medical-secondary transition-colors">
-              <CardHeader>
-                <div className="h-12 w-12 bg-medical-secondary/10 rounded-lg flex items-center justify-center mb-4">
-                  <Smartphone className="h-6 w-6 text-medical-secondary" />
-                </div>
-                <CardTitle>Mobile-First Experience</CardTitle>
-                <CardDescription>
-                  Seamlessly designed for mobile devices with app-like functionality
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-medical-secondary" />
-                    Responsive design
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-medical-secondary" />
-                    Touch-optimized
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-medical-secondary" />
-                    Offline capabilities
-                  </li>
-                </ul>
-              </CardContent>
-            </Card>
+          {/* Feature Pills */}
+          <div className="mt-12 flex flex-wrap gap-3 justify-center">
+            <Badge className="bg-gray-800 text-medical-secondary border-medical-secondary/30 px-4 py-2">
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Medical Report Analysis
+            </Badge>
+            <Badge className="bg-gray-800 text-medical-secondary border-medical-secondary/30 px-4 py-2">
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Health Insights
+            </Badge>
+            <Badge className="bg-gray-800 text-medical-secondary border-medical-secondary/30 px-4 py-2">
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Trend Analysis
+            </Badge>
+            <Badge className="bg-gray-800 text-medical-secondary border-medical-secondary/30 px-4 py-2">
+              <CheckCircle className="h-4 w-4 mr-2" />
+              HIPAA Compliant
+            </Badge>
+            <Badge className="bg-gray-800 text-medical-secondary border-medical-secondary/30 px-4 py-2">
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Premium Support
+            </Badge>
+            <Badge className="bg-gray-800 text-medical-secondary border-medical-secondary/30 px-4 py-2">
+              <CheckCircle className="h-4 w-4 mr-2" />
+              Mobile Access
+            </Badge>
           </div>
         </div>
       </section>
