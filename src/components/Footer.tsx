@@ -1,4 +1,3 @@
-
 import { Cross } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Shield, CheckCircle, FileText, Users } from "lucide-react";
@@ -57,9 +56,11 @@ export const Footer = () => {
           {/* Brand Section */}
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 medical-gradient rounded-lg flex items-center justify-center">
-                <Cross className="h-5 w-5 text-white" />
-              </div>
+              <img 
+                src="/lovable-uploads/9dd0010a-1b64-47ed-908f-6e86510d2209.png" 
+                alt="DocLumen Logo"
+                className="h-8 w-auto"
+              />
               <span className="font-montserrat font-bold text-xl text-white">
                 DocLumen
               </span>
