@@ -7,10 +7,27 @@ import { Link } from "react-router-dom";
 import { useSubscription } from "@/hooks/useSubscription";
 import { SubscriptionCard } from "@/components/subscription/SubscriptionCard";
 import { Loader2 } from "lucide-react";
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const Pricing = () => {
   const [isAnnual, setIsAnnual] = useState(false);
-  const { plans, currentSubscription, isLoading } = useSubscription();
+  const { currentSubscription, isLoading: subscriptionLoading } = useSubscription();
+
+  // Fetch plans for all users (not just authenticated)
+  const { data: plans, isLoading: plansLoading } = useQuery({
+    queryKey: ['subscription-plans-public'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('subscription_plans')
+        .select('*')
+        .eq('is_active', true)
+        .order('price_monthly');
+      
+      if (error) throw error;
+      return data;
+    },
+  });
 
   const benefits = [
     {
@@ -35,7 +52,7 @@ const Pricing = () => {
     }
   ];
 
-  if (isLoading) {
+  if (plansLoading) {
     return (
       <div className="min-h-screen pt-20 pb-12 bg-gray-50 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
