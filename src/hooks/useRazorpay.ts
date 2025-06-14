@@ -43,7 +43,7 @@ export const useRazorpay = () => {
       }
 
       const razorpayOptions = {
-        key: process.env.RAZORPAY_KEY_ID || 'rzp_test_key', // You'll need to set this
+        key: 'rzp_live_br3LKqWhb2HanT', // Your live key
         amount: options.amount * 100, // Razorpay expects amount in paise
         currency: 'INR',
         name: 'DocLumen',

@@ -50,6 +50,10 @@ export const PlanManagement = () => {
     }
   };
 
+  const features = Array.isArray(currentSubscription.subscription_plans?.features) 
+    ? currentSubscription.subscription_plans.features 
+    : [];
+
   return (
     <Card>
       <CardHeader>
@@ -86,11 +90,11 @@ export const PlanManagement = () => {
           )}
         </div>
 
-        {currentSubscription.subscription_plans?.features && (
+        {features.length > 0 && (
           <div>
             <h4 className="font-semibold text-accent mb-2">Plan Features</h4>
             <ul className="space-y-1">
-              {(currentSubscription.subscription_plans.features as string[]).map((feature, index) => (
+              {features.map((feature: string, index: number) => (
                 <li key={index} className="text-sm text-muted-foreground flex items-start">
                   <span className="mr-2">•</span>
                   {feature}

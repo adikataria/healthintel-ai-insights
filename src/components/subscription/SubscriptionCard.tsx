@@ -19,7 +19,15 @@ interface SubscriptionPlan {
 }
 
 interface SubscriptionCardProps {
-  plan: SubscriptionPlan;
+  plan: {
+    id: string;
+    name: string;
+    description: string;
+    price_monthly: number;
+    price_annual: number;
+    features: any;
+    max_report_uploads: number;
+  };
   isAnnual: boolean;
   isCurrentPlan?: boolean;
 }
@@ -58,6 +66,7 @@ export const SubscriptionCard = ({ plan, isAnnual, isCurrentPlan }: Subscription
 
   const Icon = getIcon();
   const price = isAnnual ? plan.price_annual : plan.price_monthly;
+  const features = Array.isArray(plan.features) ? plan.features : [];
 
   const handleSubscribe = async () => {
     if (!user) {
@@ -137,7 +146,7 @@ export const SubscriptionCard = ({ plan, isAnnual, isCurrentPlan }: Subscription
       
       <CardContent>
         <ul className="space-y-3 mb-6">
-          {plan.features.map((feature, index) => (
+          {features.map((feature: string, index: number) => (
             <li key={index} className="flex items-start">
               <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
               <span className="text-sm text-muted-foreground">{feature}</span>
