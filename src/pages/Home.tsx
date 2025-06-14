@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, TrendingUp, Lightbulb, Heart, Droplets, Zap, MessageCircle, Eye } from "lucide-react";
+import { Upload, TrendingUp, Lightbulb, Heart, Droplets, Zap, MessageCircle, Eye, Users, Clock, Shield, CheckCircle, Star, ArrowRight, Brain, Smartphone, FileText, Bell } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Home = () => {
@@ -59,6 +59,48 @@ const Home = () => {
       color: "text-red-600",
       bgColor: "bg-red-50", 
       borderColor: "border-red-200"
+    }
+  ];
+
+  const features = [
+    {
+      icon: Brain,
+      title: "AI-Powered Analysis",
+      description: "Advanced machine learning analyzes your reports and provides actionable insights",
+      image: "photo-1581091226825-a6a2a5aee158"
+    },
+    {
+      icon: Users,
+      title: "Family Health Management",
+      description: "Manage health profiles for your entire family in one secure platform",
+      image: "photo-1649972904349-6e44c42644a7"
+    },
+    {
+      icon: Smartphone,
+      title: "Mobile-First Experience",
+      description: "Access your health data anytime, anywhere with our responsive design",
+      image: "photo-1526374965328-7f61d4dc18c5"
+    }
+  ];
+
+  const testimonials = [
+    {
+      name: "Dr. Priya Sharma",
+      role: "Cardiologist, AIIMS Delhi",
+      content: "DocLumen has revolutionized how my patients track their health metrics. The AI insights are remarkably accurate.",
+      rating: 5
+    },
+    {
+      name: "Rajesh Kumar",
+      role: "Software Engineer, Mumbai",
+      content: "Managing my diabetes has become so much easier with DocLumen's predictive analytics and personalized recommendations.",
+      rating: 5
+    },
+    {
+      name: "Meera Patel",
+      role: "Mother of 3, Bangalore",
+      content: "I love how I can manage my entire family's health records in one place. The alerts have caught issues early multiple times.",
+      rating: 5
     }
   ];
 
@@ -163,6 +205,110 @@ const Home = () => {
                   </Link>
                 </Button>
               </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Feature Showcase */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-montserrat font-semibold mb-8 text-accent text-center">
+            Powerful Features for Better Health
+          </h2>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
+              <Card key={index} className="health-card overflow-hidden">
+                <div className="h-48 bg-gradient-to-br from-medical-light to-medical-primary/20 relative">
+                  <img 
+                    src={`https://images.unsplash.com/${feature.image}?auto=format&fit=crop&w=400&h=200`}
+                    alt={feature.title}
+                    className="w-full h-full object-cover opacity-80"
+                  />
+                  <div className="absolute inset-0 bg-medical-primary/10"></div>
+                  <div className="absolute bottom-4 left-4">
+                    <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-lg">
+                      <feature.icon className="h-6 w-6 text-medical-primary" />
+                    </div>
+                  </div>
+                </div>
+                <CardContent className="p-6">
+                  <h3 className="font-semibold text-lg mb-2 text-accent">{feature.title}</h3>
+                  <p className="text-muted-foreground text-sm">{feature.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* Health Stats */}
+        <div className="mb-12 bg-white rounded-xl p-8">
+          <h2 className="text-2xl font-montserrat font-semibold mb-8 text-accent text-center">
+            Trusted by Healthcare Professionals
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-medical-primary mb-2">50K+</div>
+              <div className="text-sm text-muted-foreground">Reports Analyzed</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-medical-primary mb-2">1000+</div>
+              <div className="text-sm text-muted-foreground">Doctors Using</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-medical-primary mb-2">25K+</div>
+              <div className="text-sm text-muted-foreground">Active Users</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-medical-primary mb-2">99.9%</div>
+              <div className="text-sm text-muted-foreground">Uptime</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Testimonials */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-montserrat font-semibold mb-8 text-accent text-center">
+            What Our Users Say
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {testimonials.map((testimonial, index) => (
+              <Card key={index} className="health-card">
+                <CardContent className="p-6">
+                  <div className="flex items-center mb-4">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
+                    ))}
+                  </div>
+                  <p className="text-muted-foreground mb-4 italic">"{testimonial.content}"</p>
+                  <div>
+                    <div className="font-semibold text-accent">{testimonial.name}</div>
+                    <div className="text-sm text-muted-foreground">{testimonial.role}</div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* Family Management CTA */}
+        <div className="mb-8">
+          <Card className="health-card bg-gradient-to-r from-medical-primary to-medical-secondary text-white">
+            <CardContent className="p-8 text-center">
+              <Users className="h-16 w-16 mx-auto mb-4 opacity-90" />
+              <h3 className="text-2xl font-bold mb-4">Manage Your Family's Health</h3>
+              <p className="text-medical-light mb-6 max-w-2xl mx-auto">
+                Add family members and keep track of everyone's health in one secure platform. 
+                Set up profiles, share reports, and get family-wide health insights.
+              </p>
+              <Button 
+                size="lg" 
+                className="bg-white text-medical-primary hover:bg-gray-100"
+                asChild
+              >
+                <Link to="/settings">
+                  <Users className="mr-2 h-5 w-5" />
+                  Add Family Members
+                </Link>
+              </Button>
             </CardContent>
           </Card>
         </div>

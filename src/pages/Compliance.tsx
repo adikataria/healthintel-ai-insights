@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Shield, Lock, FileCheck, Users, Heart, AlertTriangle, CheckCircle, Globe } from "lucide-react";
+import { Shield, Lock, FileCheck, Users, Heart, AlertTriangle, CheckCircle, Globe, Scale, Building2, Gavel } from "lucide-react";
 
 const Compliance = () => {
   return (
@@ -12,7 +12,7 @@ const Compliance = () => {
             Compliance & Certifications
           </h1>
           <p className="text-xl text-muted-foreground">
-            Our commitment to security, privacy, and ethical AI use in healthcare
+            Our commitment to security, privacy, and ethical AI use in Indian healthcare
           </p>
         </div>
 
@@ -27,7 +27,7 @@ const Compliance = () => {
             </CardHeader>
             <CardContent className="text-center">
               <p className="text-sm text-muted-foreground">
-                Enterprise-grade security with end-to-end encryption and compliance with healthcare standards
+                Enterprise-grade security complying with Indian data protection laws and healthcare standards
               </p>
             </CardContent>
           </Card>
@@ -41,7 +41,7 @@ const Compliance = () => {
             </CardHeader>
             <CardContent className="text-center">
               <p className="text-sm text-muted-foreground">
-                Responsible AI development with transparency, fairness, and human-centered design principles
+                Responsible AI development following NITI Aayog guidelines and Indian healthcare ethics
               </p>
             </CardContent>
           </Card>
@@ -49,24 +49,24 @@ const Compliance = () => {
           <Card className="health-card border-medical-primary/30">
             <CardHeader className="text-center">
               <div className="w-12 h-12 bg-medical-primary rounded-lg flex items-center justify-center mx-auto mb-3">
-                <Globe className="h-6 w-6 text-white" />
+                <Building2 className="h-6 w-6 text-white" />
               </div>
-              <CardTitle className="text-medical-primary">Global Standards</CardTitle>
+              <CardTitle className="text-medical-primary">Indian Standards</CardTitle>
             </CardHeader>
             <CardContent className="text-center">
               <p className="text-sm text-muted-foreground">
-                Compliance with international healthcare data protection and AI governance frameworks
+                Full compliance with Indian regulations including DPDP Act 2023 and MCI guidelines
               </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Certifications Section */}
+        {/* Indian Regulatory Compliance */}
         <Card className="health-card mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <FileCheck className="h-5 w-5 text-medical-primary" />
-              Security & Privacy Certifications
+              <Gavel className="h-5 w-5 text-medical-primary" />
+              Indian Regulatory Compliance
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -76,8 +76,91 @@ const Compliance = () => {
                   <div className="flex items-center gap-3">
                     <CheckCircle className="h-5 w-5 text-green-600" />
                     <div>
-                      <h4 className="font-semibold text-green-800">HIPAA Compliant</h4>
-                      <p className="text-sm text-green-700">Health Insurance Portability and Accountability Act</p>
+                      <h4 className="font-semibold text-green-800">DPDP Act 2023</h4>
+                      <p className="text-sm text-green-700">Digital Personal Data Protection Act compliance</p>
+                    </div>
+                  </div>
+                  <Badge className="bg-green-100 text-green-800">Compliant</Badge>
+                </div>
+
+                <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <div>
+                      <h4 className="font-semibold text-green-800">IT Act 2000</h4>
+                      <p className="text-sm text-green-700">Information Technology Act provisions</p>
+                    </div>
+                  </div>
+                  <Badge className="bg-green-100 text-green-800">Compliant</Badge>
+                </div>
+
+                <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <div>
+                      <h4 className="font-semibold text-green-800">MCI Guidelines</h4>
+                      <p className="text-sm text-green-700">Medical Council of India telemedicine regulations</p>
+                    </div>
+                  </div>
+                  <Badge className="bg-green-100 text-green-800">Aligned</Badge>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-blue-600" />
+                    <div>
+                      <h4 className="font-semibold text-blue-800">NABH Standards</h4>
+                      <p className="text-sm text-blue-700">National Accreditation Board for Hospitals</p>
+                    </div>
+                  </div>
+                  <Badge className="bg-blue-100 text-blue-800">In Progress</Badge>
+                </div>
+
+                <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <div>
+                      <h4 className="font-semibold text-green-800">MEITY Guidelines</h4>
+                      <p className="text-sm text-green-700">Ministry of Electronics & IT frameworks</p>
+                    </div>
+                  </div>
+                  <Badge className="bg-green-100 text-green-800">Compliant</Badge>
+                </div>
+
+                <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <div>
+                      <h4 className="font-semibold text-green-800">RBI Guidelines</h4>
+                      <p className="text-sm text-green-700">Payment security and data storage norms</p>
+                    </div>
+                  </div>
+                  <Badge className="bg-green-100 text-green-800">Compliant</Badge>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* International Certifications */}
+        <Card className="health-card mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Globe className="h-5 w-5 text-medical-primary" />
+              International Security Certifications
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="h-5 w-5 text-green-600" />
+                    <div>
+                      <h4 className="font-semibold text-green-800">ISO 27001:2022</h4>
+                      <p className="text-sm text-green-700">Information Security Management Systems</p>
                     </div>
                   </div>
                   <Badge className="bg-green-100 text-green-800">Certified</Badge>
@@ -87,13 +170,15 @@ const Compliance = () => {
                   <div className="flex items-center gap-3">
                     <CheckCircle className="h-5 w-5 text-green-600" />
                     <div>
-                      <h4 className="font-semibold text-green-800">GDPR Compliant</h4>
-                      <p className="text-sm text-green-700">General Data Protection Regulation</p>
+                      <h4 className="font-semibold text-green-800">ISO 27799</h4>
+                      <p className="text-sm text-green-700">Health informatics security management</p>
                     </div>
                   </div>
                   <Badge className="bg-green-100 text-green-800">Certified</Badge>
                 </div>
+              </div>
 
+              <div className="space-y-4">
                 <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
                   <div className="flex items-center gap-3">
                     <CheckCircle className="h-5 w-5 text-blue-600" />
@@ -104,37 +189,13 @@ const Compliance = () => {
                   </div>
                   <Badge className="bg-blue-100 text-blue-800">In Progress</Badge>
                 </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-green-600" />
-                    <div>
-                      <h4 className="font-semibold text-green-800">ISO 27001</h4>
-                      <p className="text-sm text-green-700">Information Security Management</p>
-                    </div>
-                  </div>
-                  <Badge className="bg-green-100 text-green-800">Certified</Badge>
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-blue-600" />
-                    <div>
-                      <h4 className="font-semibold text-blue-800">FDA 21 CFR Part 11</h4>
-                      <p className="text-sm text-blue-700">Electronic Records and Signatures</p>
-                    </div>
-                  </div>
-                  <Badge className="bg-blue-100 text-blue-800">In Progress</Badge>
-                </div>
 
                 <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
                   <div className="flex items-center gap-3">
                     <CheckCircle className="h-5 w-5 text-green-600" />
                     <div>
-                      <h4 className="font-semibold text-green-800">NIST Framework</h4>
-                      <p className="text-sm text-green-700">Cybersecurity Framework</p>
+                      <h4 className="font-semibold text-green-800">GDPR Alignment</h4>
+                      <p className="text-sm text-green-700">European data protection standards</p>
                     </div>
                   </div>
                   <Badge className="bg-green-100 text-green-800">Aligned</Badge>
@@ -144,58 +205,58 @@ const Compliance = () => {
           </CardContent>
         </Card>
 
-        {/* Ethical AI Principles */}
+        {/* AI Ethics & NITI Aayog Guidelines */}
         <Card className="health-card mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Heart className="h-5 w-5 text-medical-primary" />
-              Ethical AI Principles
+              AI Ethics & NITI Aayog Compliance
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div className="p-4 bg-medical-light/10 rounded-lg border border-medical-primary/20">
-                  <h4 className="font-semibold text-medical-dark mb-2">Transparency</h4>
+                  <h4 className="font-semibold text-medical-dark mb-2">Responsible AI Framework</h4>
                   <p className="text-sm text-accent">
-                    We provide clear explanations of how our AI systems work and make decisions about your health data.
+                    Following NITI Aayog's Responsible AI principles for ethical healthcare AI development and deployment.
                   </p>
                 </div>
 
                 <div className="p-4 bg-medical-light/10 rounded-lg border border-medical-primary/20">
-                  <h4 className="font-semibold text-medical-dark mb-2">Fairness</h4>
+                  <h4 className="font-semibold text-medical-dark mb-2">Transparency & Explainability</h4>
                   <p className="text-sm text-accent">
-                    Our AI models are designed to provide equitable healthcare insights across all demographics and populations.
+                    Our AI models provide clear explanations for health insights, ensuring medical professionals can validate recommendations.
                   </p>
                 </div>
 
                 <div className="p-4 bg-medical-light/10 rounded-lg border border-medical-primary/20">
-                  <h4 className="font-semibold text-medical-dark mb-2">Privacy by Design</h4>
+                  <h4 className="font-semibold text-medical-dark mb-2">Data Localization</h4>
                   <p className="text-sm text-accent">
-                    Data protection and user privacy are built into every aspect of our system architecture and AI models.
+                    All patient data is stored within Indian borders in compliance with data localization requirements.
                   </p>
                 </div>
               </div>
 
               <div className="space-y-4">
                 <div className="p-4 bg-medical-light/10 rounded-lg border border-medical-primary/20">
-                  <h4 className="font-semibold text-medical-dark mb-2">Human Oversight</h4>
+                  <h4 className="font-semibold text-medical-dark mb-2">Bias Mitigation</h4>
                   <p className="text-sm text-accent">
-                    AI-generated insights are tools to support, not replace, professional medical judgment and human decision-making.
+                    Regular audits ensure our AI models are fair across different demographics prevalent in Indian population.
                   </p>
                 </div>
 
                 <div className="p-4 bg-medical-light/10 rounded-lg border border-medical-primary/20">
-                  <h4 className="font-semibold text-medical-dark mb-2">Accountability</h4>
+                  <h4 className="font-semibold text-medical-dark mb-2">Human-in-the-Loop</h4>
                   <p className="text-sm text-accent">
-                    We maintain clear lines of responsibility and regularly audit our AI systems for bias and accuracy.
+                    AI recommendations always require human medical professional oversight, never replacing clinical judgment.
                   </p>
                 </div>
 
                 <div className="p-4 bg-medical-light/10 rounded-lg border border-medical-primary/20">
-                  <h4 className="font-semibold text-medical-dark mb-2">Continuous Improvement</h4>
+                  <h4 className="font-semibold text-medical-dark mb-2">Privacy by Design</h4>
                   <p className="text-sm text-accent">
-                    We continuously monitor and improve our AI systems based on feedback and emerging ethical standards.
+                    DPDP Act compliance built into every system component with consent-based data processing.
                   </p>
                 </div>
               </div>
@@ -203,36 +264,36 @@ const Compliance = () => {
           </CardContent>
         </Card>
 
-        {/* Data Protection Measures */}
+        {/* Data Protection for Indian Users */}
         <Card className="health-card mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Lock className="h-5 w-5 text-medical-primary" />
-              Data Protection Measures
+              Data Protection for Indian Users
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <Lock className="h-8 w-8 text-medical-primary mx-auto mb-2" />
-                  <h4 className="font-semibold mb-2">End-to-End Encryption</h4>
-                  <p className="text-sm text-muted-foreground">AES-256 encryption for data at rest and TLS 1.3 for data in transit</p>
+                  <Shield className="h-8 w-8 text-medical-primary mx-auto mb-2" />
+                  <h4 className="font-semibold mb-2">Data Localization</h4>
+                  <p className="text-sm text-muted-foreground">All data stored in Indian data centers with AES-256 encryption</p>
+                </div>
+                <div className="text-center p-4 bg-gray-50 rounded-lg">
+                  <Scale className="h-8 w-8 text-medical-primary mx-auto mb-2" />
+                  <h4 className="font-semibold mb-2">Consent Management</h4>
+                  <p className="text-sm text-muted-foreground">Granular consent controls as per DPDP Act requirements</p>
                 </div>
                 <div className="text-center p-4 bg-gray-50 rounded-lg">
                   <Users className="h-8 w-8 text-medical-primary mx-auto mb-2" />
-                  <h4 className="font-semibold mb-2">Access Controls</h4>
-                  <p className="text-sm text-muted-foreground">Role-based access with multi-factor authentication and audit logging</p>
-                </div>
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <Shield className="h-8 w-8 text-medical-primary mx-auto mb-2" />
-                  <h4 className="font-semibold mb-2">Data Minimization</h4>
-                  <p className="text-sm text-muted-foreground">We collect only necessary data and implement automatic data retention policies</p>
+                  <h4 className="font-semibold mb-2">Data Governance</h4>
+                  <p className="text-sm text-muted-foreground">Appointed Data Protection Officer and compliance team</p>
                 </div>
               </div>
 
               <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-                <h4 className="font-semibold text-blue-900 mb-3">Your Data Rights</h4>
+                <h4 className="font-semibold text-blue-900 mb-3">Your Rights Under DPDP Act 2023</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <ul className="space-y-2 text-sm text-blue-800">
                     <li className="flex items-center gap-2">
@@ -241,25 +302,25 @@ const Compliance = () => {
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle className="h-4 w-4 text-blue-600" />
-                      Right to rectify inaccurate data
+                      Right to correction and completion
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle className="h-4 w-4 text-blue-600" />
-                      Right to delete your data
+                      Right to data portability
                     </li>
                   </ul>
                   <ul className="space-y-2 text-sm text-blue-800">
                     <li className="flex items-center gap-2">
                       <CheckCircle className="h-4 w-4 text-blue-600" />
-                      Right to data portability
+                      Right to erasure (right to be forgotten)
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle className="h-4 w-4 text-blue-600" />
-                      Right to object to processing
+                      Right to grievance redressal
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle className="h-4 w-4 text-blue-600" />
-                      Right to lodge a complaint
+                      Right to nominate a data guardian
                     </li>
                   </ul>
                 </div>
@@ -268,7 +329,7 @@ const Compliance = () => {
           </CardContent>
         </Card>
 
-        {/* Important Notice */}
+        {/* Compliance Contact */}
         <Card className="health-card border-orange-200 bg-orange-50/50">
           <CardContent className="p-6">
             <div className="flex items-start gap-4">
@@ -276,13 +337,17 @@ const Compliance = () => {
                 <AlertTriangle className="h-5 w-5 text-orange-600" />
               </div>
               <div>
-                <h4 className="font-semibold text-orange-800 mb-3">Continuous Compliance</h4>
-                <p className="text-sm text-orange-700 leading-relaxed">
-                  Our compliance program is continuously evolving to meet emerging regulations and industry best practices. 
-                  We conduct regular security audits, penetration testing, and compliance assessments to ensure we maintain 
-                  the highest standards of data protection and ethical AI use. For specific compliance questions or to 
-                  request our latest audit reports, please contact our compliance team.
+                <h4 className="font-semibold text-orange-800 mb-3">Continuous Compliance & Support</h4>
+                <p className="text-sm text-orange-700 leading-relaxed mb-4">
+                  Our compliance program continuously evolves to meet emerging Indian regulations and healthcare standards. 
+                  We conduct regular security audits, penetration testing, and compliance assessments with Indian standards.
                 </p>
+                <div className="space-y-2 text-sm text-orange-700">
+                  <p><strong>Data Protection Officer:</strong> dpo@doclumen.in</p>
+                  <p><strong>Compliance Team:</strong> compliance@doclumen.in</p>
+                  <p><strong>Grievance Officer:</strong> grievance@doclumen.in</p>
+                  <p><strong>Office Address:</strong> Bangalore, Karnataka, India</p>
+                </div>
               </div>
             </div>
           </CardContent>

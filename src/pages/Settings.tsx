@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,20 +6,46 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { PlanManagement } from "@/components/subscription/PlanManagement";
-import { User, Bell, Shield, CreditCard, Palette, Globe } from "lucide-react";
+import { User, Bell, Shield, CreditCard, Palette, Globe, Users } from "lucide-react";
 
 const Settings = () => {
   return (
     <div className="min-h-screen pt-20 pb-12 bg-gray-50">
       <div className="container max-w-4xl">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-accent mb-2">Settings</h1>
-          <p className="text-muted-foreground">
-            Manage your account settings and preferences
+          <h1 className="text-3xl md:text-4xl font-montserrat font-bold mb-4 text-accent">
+            Settings
+          </h1>
+          <p className="text-xl text-muted-foreground">
+            Manage your account, preferences, and family profiles
           </p>
         </div>
 
         <div className="space-y-6">
+          {/* Family Management */}
+          <Card className="health-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Family Management
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground mb-4">
+                Add and manage health profiles for your family members in one secure platform.
+              </p>
+              <Button asChild className="bg-medical-primary hover:bg-medical-dark">
+                <Link to="/family">
+                  <Users className="mr-2 h-4 w-4" />
+                  Manage Family Profiles
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Subscription Management */}
+          <PlanManagement />
+
           {/* Profile Settings */}
           <Card>
             <CardHeader>
@@ -56,10 +81,40 @@ const Settings = () => {
             </CardContent>
           </Card>
 
-          {/* Subscription Management */}
-          <PlanManagement />
+          {/* Health Profile */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Globe className="mr-2 h-5 w-5" />
+                Health Profile
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="weight">Weight</Label>
+                <Input id="weight" type="number" placeholder="Enter your weight" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="height">Height</Label>
+                <Input id="height" type="number" placeholder="Enter your height" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="bmi">BMI</Label>
+                <Input id="bmi" type="number" placeholder="Enter your BMI" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="bloodPressure">Blood Pressure</Label>
+                <Input id="bloodPressure" type="text" placeholder="Enter your blood pressure" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="allergies">Allergies</Label>
+                <Textarea id="allergies" placeholder="Enter your allergies" />
+              </div>
+              <Button>Save Changes</Button>
+            </CardContent>
+          </Card>
 
-          {/* Notification Settings */}
+          {/* Notifications */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
@@ -100,7 +155,7 @@ const Settings = () => {
             </CardContent>
           </Card>
 
-          {/* Privacy Settings */}
+          {/* Privacy & Security */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center">
@@ -152,21 +207,23 @@ const Settings = () => {
                 <Switch />
               </div>
               <Separator />
-              <div className="space-y-2">
-                <Label>Language</Label>
-                <select className="w-full p-2 border border-gray-300 rounded-md">
-                  <option>English</option>
-                  <option>Hindi</option>
-                  <option>Spanish</option>
-                </select>
-              </div>
-              <div className="space-y-2">
-                <Label>Timezone</Label>
-                <select className="w-full p-2 border border-gray-300 rounded-md">
-                  <option>India Standard Time (IST)</option>
-                  <option>Pacific Standard Time (PST)</option>
-                  <option>Eastern Standard Time (EST)</option>
-                </select>
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Language</Label>
+                  <select className="w-full p-2 border border-gray-300 rounded-md">
+                    <option>English</option>
+                    <option>Hindi</option>
+                    <option>Spanish</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label>Timezone</Label>
+                  <select className="w-full p-2 border border-gray-300 rounded-md">
+                    <option>India Standard Time (IST)</option>
+                    <option>Pacific Standard Time (PST)</option>
+                    <option>Eastern Standard Time (EST)</option>
+                  </select>
+                </div>
               </div>
             </CardContent>
           </Card>
