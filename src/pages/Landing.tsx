@@ -83,99 +83,102 @@ const Landing = () => {
       <HowItWorks />
 
       {/* What You'll Get Badge and Title */}
-      <section className="py-4 bg-gray-900">
+      <section className="py-4 bg-white">
         <div className="container mx-auto px-4 text-center">
           <Badge className="mb-6 bg-medical-secondary/20 text-medical-secondary border-medical-secondary/30">
             <CheckCircle className="h-4 w-4 mr-2" />
             What you'll get
           </Badge>
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
             We resolve problems associated with
             <br />
-            <span className="text-medical-secondary">health management procedures.</span>
+            <span className="text-medical-primary">health management procedures.</span>
           </h2>
         </div>
       </section>
 
-      {/* Enhanced Features Section - Dark Theme */}
-      <section className="py-20 bg-gray-900">
+      {/* Enhanced Features Section - White Theme */}
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
-          {/* Top Row - 3 Cards */}
+          {/* Top Row - 3 Cards with Images */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             {/* AI Health Analysis */}
-            <Card className="bg-gray-800 border-gray-700 hover:border-medical-primary/50 transition-all duration-300 group">
+            <Card className="bg-white border-gray-200 hover:border-medical-primary/50 transition-all duration-300 group shadow-lg">
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="h-12 w-12 bg-medical-primary/20 rounded-lg flex items-center justify-center">
+                  <div className="h-12 w-12 bg-medical-primary/10 rounded-lg flex items-center justify-center">
                     <Brain className="h-6 w-6 text-medical-primary" />
                   </div>
-                  <Badge className="bg-medical-secondary/20 text-medical-secondary text-xs">
+                  <Badge className="bg-medical-secondary/20 text-medical-secondary text-xs border-medical-secondary/30">
                     Cost effective solution
                   </Badge>
                 </div>
-                <CardTitle className="text-white text-xl mb-2">AI Health Analysis</CardTitle>
-                <CardDescription className="text-gray-400">
+                <CardTitle className="text-gray-900 text-xl mb-2">AI Health Analysis</CardTitle>
+                <CardDescription className="text-gray-600">
                   Get high-quality health insights at a fraction of the cost.
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="bg-gray-700 rounded-lg p-4 mb-4 h-32 flex items-center justify-center">
-                  <div className="text-medical-secondary">
-                    <BarChart3 className="h-16 w-16 mx-auto mb-2" />
-                    <div className="text-xs text-center">Health Analytics</div>
-                  </div>
+                <div className="bg-gray-50 rounded-lg p-4 mb-4 h-32 flex items-center justify-center overflow-hidden">
+                  <img 
+                    src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=300&h=200&fit=crop&crop=center" 
+                    alt="AI Health Analysis Dashboard"
+                    className="w-full h-full object-cover rounded-md"
+                  />
                 </div>
               </CardContent>
             </Card>
 
             {/* AI Doctor Assistant */}
-            <Card className="bg-gray-800 border-gray-700 hover:border-medical-secondary/50 transition-all duration-300 group">
+            <Card className="bg-white border-gray-200 hover:border-medical-secondary/50 transition-all duration-300 group shadow-lg">
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="h-12 w-12 bg-medical-secondary/20 rounded-lg flex items-center justify-center">
+                  <div className="h-12 w-12 bg-medical-secondary/10 rounded-lg flex items-center justify-center">
                     <Heart className="h-6 w-6 text-medical-secondary" />
                   </div>
-                  <Badge className="bg-medical-primary/20 text-medical-primary text-xs">
+                  <Badge className="bg-medical-primary/20 text-medical-primary text-xs border-medical-primary/30">
                     Tailor-made design
                   </Badge>
                 </div>
-                <CardTitle className="text-white text-xl mb-2">AI Doctor Assistant</CardTitle>
-                <CardDescription className="text-gray-400">
+                <CardTitle className="text-gray-900 text-xl mb-2">AI Doctor Assistant</CardTitle>
+                <CardDescription className="text-gray-600">
                   We've got the expertise to make your health vision a reality.
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="bg-gray-700 rounded-lg p-4 mb-4 h-32 flex items-center justify-center">
-                  <div className="text-medical-primary">
-                    <Brain className="h-16 w-16 mx-auto mb-2" />
-                    <div className="text-xs text-center text-medical-secondary">Latest AI Technology</div>
-                  </div>
+                <div className="bg-gray-50 rounded-lg p-4 mb-4 h-32 flex items-center justify-center overflow-hidden">
+                  <img 
+                    src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=300&h=200&fit=crop&crop=center" 
+                    alt="AI Doctor Assistant Interface"
+                    className="w-full h-full object-cover rounded-md"
+                  />
                 </div>
               </CardContent>
             </Card>
 
             {/* Health Goals & Tracking */}
-            <Card className="bg-gray-800 border-gray-700 hover:border-accent/50 transition-all duration-300 group">
+            <Card className="bg-white border-gray-200 hover:border-medical-primary/50 transition-all duration-300 group shadow-lg">
               <CardHeader className="pb-4">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="h-12 w-12 bg-accent/20 rounded-lg flex items-center justify-center">
-                    <Target className="h-6 w-6 text-accent" />
+                  <div className="h-12 w-12 bg-medical-primary/10 rounded-lg flex items-center justify-center">
+                    <Target className="h-6 w-6 text-medical-primary" />
                   </div>
-                  <Badge className="bg-accent/20 text-accent text-xs">
+                  <Badge className="bg-medical-secondary/20 text-medical-secondary text-xs border-medical-secondary/30">
                     Scalable as you grow
                   </Badge>
                 </div>
-                <CardTitle className="text-white text-xl mb-2">Health Goals & Tracking</CardTitle>
-                <CardDescription className="text-gray-400">
+                <CardTitle className="text-gray-900 text-xl mb-2">Health Goals & Tracking</CardTitle>
+                <CardDescription className="text-gray-600">
                   We're ready to meet your evolving health needs.
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-0">
-                <div className="bg-gray-700 rounded-lg p-4 mb-4 h-32 flex items-center justify-center">
-                  <div className="text-accent">
-                    <TrendingUp className="h-16 w-16 mx-auto mb-2" />
-                    <div className="text-xs text-center">Growth Tracking</div>
-                  </div>
+                <div className="bg-gray-50 rounded-lg p-4 mb-4 h-32 flex items-center justify-center overflow-hidden">
+                  <img 
+                    src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=300&h=200&fit=crop&crop=center" 
+                    alt="Health Tracking Dashboard"
+                    className="w-full h-full object-cover rounded-md"
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -184,28 +187,28 @@ const Landing = () => {
           {/* Bottom Row - 2 Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Smart Health Alerts */}
-            <Card className="bg-gray-800 border-gray-700 hover:border-medical-primary/50 transition-all duration-300">
+            <Card className="bg-white border-gray-200 hover:border-medical-primary/50 transition-all duration-300 shadow-lg">
               <CardHeader>
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="h-12 w-12 bg-medical-primary/20 rounded-lg flex items-center justify-center">
+                  <div className="h-12 w-12 bg-medical-primary/10 rounded-lg flex items-center justify-center">
                     <Bell className="h-6 w-6 text-medical-primary" />
                   </div>
-                  <Badge className="bg-medical-primary/20 text-medical-primary text-xs">
+                  <Badge className="bg-medical-primary/20 text-medical-primary text-xs border-medical-primary/30">
                     Workflow integration
                   </Badge>
                 </div>
-                <CardTitle className="text-white text-xl mb-2">Smart Health Alerts</CardTitle>
-                <CardDescription className="text-gray-400 mb-4">
+                <CardTitle className="text-gray-900 text-xl mb-2">Smart Health Alerts</CardTitle>
+                <CardDescription className="text-gray-600 mb-4">
                   Seamlessly connect all your existing health apps.
                 </CardDescription>
                 <div className="grid grid-cols-3 gap-3">
-                  <div className="bg-gray-700 rounded-lg p-2 flex items-center justify-center">
+                  <div className="bg-gray-50 rounded-lg p-2 flex items-center justify-center">
                     <Activity className="h-6 w-6 text-medical-secondary" />
                   </div>
-                  <div className="bg-gray-700 rounded-lg p-2 flex items-center justify-center">
+                  <div className="bg-gray-50 rounded-lg p-2 flex items-center justify-center">
                     <Heart className="h-6 w-6 text-red-400" />
                   </div>
-                  <div className="bg-gray-700 rounded-lg p-2 flex items-center justify-center">
+                  <div className="bg-gray-50 rounded-lg p-2 flex items-center justify-center">
                     <Zap className="h-6 w-6 text-yellow-400" />
                   </div>
                 </div>
@@ -213,29 +216,29 @@ const Landing = () => {
             </Card>
 
             {/* Family Health Management */}
-            <Card className="bg-gray-800 border-gray-700 hover:border-medical-secondary/50 transition-all duration-300">
+            <Card className="bg-white border-gray-200 hover:border-medical-secondary/50 transition-all duration-300 shadow-lg">
               <CardHeader>
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="h-12 w-12 bg-medical-secondary/20 rounded-lg flex items-center justify-center">
+                  <div className="h-12 w-12 bg-medical-secondary/10 rounded-lg flex items-center justify-center">
                     <Users className="h-6 w-6 text-medical-secondary" />
                   </div>
-                  <Badge className="bg-medical-secondary/20 text-medical-secondary text-xs">
+                  <Badge className="bg-medical-secondary/20 text-medical-secondary text-xs border-medical-secondary/30">
                     Collaborate real-time
                   </Badge>
                 </div>
-                <CardTitle className="text-white text-xl mb-2">Family Health Management</CardTitle>
-                <CardDescription className="text-gray-400 mb-4">
+                <CardTitle className="text-gray-900 text-xl mb-2">Family Health Management</CardTitle>
+                <CardDescription className="text-gray-600 mb-4">
                   Seamlessly connect all your family health profiles.
                 </CardDescription>
                 <div className="flex items-center gap-2">
                   <div className="flex -space-x-2">
-                    <div className="w-8 h-8 bg-medical-primary rounded-full border-2 border-gray-800 flex items-center justify-center">
+                    <div className="w-8 h-8 bg-medical-primary rounded-full border-2 border-white flex items-center justify-center">
                       <span className="text-xs text-white">M</span>
                     </div>
-                    <div className="w-8 h-8 bg-medical-secondary rounded-full border-2 border-gray-800 flex items-center justify-center">
+                    <div className="w-8 h-8 bg-medical-secondary rounded-full border-2 border-white flex items-center justify-center">
                       <span className="text-xs text-white">D</span>
                     </div>
-                    <div className="w-8 h-8 bg-accent rounded-full border-2 border-gray-800 flex items-center justify-center">
+                    <div className="w-8 h-8 bg-medical-primary rounded-full border-2 border-white flex items-center justify-center">
                       <span className="text-xs text-white">K</span>
                     </div>
                   </div>
@@ -249,27 +252,27 @@ const Landing = () => {
 
           {/* Feature Pills */}
           <div className="mt-12 flex flex-wrap gap-3 justify-center">
-            <Badge className="bg-gray-800 text-medical-secondary border-medical-secondary/30 px-4 py-2">
+            <Badge className="bg-white text-medical-secondary border-medical-secondary/30 px-4 py-2 shadow-sm">
               <CheckCircle className="h-4 w-4 mr-2" />
               Medical Report Analysis
             </Badge>
-            <Badge className="bg-gray-800 text-medical-secondary border-medical-secondary/30 px-4 py-2">
+            <Badge className="bg-white text-medical-secondary border-medical-secondary/30 px-4 py-2 shadow-sm">
               <CheckCircle className="h-4 w-4 mr-2" />
               Health Insights
             </Badge>
-            <Badge className="bg-gray-800 text-medical-secondary border-medical-secondary/30 px-4 py-2">
+            <Badge className="bg-white text-medical-secondary border-medical-secondary/30 px-4 py-2 shadow-sm">
               <CheckCircle className="h-4 w-4 mr-2" />
               Trend Analysis
             </Badge>
-            <Badge className="bg-gray-800 text-medical-secondary border-medical-secondary/30 px-4 py-2">
+            <Badge className="bg-white text-medical-secondary border-medical-secondary/30 px-4 py-2 shadow-sm">
               <CheckCircle className="h-4 w-4 mr-2" />
               HIPAA Compliant
             </Badge>
-            <Badge className="bg-gray-800 text-medical-secondary border-medical-secondary/30 px-4 py-2">
+            <Badge className="bg-white text-medical-secondary border-medical-secondary/30 px-4 py-2 shadow-sm">
               <CheckCircle className="h-4 w-4 mr-2" />
               Premium Support
             </Badge>
-            <Badge className="bg-gray-800 text-medical-secondary border-medical-secondary/30 px-4 py-2">
+            <Badge className="bg-white text-medical-secondary border-medical-secondary/30 px-4 py-2 shadow-sm">
               <CheckCircle className="h-4 w-4 mr-2" />
               Mobile Access
             </Badge>
