@@ -32,6 +32,18 @@ serve(async (req) => {
       );
     }
 
+    // Check if the message requires medical disclaimers
+    const medicalAdviceKeywords = [
+      'diagnose', 'diagnosis', 'treatment', 'treat', 'medicine', 'medication', 'drug', 'prescription',
+      'cure', 'healing', 'therapy', 'surgery', 'operation', 'disease', 'illness', 'condition',
+      'what do I have', 'am I sick', 'should I take', 'how to treat', 'medical advice',
+      'doctor recommendation', 'hospital', 'emergency', 'urgent care'
+    ];
+
+    const requiresDisclaimer = medicalAdviceKeywords.some(keyword => 
+      message.toLowerCase().includes(keyword)
+    );
+
     // Create context-aware prompt for medical consultation
     const medicalContext = userReports && userReports.length > 0 
       ? `\n\nUSER'S RECENT MEDICAL REPORTS CONTEXT:\n${userReports.map((report: any) => 
@@ -39,7 +51,7 @@ serve(async (req) => {
         ).join('\n\n')}`
       : '';
 
-    const doctorPrompt = `
+    const basePrompt = `
 You are an AI Health Assistant with medical knowledge. You must follow these strict guidelines:
 
 CRITICAL COMPLIANCE RULES:
@@ -56,7 +68,9 @@ RESPONSE GUIDELINES:
 - Offer general wellness and preventive care advice
 - Be empathetic and supportive while maintaining professional boundaries
 
-USER QUESTION: ${message}${medicalContext}
+USER QUESTION: ${message}${medicalContext}`;
+
+    const disclaimerText = requiresDisclaimer ? `
 
 IMPORTANT DISCLAIMERS TO INCLUDE:
 - This is not medical advice or diagnosis
@@ -64,8 +78,11 @@ IMPORTANT DISCLAIMERS TO INCLUDE:
 - This AI is for educational and informational purposes only
 - Emergency situations require immediate medical attention
 
-Please provide a helpful, educational response while strictly adhering to these guidelines.
-`;
+Please provide a helpful, educational response while strictly adhering to these guidelines.` : `
+
+Please provide a helpful, educational response while strictly adhering to these guidelines.`;
+
+    const doctorPrompt = basePrompt + disclaimerText;
 
     // Call Gemini AI for medical consultation
     const geminiResponse = await fetch(
@@ -138,14 +155,15 @@ Please provide a helpful, educational response while strictly adhering to these 
       timestamp: new Date().toISOString(),
       messageLength: message.length,
       responseGenerated: true,
-      complianceChecked: true
+      complianceChecked: true,
+      disclaimerRequired: requiresDisclaimer
     });
 
     return new Response(
       JSON.stringify({
         response: aiResponse,
         compliance: {
-          medicalDisclaimerIncluded: true,
+          medicalDisclaimerIncluded: requiresDisclaimer,
           noSpecificDiagnosis: true,
           educationalPurpose: true,
           auditLogged: true
