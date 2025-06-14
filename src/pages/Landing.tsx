@@ -19,7 +19,8 @@ import {
   Star,
   BarChart3,
   Activity,
-  Zap
+  Zap,
+  Calendar
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import HowItWorks from '@/components/landing/HowItWorks';
@@ -428,30 +429,78 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 medical-gradient">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-            Ready to Transform Your Health Journey?
-          </h2>
-          <p className="text-xl text-medical-light mb-8 max-w-2xl mx-auto">
-            Join thousands of users who have already taken control of their health with DocLumen AI
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/auth">
-              <Button size="lg" className="bg-white text-medical-primary hover:bg-gray-100 px-8 py-3">
-                Start Your Free Trial
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-medical-primary px-8 py-3">
-              Schedule a Demo
-            </Button>
+      {/* CTA Section - Redesigned like the attached image */}
+      <section className="py-20 bg-gray-900">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-5xl font-bold text-white mb-4">
+              Ready to take the next step?
+            </h2>
           </div>
           
-          <div className="mt-8 text-medical-light text-sm">
-            No credit card required • Free forever plan available
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto mb-16">
+            {/* Start a free trial card */}
+            <Card className="bg-gray-100 border-0 p-8 rounded-3xl">
+              <CardContent className="p-0">
+                <div className="mb-6">
+                  <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mb-6">
+                    <Star className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                    Start a free trial
+                  </h3>
+                  <p className="text-gray-600 text-lg mb-8">
+                    Get a 14-day free trial, no credit card required.
+                  </p>
+                </div>
+                <Link to="/auth">
+                  <Button className="bg-medical-primary hover:bg-medical-dark text-white px-8 py-3 rounded-xl">
+                    Start free trial
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            {/* Request a demo card */}
+            <Card className="bg-medical-primary border-0 p-8 rounded-3xl">
+              <CardContent className="p-0">
+                <div className="mb-6">
+                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mb-6">
+                    <Calendar className="h-6 w-6 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-4">
+                    Request a demo
+                  </h3>
+                  <p className="text-medical-light text-lg mb-8">
+                    Connect with a specialist to see how DocLumen can work for your health needs.
+                  </p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  className="bg-white text-medical-primary hover:bg-gray-100 border-white px-8 py-3 rounded-xl"
+                >
+                  Request a demo
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Trusted by section */}
+          <div className="text-center">
+            <p className="text-gray-400 text-sm font-semibold tracking-wider uppercase mb-8">
+              TRUSTED BY +25,000 HEALTH PROFESSIONALS
+            </p>
+            
+            <div className="flex flex-wrap items-center justify-center gap-8 opacity-60">
+              <div className="text-white font-bold text-xl">DocLumen</div>
+              <div className="text-white font-bold text-xl">HealthTech</div>
+              <div className="text-white font-bold text-xl">MedAI</div>
+              <div className="text-white font-bold text-xl">WellnessPro</div>
+              <div className="text-white font-bold text-xl">HealthIntel</div>
+              <div className="text-white font-bold text-xl">MedAnalyzer</div>
+            </div>
           </div>
         </div>
       </section>
