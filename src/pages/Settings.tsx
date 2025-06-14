@@ -1,55 +1,31 @@
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { User, Bell, Shield, Download, Trash2, Moon, Sun } from "lucide-react";
-import { toast } from "sonner";
+import { PlanManagement } from "@/components/subscription/PlanManagement";
+import { User, Bell, Shield, CreditCard, Palette, Globe } from "lucide-react";
 
 const Settings = () => {
-  const [notifications, setNotifications] = useState({
-    checkupReminders: true,
-    medicationAlerts: false,
-    healthTips: true,
-    weeklyReports: true
-  });
-
-  const [darkMode, setDarkMode] = useState(false);
-
-  const handleNotificationChange = (key: string, value: boolean) => {
-    setNotifications(prev => ({ ...prev, [key]: value }));
-    toast.success("Notification settings updated");
-  };
-
-  const handleExportData = () => {
-    toast.success("Your health data export will be emailed to you within 24 hours");
-  };
-
-  const handleDeleteAccount = () => {
-    toast.error("Account deletion requires email confirmation. Check your inbox for instructions.");
-  };
-
   return (
     <div className="min-h-screen pt-20 pb-12 bg-gray-50">
       <div className="container max-w-4xl">
         <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-montserrat font-bold mb-4 text-accent">
-            Settings & Privacy
-          </h1>
-          <p className="text-xl text-muted-foreground">
-            Manage your account, notifications, and data privacy preferences
+          <h1 className="text-3xl font-bold text-accent mb-2">Settings</h1>
+          <p className="text-muted-foreground">
+            Manage your account settings and preferences
           </p>
         </div>
 
         <div className="space-y-6">
           {/* Profile Settings */}
-          <Card className="health-card">
+          <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5 text-medical-primary" />
+              <CardTitle className="flex items-center">
+                <User className="mr-2 h-5 w-5" />
                 Profile Information
               </CardTitle>
             </CardHeader>
@@ -57,192 +33,168 @@ const Settings = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name</Label>
-                  <Input id="firstName" defaultValue="Adi" />
+                  <Input id="firstName" placeholder="Enter your first name" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" defaultValue="Patel" />
+                  <Input id="lastName" placeholder="Enter your last name" />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
-                <Input id="email" type="email" defaultValue="adi.patel@email.com" />
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" placeholder="Enter your email" />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="age">Age</Label>
-                  <Input id="age" type="number" defaultValue="32" />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="gender">Gender</Label>
-                  <select className="w-full p-2 border border-gray-300 rounded-md">
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                    <option value="prefer-not-to-say">Prefer not to say</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="height">Height (cm)</Label>
-                  <Input id="height" type="number" defaultValue="175" />
-                </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input id="phone" type="tel" placeholder="Enter your phone number" />
               </div>
-              <Button className="bg-medical-primary hover:bg-medical-dark">
-                Update Profile
-              </Button>
+              <div className="space-y-2">
+                <Label htmlFor="bio">Bio</Label>
+                <Textarea id="bio" placeholder="Tell us about yourself" />
+              </div>
+              <Button>Save Changes</Button>
             </CardContent>
           </Card>
 
+          {/* Subscription Management */}
+          <PlanManagement />
+
           {/* Notification Settings */}
-          <Card className="health-card">
+          <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Bell className="h-5 w-5 text-medical-primary" />
+              <CardTitle className="flex items-center">
+                <Bell className="mr-2 h-5 w-5" />
                 Notification Preferences
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-medium">Check-up Reminders</h3>
-                  <p className="text-sm text-muted-foreground">Get reminded about upcoming health check-ups</p>
+                <div className="space-y-0.5">
+                  <Label>Email Notifications</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Receive email updates about your health reports
+                  </p>
                 </div>
-                <Switch 
-                  checked={notifications.checkupReminders}
-                  onCheckedChange={(value) => handleNotificationChange('checkupReminders', value)}
-                />
+                <Switch />
               </div>
               <Separator />
               <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-medium">Medication Alerts</h3>
-                  <p className="text-sm text-muted-foreground">Reminders for medication schedules</p>
+                <div className="space-y-0.5">
+                  <Label>Health Alerts</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Get notified about important health insights
+                  </p>
                 </div>
-                <Switch 
-                  checked={notifications.medicationAlerts}
-                  onCheckedChange={(value) => handleNotificationChange('medicationAlerts', value)}
-                />
+                <Switch />
               </div>
               <Separator />
               <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-medium">Health Tips</h3>
-                  <p className="text-sm text-muted-foreground">Receive personalized health recommendations</p>
+                <div className="space-y-0.5">
+                  <Label>Goal Reminders</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Receive reminders about your health goals
+                  </p>
                 </div>
-                <Switch 
-                  checked={notifications.healthTips}
-                  onCheckedChange={(value) => handleNotificationChange('healthTips', value)}
-                />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-medium">Weekly Reports</h3>
-                  <p className="text-sm text-muted-foreground">Summary of your health trends and insights</p>
-                </div>
-                <Switch 
-                  checked={notifications.weeklyReports}
-                  onCheckedChange={(value) => handleNotificationChange('weeklyReports', value)}
-                />
+                <Switch />
               </div>
             </CardContent>
           </Card>
 
-          {/* Appearance Settings */}
-          <Card className="health-card">
+          {/* Privacy Settings */}
+          <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                {darkMode ? <Moon className="h-5 w-5 text-medical-primary" /> : <Sun className="h-5 w-5 text-medical-primary" />}
-                Appearance
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-medium">Dark Mode</h3>
-                  <p className="text-sm text-muted-foreground">Switch to dark theme for better viewing in low light</p>
-                </div>
-                <Switch 
-                  checked={darkMode}
-                  onCheckedChange={setDarkMode}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Data Privacy */}
-          <Card className="health-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-medical-primary" />
-                Data Privacy & Security
+              <CardTitle className="flex items-center">
+                <Shield className="mr-2 h-5 w-5" />
+                Privacy & Security
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                <h3 className="font-semibold text-green-800 mb-2">🔒 Your Data is Secure</h3>
-                <p className="text-sm text-green-700">
-                  All your health information is encrypted and stored securely. We follow HIPAA compliance standards 
-                  to protect your medical privacy.
-                </p>
-              </div>
-              
-              <div className="space-y-3">
-                <h3 className="font-medium">Data Management</h3>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Button 
-                    variant="outline" 
-                    onClick={handleExportData}
-                    className="flex items-center gap-2"
-                  >
-                    <Download className="h-4 w-4" />
-                    Export My Data
-                  </Button>
-                  <Button 
-                    variant="destructive" 
-                    onClick={handleDeleteAccount}
-                    className="flex items-center gap-2"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    Delete Account
-                  </Button>
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Data Sharing</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Allow anonymized data for research purposes
+                  </p>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Export includes all your lab reports, health insights, and chat history. 
-                  Account deletion is permanent and cannot be undone.
-                </p>
+                <Switch />
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Two-Factor Authentication</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Add an extra layer of security to your account
+                  </p>
+                </div>
+                <Button variant="outline" size="sm">Enable</Button>
+              </div>
+              <Separator />
+              <Button variant="outline">Change Password</Button>
+            </CardContent>
+          </Card>
+
+          {/* Display Preferences */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <Palette className="mr-2 h-5 w-5" />
+                Display Preferences
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Dark Mode</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Switch to dark theme
+                  </p>
+                </div>
+                <Switch />
+              </div>
+              <Separator />
+              <div className="space-y-2">
+                <Label>Language</Label>
+                <select className="w-full p-2 border border-gray-300 rounded-md">
+                  <option>English</option>
+                  <option>Hindi</option>
+                  <option>Spanish</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <Label>Timezone</Label>
+                <select className="w-full p-2 border border-gray-300 rounded-md">
+                  <option>India Standard Time (IST)</option>
+                  <option>Pacific Standard Time (PST)</option>
+                  <option>Eastern Standard Time (EST)</option>
+                </select>
               </div>
             </CardContent>
           </Card>
 
-          {/* Health Data Integrations */}
-          <Card className="health-card">
+          {/* Account Actions */}
+          <Card>
             <CardHeader>
-              <CardTitle>Health Data Integrations</CardTitle>
+              <CardTitle className="text-red-600">Danger Zone</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                  <div>
-                    <h3 className="font-medium">Apple Health</h3>
-                    <p className="text-sm text-muted-foreground">Sync your activity and health data</p>
-                  </div>
-                  <Button variant="outline" size="sm">Connect</Button>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Export Data</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Download all your health data
+                  </p>
                 </div>
-                <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                  <div>
-                    <h3 className="font-medium">Google Fit</h3>
-                    <p className="text-sm text-muted-foreground">Import fitness and wellness data</p>
-                  </div>
-                  <Button variant="outline" size="sm">Connect</Button>
+                <Button variant="outline">Export</Button>
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label className="text-red-600">Delete Account</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Permanently delete your account and all data
+                  </p>
                 </div>
-                <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                  <div>
-                    <h3 className="font-medium">Fitbit</h3>
-                    <p className="text-sm text-muted-foreground">Track activity, sleep, and heart rate</p>
-                  </div>
-                  <Button variant="outline" size="sm">Connect</Button>
-                </div>
+                <Button variant="destructive">Delete</Button>
               </div>
             </CardContent>
           </Card>

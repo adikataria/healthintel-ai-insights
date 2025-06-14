@@ -1,80 +1,16 @@
 
 import { useState } from 'react';
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, Star, Zap, Crown, Shield, Users, Calendar, BarChart3 } from "lucide-react";
+import { Zap, BarChart3, Users, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useSubscription } from "@/hooks/useSubscription";
+import { SubscriptionCard } from "@/components/subscription/SubscriptionCard";
+import { Loader2 } from "lucide-react";
 
 const Pricing = () => {
   const [isAnnual, setIsAnnual] = useState(false);
-
-  const plans = [
-    {
-      name: "Free",
-      description: "Perfect for getting started with DocLumen",
-      price: { monthly: 0, annual: 0 },
-      icon: Shield,
-      color: "text-green-600",
-      bgColor: "bg-green-50",
-      borderColor: "border-green-200",
-      buttonVariant: "outline" as const,
-      features: [
-        "Basic AI chat functionality",
-        "Up to 3 report uploads per month",
-        "General preventative care tips",
-        "Access to basic health resources",
-        "Standard health insights",
-        "Community support"
-      ],
-      limitations: [
-        "Limited report uploads",
-        "Basic insights only",
-        "No personalized health plans"
-      ]
-    },
-    {
-      name: "Premium",
-      description: "Comprehensive health management for serious users",
-      price: { monthly: 29, annual: 24 },
-      icon: Star,
-      color: "text-medical-primary",
-      bgColor: "bg-medical-light",
-      borderColor: "border-medical-primary",
-      buttonVariant: "default" as const,
-      popular: true,
-      features: [
-        "Unlimited report uploads",
-        "Advanced AI insights and analysis",
-        "Personalized health plans",
-        "Premium AI queries and consultations",
-        "Advanced goal tracking and monitoring",
-        "Detailed health analytics dashboard",
-        "Priority support",
-        "Export reports in multiple formats"
-      ]
-    },
-    {
-      name: "Pro",
-      description: "Enterprise-grade features for healthcare professionals",
-      price: { monthly: 99, annual: 79 },
-      icon: Crown,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
-      borderColor: "border-purple-200",
-      buttonVariant: "outline" as const,
-      features: [
-        "Everything in Premium",
-        "Exclusive webinars and workshops",
-        "In-depth health analytics",
-        "Multi-patient management",
-        "Advanced reporting tools",
-        "API access for integrations",
-        "White-label solutions",
-        "24/7 dedicated support",
-        "Custom health protocols"
-      ]
-    }
-  ];
+  const { plans, currentSubscription, isLoading } = useSubscription();
 
   const benefits = [
     {
@@ -84,7 +20,7 @@ const Pricing = () => {
     },
     {
       icon: BarChart3,
-      title: "Advanced Analytics",
+      title: "Advanced Analytics", 
       description: "Track trends and patterns in your health data"
     },
     {
@@ -98,6 +34,14 @@ const Pricing = () => {
       description: "24/7 health tracking and personalized recommendations"
     }
   ];
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen pt-20 pb-12 bg-gray-50 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen pt-20 pb-12 bg-gray-50">
@@ -144,73 +88,14 @@ const Pricing = () => {
       {/* Pricing Cards */}
       <section className="container max-w-7xl mb-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {plans.map((plan, index) => {
-            const Icon = plan.icon;
-            const price = isAnnual ? plan.price.annual : plan.price.monthly;
-            
-            return (
-              <Card 
-                key={index} 
-                className={`relative health-card hover:shadow-xl transition-all duration-300 ${
-                  plan.popular ? 'ring-2 ring-medical-primary scale-105' : ''
-                }`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-medical-primary text-white px-4 py-1 rounded-full text-sm font-medium">
-                      Most Popular
-                    </span>
-                  </div>
-                )}
-                
-                <CardHeader className="text-center pb-6">
-                  <div className={`w-12 h-12 ${plan.bgColor} rounded-lg flex items-center justify-center mx-auto mb-4`}>
-                    <Icon className={`h-6 w-6 ${plan.color}`} />
-                  </div>
-                  <CardTitle className="text-2xl font-montserrat text-accent">
-                    {plan.name}
-                  </CardTitle>
-                  <p className="text-muted-foreground">{plan.description}</p>
-                  
-                  <div className="mt-4">
-                    <span className="text-4xl font-bold text-accent">
-                      ${price}
-                    </span>
-                    <span className="text-muted-foreground">
-                      {price > 0 ? `/${isAnnual ? 'year' : 'month'}` : ''}
-                    </span>
-                    {isAnnual && price > 0 && (
-                      <div className="text-sm text-muted-foreground mt-1">
-                        Billed annually
-                      </div>
-                    )}
-                  </div>
-                </CardHeader>
-                
-                <CardContent>
-                  <ul className="space-y-3 mb-6">
-                    {plan.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-start">
-                        <Check className="h-5 w-5 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
-                        <span className="text-sm text-muted-foreground">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  
-                  <Button 
-                    variant={plan.buttonVariant}
-                    size="lg" 
-                    className="w-full"
-                    asChild
-                  >
-                    <Link to={plan.name === 'Free' ? '/auth' : '/auth'}>
-                      {plan.name === 'Free' ? 'Get Started Free' : `Choose ${plan.name}`}
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            );
-          })}
+          {plans?.map((plan) => (
+            <SubscriptionCard
+              key={plan.id}
+              plan={plan}
+              isAnnual={isAnnual}
+              isCurrentPlan={currentSubscription?.plan_id === plan.id}
+            />
+          ))}
         </div>
       </section>
 
@@ -228,15 +113,13 @@ const Pricing = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {benefits.map((benefit, index) => (
             <Card key={index} className="health-card text-center">
-              <CardHeader>
+              <CardContent className="p-6">
                 <div className="w-12 h-12 bg-medical-light rounded-lg flex items-center justify-center mx-auto mb-4">
                   <benefit.icon className="h-6 w-6 text-medical-primary" />
                 </div>
-                <CardTitle className="text-lg font-montserrat text-accent">
+                <h3 className="text-lg font-montserrat font-semibold text-accent mb-2">
                   {benefit.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+                </h3>
                 <p className="text-muted-foreground text-sm">{benefit.description}</p>
               </CardContent>
             </Card>
