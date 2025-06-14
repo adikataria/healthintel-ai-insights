@@ -71,16 +71,35 @@ const HealthInsightsDashboard = () => {
               </p>
             </div>
             
-            {/* Upgrade Button - Show only if user doesn't have active subscription */}
-            {!hasActiveSubscription && (
-              <Button 
-                onClick={() => navigate('/pricing')}
-                className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
-              >
-                <Crown className="h-5 w-5" />
-                UPGRADE
-              </Button>
-            )}
+            {/* Current Plan and Upgrade Button */}
+            <div className="flex items-center gap-4">
+              {/* Current Plan Badge */}
+              <div className="text-right">
+                <p className="text-sm text-gray-500 mb-1">Current Plan</p>
+                <Badge 
+                  variant="secondary" 
+                  className={`text-sm font-semibold ${
+                    currentSubscription?.subscription_plans?.name === 'Free' ? 'bg-gray-100 text-gray-700' :
+                    currentSubscription?.subscription_plans?.name === 'Premium' ? 'bg-blue-100 text-blue-700' :
+                    currentSubscription?.subscription_plans?.name === 'Pro' ? 'bg-purple-100 text-purple-700' :
+                    'bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  {currentSubscription?.subscription_plans?.name || 'Free'}
+                </Badge>
+              </div>
+
+              {/* Upgrade Button - Show only if user doesn't have active subscription */}
+              {!hasActiveSubscription && (
+                <Button 
+                  onClick={() => navigate('/pricing')}
+                  className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2"
+                >
+                  <Crown className="h-5 w-5" />
+                  UPGRADE
+                </Button>
+              )}
+            </div>
           </div>
         </div>
 
