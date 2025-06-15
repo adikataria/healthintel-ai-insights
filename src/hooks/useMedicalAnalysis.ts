@@ -37,9 +37,7 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UseMedicalAnalysisPro
           userConsent: true,
           extractionLevel: 'complete_comprehensive',
           requireCompleteData: true,
-          zeroMissingDataMode: true,
-          showAllTests: true, // Ensure all tests are analyzed and displayed
-          comprehensiveDisplay: true // Flag for comprehensive test display
+          zeroMissingDataMode: true
         }
       });
 
@@ -49,17 +47,22 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UseMedicalAnalysisPro
       }
 
       console.log('Comprehensive analysis completed successfully');
-      console.log('Analysis result:', data?.analysis);
+      console.log('Analysis result quality metrics:', data?.qualityMetrics);
       
-      // Validate that we have comprehensive test data
+      // Validate that we have complete data
       if (data?.analysis?.healthIndicators) {
-        const totalTests = data.analysis.healthIndicators.length;
-        console.log(`Analysis completed with ${totalTests} health indicators extracted`);
+        const missingDataIndicators = data.analysis.healthIndicators.filter(indicator => 
+          !indicator.value || 
+          indicator.value.toLowerCase().includes('missing') ||
+          indicator.value.toLowerCase().includes('unknown') ||
+          indicator.value === 'N/A'
+        );
         
-        if (totalTests > 0) {
-          toast.success(`Complete analysis with ${totalTests} lab tests analyzed successfully!`);
+        if (missingDataIndicators.length > 0) {
+          console.warn('Some indicators still have missing data:', missingDataIndicators);
+          toast.warning(`Analysis completed but ${missingDataIndicators.length} parameters need manual review`);
         } else {
-          toast.warning('Analysis completed but no specific test values were extracted from the report');
+          toast.success('Complete analysis with all data extracted successfully!');
         }
       } else {
         toast.success('Report analysis completed successfully!');
@@ -76,9 +79,9 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UseMedicalAnalysisPro
       const errorMessage = error instanceof Error ? error.message : 'Complete analysis failed';
       toast.error(`Analysis failed: ${errorMessage}. Retrying with enhanced extraction...`);
       
-      // Attempt retry with fallback mode for maximum test extraction
+      // Attempt retry with fallback mode
       try {
-        console.log('Attempting retry with enhanced fallback extraction for all tests...');
+        console.log('Attempting retry with enhanced fallback extraction...');
         const retryData = await supabase.functions.invoke('analyze-medical-report', {
           body: {
             reportId: pendingAnalysis.reportId,
@@ -89,17 +92,13 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UseMedicalAnalysisPro
             extractionLevel: 'fallback_comprehensive',
             requireCompleteData: true,
             zeroMissingDataMode: true,
-            retryAttempt: true,
-            showAllTests: true,
-            comprehensiveDisplay: true
+            retryAttempt: true
           }
         });
 
         if (retryData.error) throw retryData.error;
         
-        const testCount = retryData.data?.analysis?.healthIndicators?.length || 0;
-        toast.success(`Analysis completed successfully on retry with ${testCount} tests analyzed!`);
-        
+        toast.success('Analysis completed successfully on retry!');
         if (onSuccess) {
           onSuccess(retryData.data.analysis);
         }
