@@ -63,7 +63,7 @@ const Landing = () => {
             <div className="hidden lg:block">
               <div className="relative">
                 <div className="bg-white rounded-2xl shadow-2xl p-4 transform rotate-2 hover:rotate-0 transition-transform duration-300">
-                  <img alt="DocLumen AI Health Dashboard" className="w-full h-auto rounded-xl" src="/lovable-uploads/f9b9ad28-9336-4c5f-a058-e1dfc7b997a9.png" />
+                  <img alt="DocLumen AI Health Dashboard" className="w-full h-auto rounded-xl" src="/lovable-uploads/4af02ce3-c063-42b4-acf5-803df81b1347.png" />
                 </div>
                 {/* Floating elements */}
                 <div className="absolute -top-4 -right-4 bg-medical-primary text-white p-3 rounded-full shadow-lg animate-bounce">
