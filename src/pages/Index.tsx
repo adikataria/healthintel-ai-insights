@@ -1,9 +1,9 @@
 
 import React from 'react';
-import HealthInsightsDashboard from '@/components/dashboard/HealthInsightsDashboard';
+import { EnhancedHealthInsightsDashboard } from '@/components/dashboard/EnhancedHealthInsightsDashboard';
 
 const Index = () => {
-  return <HealthInsightsDashboard />;
+  return <EnhancedHealthInsightsDashboard />;
 };
 
 export default Index;

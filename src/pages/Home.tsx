@@ -1,12 +1,12 @@
 
-import HealthInsightsDashboard from "@/components/dashboard/HealthInsightsDashboard";
+import { EnhancedHealthInsightsDashboard } from "@/components/dashboard/EnhancedHealthInsightsDashboard";
 
 /**
- * Dashboard page for signed-in users.
- * Shows greeting, quick actions, health snapshot, and explanation prompt.
+ * Enhanced Dashboard page for signed-in users.
+ * Features modern UI, customizable widgets, gamification, and personalized experience.
  */
 const Dashboard = () => {
-  return <HealthInsightsDashboard />;
+  return <EnhancedHealthInsightsDashboard />;
 };
 
 export default Dashboard;
