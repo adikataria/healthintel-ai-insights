@@ -14,6 +14,7 @@ import { supabase } from '@/integrations/supabase/client';
 export const AuthForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isForgotPasswordLoading, setIsForgotPasswordLoading] = useState(false);
   const { signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
@@ -66,6 +67,27 @@ export const AuthForm = () => {
     setIsLoading(false);
   };
 
+  const handleForgotPassword = async () => {
+    if (!signInData.email) {
+      toast.error('Please enter your email address first');
+      return;
+    }
+
+    setIsForgotPasswordLoading(true);
+
+    const { error } = await supabase.auth.resetPasswordForEmail(signInData.email, {
+      redirectTo: `${window.location.origin}/reset-password`
+    });
+
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success('Password reset email sent! Check your inbox.');
+    }
+
+    setIsForgotPasswordLoading(false);
+  };
+
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
     
@@ -88,9 +110,11 @@ export const AuthForm = () => {
       <div className="hidden lg:flex relative flex-1 flex-col justify-center items-center p-8 bg-medical-primary rounded-l-3xl overflow-hidden z-10">
         {/* Logo */}
         <div className="flex items-center gap-3 mb-8">
-          <span className="w-14 h-14 flex items-center justify-center rounded-2xl bg-medical-secondary shadow-lg">
-            <Heart className="h-8 w-8 text-white" />
-          </span>
+          <img 
+            src="/lovable-uploads/99ed6175-9efc-4e0c-a85f-bf132d0f0142.png" 
+            alt="DocLumen Logo" 
+            className="w-14 h-14 object-contain"
+          />
           <span className="text-3xl xl:text-4xl font-montserrat font-bold text-white">DocLumen</span>
         </div>
         {/* Tagline and Illustration */}
@@ -134,9 +158,11 @@ export const AuthForm = () => {
       {/* Mobile Header - Only visible on mobile */}
       <div className="lg:hidden bg-medical-primary text-white p-6 text-center">
         <div className="flex items-center justify-center gap-3 mb-4">
-          <span className="w-10 h-10 flex items-center justify-center rounded-xl bg-medical-secondary shadow-lg">
-            <Heart className="h-6 w-6 text-white" />
-          </span>
+          <img 
+            src="/lovable-uploads/99ed6175-9efc-4e0c-a85f-bf132d0f0142.png" 
+            alt="DocLumen Logo" 
+            className="w-10 h-10 object-contain"
+          />
           <span className="text-2xl font-montserrat font-bold">DocLumen</span>
         </div>
         <h2 className="text-lg font-bold text-white/90 mb-2">
@@ -235,6 +261,23 @@ export const AuthForm = () => {
                       className="h-10 sm:h-11 text-sm"
                     />
                   </div>
+                  
+                  {/* Forgot Password Link */}
+                  <div className="flex justify-end">
+                    <Button
+                      type="button"
+                      variant="link"
+                      onClick={handleForgotPassword}
+                      disabled={isForgotPasswordLoading}
+                      className="p-0 h-auto text-xs text-medical-secondary hover:text-medical-dark"
+                    >
+                      {isForgotPasswordLoading ? (
+                        <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                      ) : null}
+                      Forgot password?
+                    </Button>
+                  </div>
+
                   <Button 
                     type="submit" 
                     className="w-full h-10 sm:h-11 bg-medical-primary hover:bg-medical-dark duration-150 ease-in text-sm"
