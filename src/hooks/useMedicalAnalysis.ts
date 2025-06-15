@@ -1,6 +1,5 @@
 
 import { useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -9,58 +8,10 @@ interface UsemedicalAnalysisProps {
   onError?: (error: string) => void;
 }
 
-interface UploadReportData {
-  file: File;
-  title: string;
-}
-
 export const useMedicalAnalysis = ({ onSuccess, onError }: UsemedicalAnalysisProps = {}) => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showConsentModal, setShowConsentModal] = useState(false);
   const [pendingAnalysis, setPendingAnalysis] = useState<any>(null);
-
-  const uploadReport = useMutation({
-    mutationFn: async (data: UploadReportData) => {
-      const { file, title } = data;
-      
-      // Upload file to Supabase storage
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}.${fileExt}`;
-      
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('medical-reports')
-        .upload(fileName, file);
-
-      if (uploadError) {
-        throw new Error('Failed to upload file');
-      }
-
-      // Get the public URL for the uploaded file
-      const { data: { publicUrl } } = supabase.storage
-        .from('medical-reports')
-        .getPublicUrl(uploadData.path);
-
-      // Create report record in database with only valid columns
-      const { data: reportData, error: reportError } = await supabase
-        .from('medical_reports')
-        .insert({
-          title,
-          file_name: file.name,
-          file_url: publicUrl,
-          file_size: file.size,
-          file_type: file.type,
-          user_id: (await supabase.auth.getUser()).data.user?.id
-        })
-        .select()
-        .single();
-
-      if (reportError) {
-        throw new Error('Failed to create report record');
-      }
-
-      return reportData;
-    }
-  });
 
   const startAnalysis = (reportData: any) => {
     setPendingAnalysis(reportData);
@@ -124,7 +75,6 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UsemedicalAnalysisPro
     showConsentModal,
     startAnalysis,
     handleConsentAccepted,
-    handleConsentDeclined,
-    uploadReport
+    handleConsentDeclined
   };
 };
