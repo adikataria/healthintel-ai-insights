@@ -143,7 +143,7 @@ export default function AIDoctor() {
           {/* Welcome Message */}
           {messages.length === 0 && (
             <MessageBubble
-              role="ai"
+              role="assistant"
               content="👋 Hi! I'm your enhanced AI Doctor. I can remember our past conversations, ask follow-up questions, and even listen to your voice. How can I help you today?"
             />
           )}

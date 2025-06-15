@@ -3,7 +3,7 @@ import { User, Bot } from "lucide-react";
 import React from "react";
 
 type Props = {
-  role: "user" | "ai";
+  role: "user" | "assistant";
   content: string;
 };
 
