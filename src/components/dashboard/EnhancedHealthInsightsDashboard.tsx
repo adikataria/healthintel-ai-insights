@@ -34,7 +34,8 @@ import {
   BarChart3,
   History,
   Activity,
-  Stethoscope
+  Stethoscope,
+  ChefHat
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -117,6 +118,7 @@ export const EnhancedHealthInsightsDashboard = () => {
     { href: '/upload', label: 'Upload', icon: Upload },
     { href: '/insights', label: 'Insights', icon: FileText },
     { href: '/goals', label: 'Goals', icon: Target },
+    { href: '/diet-planner', label: 'Diet Planner', icon: ChefHat },
     { href: '/health-history', label: 'History', icon: History },
     { href: '/chat', label: 'AI Assistant', icon: MessageSquare },
     { href: '/trends', label: 'Trends', icon: BarChart3 },
@@ -125,8 +127,8 @@ export const EnhancedHealthInsightsDashboard = () => {
   const quickActions = [
     { icon: Upload, label: 'Upload Report', action: () => navigate('/upload'), color: 'bg-slate-500 hover:bg-slate-600' },
     { icon: Activity, label: 'View Progress', action: handleViewProgress, color: 'bg-blue-500 hover:bg-blue-600' },
+    { icon: ChefHat, label: 'Diet Planner', action: () => navigate('/diet-planner'), color: 'bg-green-500 hover:bg-green-600' },
     { icon: Stethoscope, label: 'Quick Health Check', action: handleQuickHealthCheck, color: 'bg-teal-500 hover:bg-teal-600' },
-    { icon: MessageSquare, label: 'AI Doctor', action: () => navigate('/chat'), color: 'bg-emerald-500 hover:bg-emerald-600' },
   ];
 
   const renderWidget = (widget: Widget) => {
