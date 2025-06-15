@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Upload as UploadIcon, FileText, CheckCircle, AlertCircle, X, User, LogOut, Settings, Moon, Bell, Menu, Search, Crown, Plus } from "lucide-react";
+import { Upload as UploadIcon, FileText, CheckCircle, AlertCircle, X, User, LogOut, Settings, Moon, Bell, Menu, Search, Crown } from "lucide-react";
 import { ConsentModal } from "@/components/medical/ConsentModal";
 import { toast } from "sonner";
 import { useMedicalAnalysis } from "@/hooks/useMedicalAnalysis";
