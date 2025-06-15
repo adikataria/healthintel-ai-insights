@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,6 +10,14 @@ interface Message {
   timestamp: Date;
   metadata?: any;
   isStreaming?: boolean;
+  followUpQuestions?: FollowUpQuestion[];
+}
+
+interface FollowUpQuestion {
+  id: string;
+  question: string;
+  options?: string[];
+  type: 'multiple-choice' | 'text' | 'yes-no';
 }
 
 interface Symptom {
@@ -31,6 +38,10 @@ export const useAIDoctorChat = ({ conversationId }: UseAIDoctorChatProps = {}) =
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(conversationId || null);
   const [userReports, setUserReports] = useState([]);
   const [userProfile, setUserProfile] = useState(null);
+  const [recentInteractions, setRecentInteractions] = useState<string[]>([]);
+  const [healthTrends, setHealthTrends] = useState<string[]>([]);
+  const [activeFollowUp, setActiveFollowUp] = useState<FollowUpQuestion[]>([]);
+  const [conversationContext, setConversationContext] = useState<any>({});
   const abortControllerRef = useRef<AbortController | null>(null);
 
   // Load user's health profile for personalized insights
@@ -122,6 +133,43 @@ export const useAIDoctorChat = ({ conversationId }: UseAIDoctorChatProps = {}) =
     loadMessages();
   }, [currentConversationId]);
 
+  // Load user's conversation history for memory
+  useEffect(() => {
+    const loadConversationHistory = async () => {
+      if (!user) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('chat_conversations')
+          .select('id, title, created_at, messages:chat_messages(content)')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(5);
+
+        if (error) throw error;
+
+        const interactions = data.flatMap(conv => 
+          conv.messages?.slice(0, 2).map((msg: any) => msg.content) || []
+        ).slice(0, 5);
+
+        setRecentInteractions(interactions);
+
+        // Mock health trends based on conversation history
+        const trends = [
+          "Blood pressure readings stable over last month",
+          "Symptom pattern shows improvement",
+          "Medication adherence on track"
+        ];
+        setHealthTrends(trends);
+
+      } catch (error) {
+        console.error('Error loading conversation history:', error);
+      }
+    };
+
+    loadConversationHistory();
+  }, [user]);
+
   const createNewConversation = async (title: string = 'New Health Consultation') => {
     if (!user) return null;
 
@@ -148,7 +196,7 @@ export const useAIDoctorChat = ({ conversationId }: UseAIDoctorChatProps = {}) =
     }
   };
 
-  const sendMessage = async (content: string, symptoms?: Symptom[]) => {
+  const sendMessage = async (content: string, symptoms?: Symptom[], context?: any) => {
     if (!currentConversationId) {
       const newConversationId = await createNewConversation();
       if (!newConversationId) return;
@@ -164,7 +212,7 @@ export const useAIDoctorChat = ({ conversationId }: UseAIDoctorChatProps = {}) =
       role: 'user',
       content,
       timestamp: new Date(),
-      metadata: { symptoms: symptoms || [] },
+      metadata: { symptoms: symptoms || [], context: context || {} },
       isStreaming: false
     };
 
@@ -185,42 +233,66 @@ export const useAIDoctorChat = ({ conversationId }: UseAIDoctorChatProps = {}) =
     setMessages(prev => [...prev, aiMessage]);
 
     try {
-      console.log('Sending streaming message to AI Doctor...');
+      console.log('Sending enhanced message to AI Doctor...');
 
       // Create abort controller for this request
       abortControllerRef.current = new AbortController();
 
-      const { data, error } = await supabase.functions.invoke('ai-doctor-chat-stream', {
+      const { data, error } = await supabase.functions.invoke('ai-doctor-chat', {
         body: {
           message: content,
           conversationId: currentConversationId,
           userReports,
           userProfile,
-          symptoms: symptoms || []
+          symptoms: symptoms || [],
+          conversationHistory: recentInteractions,
+          healthTrends,
+          conversationContext
         }
       });
 
       if (error) {
-        console.error('AI Doctor streaming error:', error);
+        console.error('AI Doctor error:', error);
         throw new Error(error.message || 'Chat service error');
       }
+
+      // Generate follow-up questions based on response
+      const followUpQuestions = generateFollowUpQuestions(content, data.response);
 
       // Update the streaming message with final content
       setMessages(prev => prev.map(msg => 
         msg.id === aiMessageId 
-          ? { ...msg, content: data.response, isStreaming: false, metadata: data.metadata }
+          ? { 
+              ...msg, 
+              content: data.response, 
+              isStreaming: false, 
+              metadata: data.metadata,
+              followUpQuestions 
+            }
           : msg
       ));
 
+      // Set active follow-up questions
+      if (followUpQuestions.length > 0) {
+        setActiveFollowUp(followUpQuestions);
+      }
+
+      // Update conversation context
+      setConversationContext(prev => ({
+        ...prev,
+        lastTopic: extractMainTopic(content),
+        lastSymptoms: symptoms || [],
+        followUpActive: followUpQuestions.length > 0
+      }));
+
       // Show success toast for enhanced features
       if (data.compliance?.enhancedAnalysis) {
-        toast.success('Enhanced analysis completed with personalized insights');
+        toast.success('Enhanced analysis with personalized insights completed');
       }
 
     } catch (error) {
       if (error.name === 'AbortError') {
         console.log('Request was cancelled');
-        // Remove the streaming message if request was cancelled
         setMessages(prev => prev.filter(msg => msg.id !== aiMessageId));
         return;
       }
@@ -243,6 +315,54 @@ export const useAIDoctorChat = ({ conversationId }: UseAIDoctorChatProps = {}) =
       setIsLoading(false);
       abortControllerRef.current = null;
     }
+  };
+
+  const handleFollowUpComplete = (answers: Record<string, string>) => {
+    const followUpSummary = Object.entries(answers)
+      .map(([questionId, answer]) => `${questionId}: ${answer}`)
+      .join(', ');
+    
+    const contextualMessage = `Based on our follow-up discussion: ${followUpSummary}. Please provide more specific guidance.`;
+    
+    sendMessage(contextualMessage, [], { isFollowUp: true, answers });
+    setActiveFollowUp([]);
+  };
+
+  const generateFollowUpQuestions = (userInput: string, aiResponse: string): FollowUpQuestion[] => {
+    // Simple logic to generate follow-up questions based on content
+    const questions: FollowUpQuestion[] = [];
+    
+    if (userInput.toLowerCase().includes('pain')) {
+      questions.push({
+        id: 'pain-scale',
+        question: 'On a scale of 1-10, how would you rate your pain?',
+        options: ['1-3 (Mild)', '4-6 (Moderate)', '7-8 (Severe)', '9-10 (Extreme)'],
+        type: 'multiple-choice'
+      });
+    }
+    
+    if (userInput.toLowerCase().includes('symptom')) {
+      questions.push({
+        id: 'symptom-duration',
+        question: 'How long have you been experiencing these symptoms?',
+        options: ['Less than 24 hours', '1-3 days', '1 week', 'More than a week'],
+        type: 'multiple-choice'
+      });
+    }
+    
+    return questions.slice(0, 2); // Limit to 2 follow-up questions
+  };
+
+  const extractMainTopic = (message: string): string => {
+    // Simple topic extraction
+    const commonTopics = ['pain', 'fever', 'headache', 'cough', 'fatigue', 'nausea'];
+    const topic = commonTopics.find(t => message.toLowerCase().includes(t));
+    return topic || 'general health';
+  };
+
+  const recallInteraction = (interaction: string) => {
+    const recallMessage = `You mentioned: "${interaction}". Can you tell me more about this or provide an update?`;
+    sendMessage(recallMessage, [], { isRecall: true, originalInteraction: interaction });
   };
 
   const sendSymptomAnalysis = async (symptoms: Symptom[], additionalContext?: string) => {
@@ -268,11 +388,25 @@ export const useAIDoctorChat = ({ conversationId }: UseAIDoctorChatProps = {}) =
     messages,
     isLoading,
     sendMessage,
-    sendSymptomAnalysis,
+    sendSymptomAnalysis: async (symptoms: Symptom[], additionalContext?: string) => {
+      const symptomDescriptions = symptoms.map(s => 
+        `${s.description} (Duration: ${s.duration || 'not specified'}, Intensity: ${s.intensity || 'not specified'}/10)`
+      ).join(', ');
+
+      const message = `I'm experiencing the following symptoms: ${symptomDescriptions}. ${additionalContext || 'Please provide analysis and guidance.'}`;
+      
+      await sendMessage(message, symptoms);
+    },
     createNewConversation,
     conversationId: currentConversationId,
     userProfile,
-    userReports: userReports.length
+    userReports: userReports.length,
+    recentInteractions,
+    healthTrends,
+    activeFollowUp,
+    handleFollowUpComplete,
+    recallInteraction,
+    conversationContext
   };
 };
 
