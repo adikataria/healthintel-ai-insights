@@ -17,6 +17,9 @@ interface ReportAnalysisProps {
 }
 
 export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({ reportData }) => {
+  console.log('ReportAnalysis received data:', reportData);
+  console.log('AI insights:', reportData.ai_insights);
+
   if (!reportData.ai_insights) {
     return (
       <Card className="max-w-4xl mx-auto">
@@ -34,12 +37,10 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({ reportData }) =>
   }
 
   const handleDownloadReport = () => {
-    // Implementation for downloading the report
     console.log('Download report:', reportData.id);
   };
 
   const handleShareReport = () => {
-    // Implementation for sharing the report
     console.log('Share report:', reportData.id);
   };
 
