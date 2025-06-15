@@ -25,14 +25,15 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UseMedicalAnalysisPro
     setIsAnalyzing(true);
 
     try {
-      console.log('Starting comprehensive medical report analysis...');
+      console.log('Starting comprehensive PDF medical report analysis...');
       console.log('Report data:', {
         type: pendingAnalysis.type,
         fileName: pendingAnalysis.fileName,
-        contentLength: pendingAnalysis.content?.length || 0
+        contentLength: pendingAnalysis.content?.length || 0,
+        isPDF: pendingAnalysis.fileName?.toLowerCase().includes('.pdf') || false
       });
 
-      // First attempt with aggressive extraction
+      // Enhanced PDF processing with comprehensive extraction
       const { data, error } = await supabase.functions.invoke('analyze-medical-report', {
         body: {
           reportId: pendingAnalysis.reportId,
@@ -40,64 +41,79 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UseMedicalAnalysisPro
           reportType: pendingAnalysis.type,
           fileName: pendingAnalysis.fileName,
           userConsent: true,
-          extractionMode: 'aggressive_comprehensive',
+          extractionMode: 'ultra_aggressive_comprehensive',
           requireLabValues: true,
-          enhancedParsing: true,
-          forceExtraction: true,
-          extractRealValues: true,
+          enhancedPDFProcessing: true,
+          comprehensiveExtraction: true,
+          forceRealValues: true,
           parseNumericData: true,
           includeUnits: true,
           detailedAnalysis: true,
           aggressiveTextExtraction: true,
           ocrEnhancement: true,
-          multiModalAnalysis: true
+          multiModalAnalysis: true,
+          pdfOptimized: true,
+          extractEverything: true
         }
       });
 
       if (error) {
-        console.error('Analysis error:', error);
-        throw new Error(error.message || 'Analysis failed');
+        console.error('PDF Analysis error:', error);
+        throw new Error(error.message || 'PDF analysis failed');
       }
 
-      console.log('Analysis completed:', data);
+      console.log('PDF Analysis completed:', data);
       
-      // Check if we have meaningful lab values
+      // Comprehensive validation of extracted lab values
       let hasRealLabValues = false;
       let realValuesCount = 0;
+      let validParameters = [];
       
       if (data?.analysis?.healthIndicators && data.analysis.healthIndicators.length > 0) {
-        const realValues = data.analysis.healthIndicators.filter(indicator => 
+        validParameters = data.analysis.healthIndicators.filter(indicator => 
+          indicator.parameter && 
           indicator.value && 
+          indicator.parameter.trim() !== '' &&
+          indicator.value.trim() !== '' &&
           indicator.value !== 'N/A' && 
+          indicator.value !== 'Not available' &&
+          indicator.value !== 'Not found' &&
           !indicator.value.includes('Clinical assessment completed') &&
           !indicator.value.includes('refer to full report') &&
           !indicator.value.includes('Laboratory assessed') &&
           !indicator.value.includes('not available') &&
           !indicator.value.includes('missing') &&
-          indicator.value.trim() !== '' &&
+          !indicator.value.includes('unable to extract') &&
           // Check for actual numerical values or specific lab results
           (indicator.value.match(/\d+/) || 
            indicator.value.includes('mg/dL') || 
            indicator.value.includes('g/dL') || 
            indicator.value.includes('U/L') ||
+           indicator.value.includes('mmol/L') ||
            indicator.value.includes('cells') ||
            indicator.value.includes('%') ||
+           indicator.value.includes('mL') ||
            indicator.value.toLowerCase().includes('normal') ||
            indicator.value.toLowerCase().includes('high') ||
            indicator.value.toLowerCase().includes('low') ||
            indicator.value.toLowerCase().includes('elevated') ||
-           indicator.value.toLowerCase().includes('decreased'))
+           indicator.value.toLowerCase().includes('decreased') ||
+           indicator.value.toLowerCase().includes('positive') ||
+           indicator.value.toLowerCase().includes('negative'))
         );
         
-        realValuesCount = realValues.length;
+        realValuesCount = validParameters.length;
         hasRealLabValues = realValuesCount > 0;
         
-        console.log(`Found ${realValuesCount} real lab values:`, realValues.map(v => ({ parameter: v.parameter, value: v.value })));
+        console.log(`Found ${realValuesCount} valid lab parameters:`, validParameters.map(v => ({ 
+          parameter: v.parameter, 
+          value: v.value 
+        })));
       }
 
-      // If no real values found, try enhanced retry
-      if (!hasRealLabValues) {
-        console.log('No real lab values found, attempting enhanced extraction...');
+      // If insufficient values found, attempt comprehensive retry
+      if (realValuesCount < 3) {
+        console.log(`Only ${realValuesCount} parameters found, attempting comprehensive retry...`);
         
         const retryData = await supabase.functions.invoke('analyze-medical-report', {
           body: {
@@ -106,7 +122,7 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UseMedicalAnalysisPro
             reportType: pendingAnalysis.type,
             fileName: pendingAnalysis.fileName,
             userConsent: true,
-            extractionMode: 'ultra_aggressive_numeric',
+            extractionMode: 'maximum_comprehensive_extraction',
             parseNumericValues: true,
             extractAllParameters: true,
             includeUnits: true,
@@ -117,20 +133,23 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UseMedicalAnalysisPro
             enhancedOCR: true,
             deepContentAnalysis: true,
             forceNumericExtraction: true,
-            extractEverything: true
+            extractEverything: true,
+            pdfDeepScan: true,
+            comprehensiveTableExtraction: true,
+            multiColumnProcessing: true
           }
         });
 
-        if (retryData.error) {
-          console.error('Enhanced extraction failed:', retryData.error);
-        } else {
-          const retryRealValues = retryData.data?.analysis?.healthIndicators?.filter(indicator => 
+        if (!retryData.error && retryData.data?.analysis?.healthIndicators) {
+          const retryValidParameters = retryData.data.analysis.healthIndicators.filter(indicator => 
+            indicator.parameter && 
             indicator.value && 
-            indicator.value !== 'N/A' && 
+            indicator.parameter.trim() !== '' &&
+            indicator.value.trim() !== '' &&
+            indicator.value !== 'N/A' &&
             !indicator.value.includes('Clinical assessment completed') &&
             !indicator.value.includes('refer to full report') &&
             !indicator.value.includes('Laboratory assessed') &&
-            indicator.value.trim() !== '' &&
             (indicator.value.match(/\d+/) || 
              indicator.value.includes('mg/dL') || 
              indicator.value.includes('g/dL') || 
@@ -138,26 +157,27 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UseMedicalAnalysisPro
              indicator.value.toLowerCase().includes('normal') ||
              indicator.value.toLowerCase().includes('high') ||
              indicator.value.toLowerCase().includes('low'))
-          ) || [];
+          );
 
-          if (retryRealValues.length > 0) {
-            console.log(`Enhanced extraction found ${retryRealValues.length} real parameters`);
-            toast.success(`Analysis complete! Successfully extracted ${retryRealValues.length} specific lab parameters with values`);
+          if (retryValidParameters.length > realValuesCount) {
+            console.log(`Comprehensive retry found ${retryValidParameters.length} valid parameters`);
+            realValuesCount = retryValidParameters.length;
+            hasRealLabValues = true;
+            data.analysis = retryData.data.analysis;
+            toast.success(`Comprehensive analysis complete! Successfully extracted ${retryValidParameters.length} specific lab parameters from your PDF report`);
             if (onSuccess) {
               onSuccess(retryData.data.analysis);
             }
             return retryData.data.analysis;
-          } else {
-            console.warn('Enhanced extraction also failed to find real lab values');
           }
         }
       }
 
-      // Final validation and response
-      if (hasRealLabValues) {
-        toast.success(`Analysis complete! Successfully extracted ${realValuesCount} specific lab parameters with actual values`);
+      // Final validation and user feedback
+      if (hasRealLabValues && realValuesCount >= 1) {
+        toast.success(`PDF analysis complete! Successfully extracted ${realValuesCount} laboratory parameters with actual values from your report`);
       } else {
-        // Check if this is a valid medical report at all
+        // Check if this appears to be a valid medical document
         const hasAnyMedicalContent = pendingAnalysis.content && (
           pendingAnalysis.content.toLowerCase().includes('lab') ||
           pendingAnalysis.content.toLowerCase().includes('blood') ||
@@ -166,14 +186,19 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UseMedicalAnalysisPro
           pendingAnalysis.content.toLowerCase().includes('patient') ||
           pendingAnalysis.content.toLowerCase().includes('medical') ||
           pendingAnalysis.content.toLowerCase().includes('hospital') ||
-          pendingAnalysis.content.toLowerCase().includes('clinic')
+          pendingAnalysis.content.toLowerCase().includes('clinic') ||
+          pendingAnalysis.content.toLowerCase().includes('laboratory') ||
+          pendingAnalysis.content.toLowerCase().includes('specimen') ||
+          pendingAnalysis.content.toLowerCase().includes('reference') ||
+          pendingAnalysis.content.toLowerCase().includes('normal') ||
+          pendingAnalysis.content.toLowerCase().includes('abnormal')
         );
 
         if (!hasAnyMedicalContent) {
-          toast.error('This file does not appear to contain medical lab report data. Please upload a valid lab report.');
-          throw new Error('Invalid medical report - no medical content detected');
+          toast.error('This PDF does not appear to contain medical laboratory report data. Please upload a valid lab report.');
+          throw new Error('Invalid medical report - no medical content detected in PDF');
         } else {
-          toast.warning('Lab report processed but specific numerical values could not be extracted. This may be due to the file format, image quality, or report structure. You can still ask our AI Doctor about your report.');
+          toast.warning('PDF processed but specific numerical values could not be extracted. This may be due to the PDF format, scan quality, or complex layout. You can still ask our AI Doctor about your report contents.');
         }
       }
       
@@ -184,16 +209,18 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UseMedicalAnalysisPro
       return data.analysis;
 
     } catch (error) {
-      console.error('Medical analysis error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Analysis failed';
+      console.error('PDF Medical analysis error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'PDF analysis failed';
       
-      // Provide more specific error messages
+      // Provide more specific error messages for PDF processing
       if (errorMessage.includes('Invalid medical report')) {
-        toast.error('Please upload a valid medical lab report (PDF or image format)');
+        toast.error('Please upload a valid medical laboratory report in PDF format');
       } else if (errorMessage.includes('quota') || errorMessage.includes('429')) {
         toast.error('Analysis service is temporarily busy. Please try again in a few minutes.');
+      } else if (errorMessage.includes('PDF')) {
+        toast.error(`PDF processing failed: ${errorMessage}. Please ensure your PDF contains readable text and try again.`);
       } else {
-        toast.error(`Analysis failed: ${errorMessage}. Please try uploading the report again or contact support if the issue persists.`);
+        toast.error(`Analysis failed: ${errorMessage}. Please try uploading a different PDF format or contact support if the issue persists.`);
       }
       
       if (onError) {
