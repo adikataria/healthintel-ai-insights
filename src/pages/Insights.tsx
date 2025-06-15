@@ -1,16 +1,41 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { MessageCircle, TrendingUp, AlertTriangle, CheckCircle, Heart, Droplets, Zap, FileText, Calendar } from "lucide-react";
+import { MessageCircle, TrendingUp, AlertTriangle, CheckCircle, Heart, Droplets, Zap, FileText, Calendar, User, LogOut, Settings, Moon, Bell, Menu, Search, Crown, Plus, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line } from "recharts";
 import { useMedicalReports } from "@/hooks/useMedicalReports";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/contexts/AuthContext";
+import { useSubscription } from "@/hooks/useSubscription";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 
 const Insights = () => {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const { currentSubscription } = useSubscription();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
   const { latestReport, reports, isLoading } = useMedicalReports();
+
+  const hasActiveSubscription = currentSubscription?.status === 'active' && currentSubscription?.subscription_plans?.name !== 'Free';
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
 
   // Extract health metrics from the latest report
   const getHealthMetrics = () => {
@@ -121,7 +146,7 @@ const Insights = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen pt-20 pb-12 bg-gray-50">
+      <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark bg-slate-900' : 'bg-slate-50'}`}>
         <div className="container max-w-6xl">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
@@ -134,19 +159,109 @@ const Insights = () => {
     );
   }
 
-  if (!latestReport) {
-    return (
-      <div className="min-h-screen pt-20 pb-12 bg-gray-50">
-        <div className="container max-w-6xl">
-          <div className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-montserrat font-bold mb-4 text-accent">
-              Health Insights Dashboard
-            </h1>
-            <p className="text-xl text-muted-foreground">
-              Upload a lab report to see AI-powered health insights
-            </p>
+  return (
+    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark bg-slate-900' : 'bg-slate-50'}`}>
+      {/* Dashboard Header */}
+      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 px-2 sm:px-4 py-2 sm:py-3">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-1 sm:p-2"
+            >
+              {isMobileMenuOpen ? <X className="h-4 w-4 sm:h-5 sm:w-5" /> : <Menu className="h-4 w-4 sm:h-5 sm:w-5" />}
+            </Button>
+            
+            <div className="relative flex-1 max-w-xs sm:max-w-sm lg:max-w-md">
+              <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-slate-400" />
+              <Input
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-7 sm:pl-10 w-full h-8 sm:h-9 bg-slate-100 border-slate-200 text-sm"
+              />
+            </div>
           </div>
 
+          <div className="flex items-center gap-1 sm:gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              className="p-1 sm:p-2"
+            >
+              <Moon className="h-3 w-3 sm:h-4 sm:w-4" />
+            </Button>
+            
+            <div className="hidden sm:block">
+              <Button variant="ghost" size="sm" className="p-1 sm:p-2">
+                <Bell className="h-3 w-3 sm:h-4 sm:w-4" />
+              </Button>
+            </div>
+            
+            {!hasActiveSubscription && (
+              <Button 
+                onClick={() => navigate('/pricing')}
+                className="bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white font-semibold px-2 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm flex items-center gap-1 sm:gap-2"
+              >
+                <Crown className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">UPGRADE</span>
+                <span className="sm:hidden">UP</span>
+              </Button>
+            )}
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="flex items-center gap-1 sm:gap-2 p-1 sm:p-2">
+                  <div className="w-6 h-6 sm:w-7 sm:h-7 bg-slate-200 rounded-full flex items-center justify-center">
+                    <User className="h-3 w-3 sm:h-4 sm:w-4 text-slate-600" />
+                  </div>
+                  <span className="hidden lg:block text-sm font-medium text-slate-700 max-w-20 truncate">
+                    {user?.email?.split('@')[0]}
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 z-50 bg-white">
+                <DropdownMenuItem asChild>
+                  <button onClick={() => navigate('/settings')} className="flex items-center w-full">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </button>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Sign out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto p-2 sm:p-4 md:p-6">
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-montserrat font-bold mb-4 text-accent">
+            Health Insights Dashboard
+          </h1>
+          <p className="text-xl text-muted-foreground">
+            AI-powered analysis of your latest lab results
+          </p>
+          {latestReport && (
+            <div className="flex items-center gap-2 mt-4">
+              <Badge variant="outline" className="text-medical-primary border-medical-primary">
+                Latest Report: {latestReport.title}
+              </Badge>
+              <Badge variant="outline" className="text-gray-600">
+                {new Date(latestReport.created_at).toLocaleDateString()}
+              </Badge>
+            </div>
+          )}
+        </div>
+
+        {!latestReport ? (
           <Card className="health-card">
             <CardContent className="p-12 text-center">
               <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
@@ -168,197 +283,174 @@ const Insights = () => {
               </Button>
             </CardContent>
           </Card>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen pt-20 pb-12 bg-gray-50">
-      <div className="container max-w-6xl">
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-montserrat font-bold mb-4 text-accent">
-            Health Insights Dashboard
-          </h1>
-          <p className="text-xl text-muted-foreground">
-            AI-powered analysis of your latest lab results
-          </p>
-          {latestReport && (
-            <div className="flex items-center gap-2 mt-4">
-              <Badge variant="outline" className="text-medical-primary border-medical-primary">
-                Latest Report: {latestReport.title}
-              </Badge>
-              <Badge variant="outline" className="text-gray-600">
-                {new Date(latestReport.created_at).toLocaleDateString()}
-              </Badge>
-            </div>
-          )}
-        </div>
-
-        {/* Report History Section */}
-        <Card className="health-card mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-medical-primary" />
-              Report History ({reports.length} reports)
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {reports.slice(0, 5).map((report, index) => (
-                <div key={report.id} className={`flex items-center justify-between p-3 rounded-lg border ${
-                  index === 0 ? 'bg-medical-light/10 border-medical-primary/20' : 'bg-gray-50 border-gray-200'
-                }`}>
-                  <div className="flex items-center gap-3">
-                    <div className={`w-2 h-2 rounded-full ${
-                      index === 0 ? 'bg-medical-primary' : 'bg-gray-400'
-                    }`}></div>
-                    <div>
-                      <h4 className="font-medium text-accent">{report.title}</h4>
-                      <p className="text-sm text-muted-foreground">{report.file_name}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium">{new Date(report.created_at).toLocaleDateString()}</p>
-                    {index === 0 && (
-                      <Badge className="bg-medical-primary text-white text-xs">Current</Badge>
-                    )}
-                  </div>
-                </div>
-              ))}
-              {reports.length > 5 && (
-                <p className="text-sm text-muted-foreground text-center">
-                  And {reports.length - 5} more reports...
-                </p>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Overview Section */}
-        {healthMetrics.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            {healthMetrics.slice(0, 6).map((metric, index) => (
-              <Card key={index} className={`health-card ${metric.borderColor} border-l-4`}>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center justify-between text-lg">
-                    <span className="flex items-center gap-2">
-                      <div className={`w-8 h-8 ${metric.bgColor} rounded-lg flex items-center justify-center`}>
-                        <metric.icon className={`h-4 w-4 ${metric.color}`} />
+        ) : (
+          <>
+            {/* Report History Section */}
+            <Card className="health-card mb-8">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="h-5 w-5 text-medical-primary" />
+                  Report History ({reports.length} reports)
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {reports.slice(0, 5).map((report, index) => (
+                    <div key={report.id} className={`flex items-center justify-between p-3 rounded-lg border ${
+                      index === 0 ? 'bg-medical-light/10 border-medical-primary/20' : 'bg-gray-50 border-gray-200'
+                    }`}>
+                      <div className="flex items-center gap-3">
+                        <div className={`w-2 h-2 rounded-full ${
+                          index === 0 ? 'bg-medical-primary' : 'bg-gray-400'
+                        }`}></div>
+                        <div>
+                          <h4 className="font-medium text-accent">{report.title}</h4>
+                          <p className="text-sm text-muted-foreground">{report.file_name}</p>
+                        </div>
                       </div>
-                      {metric.metric}
-                    </span>
-                    <span className={`text-sm px-2 py-1 rounded-full ${metric.bgColor} ${metric.color} font-medium`}>
-                      {metric.status}
-                    </span>
+                      <div className="text-right">
+                        <p className="text-sm font-medium">{new Date(report.created_at).toLocaleDateString()}</p>
+                        {index === 0 && (
+                          <Badge className="bg-medical-primary text-white text-xs">Current</Badge>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  {reports.length > 5 && (
+                    <p className="text-sm text-muted-foreground text-center">
+                      And {reports.length - 5} more reports...
+                    </p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Overview Section */}
+            {healthMetrics.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                {healthMetrics.slice(0, 6).map((metric, index) => (
+                  <Card key={index} className={`health-card ${metric.borderColor} border-l-4`}>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="flex items-center justify-between text-lg">
+                        <span className="flex items-center gap-2">
+                          <div className={`w-8 h-8 ${metric.bgColor} rounded-lg flex items-center justify-center`}>
+                            <metric.icon className={`h-4 w-4 ${metric.color}`} />
+                          </div>
+                          {metric.metric}
+                        </span>
+                        <span className={`text-sm px-2 py-1 rounded-full ${metric.bgColor} ${metric.color} font-medium`}>
+                          {metric.status}
+                        </span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold mb-2">{metric.value}</div>
+                      <p className="text-sm text-muted-foreground mb-3">{metric.description?.substring(0, 100)}...</p>
+                      <div className={`p-3 ${metric.bgColor} rounded-lg`}>
+                        <p className="text-xs font-medium">💡 Recommendation:</p>
+                        <p className="text-xs">{metric.recommendation}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+
+            {/* Metrics Comparison */}
+            {reports.length > 1 && (
+              <Card className="health-card mb-8">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-medical-primary" />
+                    Health Trends Comparison
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold mb-2">{metric.value}</div>
-                  <p className="text-sm text-muted-foreground mb-3">{metric.description?.substring(0, 100)}...</p>
-                  <div className={`p-3 ${metric.bgColor} rounded-lg`}>
-                    <p className="text-xs font-medium">💡 Recommendation:</p>
-                    <p className="text-xs">{metric.recommendation}</p>
+                  <ChartContainer config={chartConfig} className="h-[300px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={comparisonData}>
+                        <XAxis dataKey="month" />
+                        <YAxis />
+                        <ChartTooltip content={<ChartTooltipContent />} />
+                        <Bar dataKey="previous" fill="var(--color-previous)" name="Previous Report" />
+                        <Bar dataKey="current" fill="var(--color-current)" name="Current Report" />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </ChartContainer>
+                  <p className="text-sm text-muted-foreground mt-4">
+                    Comparison between your current and previous lab reports.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Personalized Health Recommendations */}
+            {preventativeSuggestions.length > 0 && (
+              <Card className="health-card mb-8">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CheckCircle className="h-5 w-5 text-medical-primary" />
+                    Personalized Health Recommendations
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {preventativeSuggestions.map((suggestion, index) => (
+                      <div key={index} className={`p-4 rounded-lg border ${
+                        suggestion.priority === 'high' 
+                          ? 'bg-red-50 border-red-200' 
+                          : 'bg-blue-50 border-blue-200'
+                      }`}>
+                        <div className="flex items-start gap-3">
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                            suggestion.priority === 'high' 
+                              ? 'bg-red-100 text-red-600' 
+                              : 'bg-blue-100 text-blue-600'
+                          }`}>
+                            <suggestion.icon className="h-4 w-4" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-accent mb-1">{suggestion.title}</h3>
+                            <p className="text-sm text-muted-foreground">{suggestion.description}</p>
+                          </div>
+                          <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                            suggestion.priority === 'high' 
+                              ? 'bg-red-100 text-red-700' 
+                              : 'bg-blue-100 text-blue-700'
+                          }`}>
+                            {suggestion.priority}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </CardContent>
               </Card>
-            ))}
-          </div>
-        )}
+            )}
 
-        {/* Metrics Comparison */}
-        {reports.length > 1 && (
-          <Card className="health-card mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-medical-primary" />
-                Health Trends Comparison
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ChartContainer config={chartConfig} className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={comparisonData}>
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Bar dataKey="previous" fill="var(--color-previous)" name="Previous Report" />
-                    <Bar dataKey="current" fill="var(--color-current)" name="Current Report" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-              <p className="text-sm text-muted-foreground mt-4">
-                Comparison between your current and previous lab reports.
-              </p>
-            </CardContent>
-          </Card>
+            {/* CTA Section */}
+            <Card className="health-card">
+              <CardContent className="p-6 text-center">
+                <h3 className="font-montserrat font-semibold text-xl mb-4 text-accent">
+                  Need More Personalized Advice?
+                </h3>
+                <p className="text-muted-foreground mb-6">
+                  Chat with our AI health assistant for detailed explanations and personalized recommendations.
+                </p>
+                <Button 
+                  size="lg" 
+                  className="bg-medical-primary hover:bg-medical-dark text-white px-8"
+                  asChild
+                >
+                  <Link to="/chat">
+                    <MessageCircle className="mr-2 h-5 w-5" />
+                    Ask AI Doctor
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </>
         )}
-
-        {/* Personalized Health Recommendations */}
-        {preventativeSuggestions.length > 0 && (
-          <Card className="health-card mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-medical-primary" />
-                Personalized Health Recommendations
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {preventativeSuggestions.map((suggestion, index) => (
-                  <div key={index} className={`p-4 rounded-lg border ${
-                    suggestion.priority === 'high' 
-                      ? 'bg-red-50 border-red-200' 
-                      : 'bg-blue-50 border-blue-200'
-                  }`}>
-                    <div className="flex items-start gap-3">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                        suggestion.priority === 'high' 
-                          ? 'bg-red-100 text-red-600' 
-                          : 'bg-blue-100 text-blue-600'
-                      }`}>
-                        <suggestion.icon className="h-4 w-4" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-accent mb-1">{suggestion.title}</h3>
-                        <p className="text-sm text-muted-foreground">{suggestion.description}</p>
-                      </div>
-                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                        suggestion.priority === 'high' 
-                          ? 'bg-red-100 text-red-700' 
-                          : 'bg-blue-100 text-blue-700'
-                      }`}>
-                        {suggestion.priority}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* CTA Section */}
-        <Card className="health-card">
-          <CardContent className="p-6 text-center">
-            <h3 className="font-montserrat font-semibold text-xl mb-4 text-accent">
-              Need More Personalized Advice?
-            </h3>
-            <p className="text-muted-foreground mb-6">
-              Chat with our AI health assistant for detailed explanations and personalized recommendations.
-            </p>
-            <Button 
-              size="lg" 
-              className="bg-medical-primary hover:bg-medical-dark text-white px-8"
-              asChild
-            >
-              <Link to="/chat">
-                <MessageCircle className="mr-2 h-5 w-5" />
-                Ask AI Doctor
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
