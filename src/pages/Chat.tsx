@@ -1,11 +1,10 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Send, Bot, Plus, Sparkles, MessageCircle, Stethoscope, Zap, Settings, AlertTriangle, User, LogOut, Moon, Bell, Menu, Search, Crown, X } from "lucide-react";
+import { Send, Bot, Plus, Sparkles, MessageCircle, Stethoscope, Zap, Settings, AlertTriangle } from "lucide-react";
 import { ConsentModal } from "@/components/medical/ConsentModal";
 import { SymptomChecker } from "@/components/medical/SymptomChecker";
 import { useAIDoctorChat } from "@/hooks/useAIDoctorChat";
@@ -18,28 +17,14 @@ import { EnhancedChatFooter } from "@/components/medical/EnhancedChatFooter";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "sonner";
-import { useSubscription } from "@/hooks/useSubscription";
-import { useNavigate } from "react-router-dom";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
 
 const Chat = () => {
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
-  const { currentSubscription } = useSubscription();
+  const { user } = useAuth();
   const [inputMessage, setInputMessage] = useState("");
   const [showConsentModal, setShowConsentModal] = useState(false);
   const [pendingMessage, setPendingMessage] = useState("");
   const [pendingSymptoms, setPendingSymptoms] = useState(null);
   const [activeTab, setActiveTab] = useState("chat");
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { speak } = useTextToSpeech();
   const isMobile = useIsMobile();
@@ -57,13 +42,6 @@ const Chat = () => {
     handleFollowUpComplete,
     recallInteraction
   } = useAIDoctorChat();
-
-  const hasActiveSubscription = currentSubscription?.status === 'active' && currentSubscription?.subscription_plans?.name !== 'Free';
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/');
-  };
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -147,83 +125,36 @@ const Chat = () => {
   const lastAIMessage = messages.filter(m => m.role === 'assistant').pop()?.content;
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark bg-slate-900' : 'bg-slate-50'}`}>
-      {/* Dashboard Header */}
-      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 px-2 sm:px-4 py-2 sm:py-3">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-1 sm:p-2"
-            >
-              {isMobileMenuOpen ? <X className="h-4 w-4 sm:h-5 sm:w-5" /> : <Menu className="h-4 w-4 sm:h-5 sm:w-5" />}
-            </Button>
-            
-            <div className="relative flex-1 max-w-xs sm:max-w-sm lg:max-w-md">
-              <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-slate-400" />
-              <Input
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-7 sm:pl-10 w-full h-8 sm:h-9 bg-slate-100 border-slate-200 text-sm"
-              />
+    <div className="min-h-screen bg-gradient-to-br from-medical-light/20 via-white to-blue-50/30">
+      {/* Enhanced Header - Mobile Responsive */}
+      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 px-2 sm:px-4 py-2 sm:py-3 sticky top-0 z-10">
+        <div className="flex items-center justify-between max-w-6xl mx-auto">
+          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+            <div className="relative">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-medical-primary to-medical-secondary rounded-xl flex items-center justify-center shadow-sm">
+                <Bot className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
+              </div>
+              <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full animate-pulse border-2 border-white"></div>
+            </div>
+            <div className="flex-1 min-w-0">
+              <h1 className="font-semibold text-sm sm:text-base text-gray-900 flex items-center gap-1 sm:gap-2 truncate">
+                DocLumen AI Doctor
+                <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500 flex-shrink-0" />
+              </h1>
+              <p className="text-xs sm:text-sm text-gray-600 truncate">Your intelligent health companion</p>
             </div>
           </div>
-
-          <div className="flex items-center gap-1 sm:gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              className="p-1 sm:p-2"
-            >
-              <Moon className="h-3 w-3 sm:h-4 sm:w-4" />
-            </Button>
-            
-            <div className="hidden sm:block">
-              <Button variant="ghost" size="sm" className="p-1 sm:p-2">
-                <Bell className="h-3 w-3 sm:h-4 sm:w-4" />
-              </Button>
-            </div>
-            
-            {!hasActiveSubscription && (
-              <Button 
-                onClick={() => navigate('/pricing')}
-                className="bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white font-semibold px-2 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm flex items-center gap-1 sm:gap-2"
-              >
-                <Crown className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span className="hidden sm:inline">UPGRADE</span>
-                <span className="sm:hidden">UP</span>
+          <div className="flex items-center gap-1 sm:gap-2">
+            {!isMobile && (
+              <Button variant="ghost" size="sm" className="gap-2 hidden sm:flex">
+                <Settings className="h-4 w-4" />
+                Settings
               </Button>
             )}
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="flex items-center gap-1 sm:gap-2 p-1 sm:p-2">
-                  <div className="w-6 h-6 sm:w-7 sm:h-7 bg-slate-200 rounded-full flex items-center justify-center">
-                    <User className="h-3 w-3 sm:h-4 sm:w-4 text-slate-600" />
-                  </div>
-                  <span className="hidden lg:block text-sm font-medium text-slate-700 max-w-20 truncate">
-                    {user?.email?.split('@')[0]}
-                  </span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 z-50 bg-white">
-                <DropdownMenuItem asChild>
-                  <button onClick={() => navigate('/settings')} className="flex items-center w-full">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                  </button>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Sign out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button variant="outline" size="sm" className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+              <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
+              {!isMobile && "New Chat"}
+            </Button>
           </div>
         </div>
       </div>
@@ -265,9 +196,7 @@ const Chat = () => {
             {activeFollowUp.length > 0 && (
               <ConversationalFlow
                 questions={activeFollowUp}
-                onAnswerSubmit={(questionId: string, answer: string) => {
-                  handleSendMessage(`${questionId}: ${answer}`);
-                }}
+                onAnswerSubmit={() => {}}
                 onFlowComplete={handleFollowUpComplete}
                 isActive={true}
               />
