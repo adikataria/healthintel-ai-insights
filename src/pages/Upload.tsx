@@ -273,7 +273,7 @@ COMPREHENSIVE EXTRACTION REQUIREMENTS:
 
 1. COMPLETE BLOOD COUNT (CBC) - Extract ALL values:
    - Hemoglobin (Hb): Value + units (g/dL, g/L)
-   - Red Blood Cell Count (RBC): Value + units
+   - Red Blood Cell Count (RBC): Value + units  
    - White Blood Cell Count (WBC): Value + units  
    - Platelet Count: Value + units
    - Hematocrit (HCT/PCV): Value + percentage
@@ -596,8 +596,10 @@ COMPLETE ANALYSIS MANDATE: Extract ALL medical laboratory data, test results, an
       <div className="min-h-screen pt-20 pb-12 bg-gradient-to-br from-medical-light/20 via-white to-medical-secondary/10">
         <div className="container max-w-6xl">
           <ReportAnalysis 
-            analysis={analysisResult}
-            reportTitle={uploadedFiles[0]?.name || 'Medical Report'}
+            reportData={{
+              ai_insights: analysisResult,
+              file_name: uploadedFiles[0]?.name || 'Medical Report'
+            }}
           />
           <div className="mt-6 text-center">
             <Button 
