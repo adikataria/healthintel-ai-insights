@@ -23,10 +23,11 @@ import {
   Microscope,
   Users,
   Calendar,
-  TrendingDown
+  TrendingDown,
+  Upload,
+  Search
 } from 'lucide-react';
 import { SummaryCard } from './SummaryCard';
-import { MetricInfoDialog } from './MetricInfoDialog';
 
 interface HealthIndicator {
   parameter: string;
@@ -138,7 +139,9 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
   // Check if we have valid health indicators
   const hasLabValues = analysis.healthIndicators && analysis.healthIndicators.length > 0;
   const validIndicators = hasLabValues ? analysis.healthIndicators.filter(indicator => 
-    indicator.parameter && indicator.value && indicator.value !== 'N/A' && !indicator.value.includes('Clinical assessment completed')
+    indicator.parameter && indicator.value && indicator.value !== 'N/A' && 
+    !indicator.value.includes('Clinical assessment completed') &&
+    !indicator.value.includes('Laboratory assessed')
   ) : [];
 
   // Helper to segment metrics
@@ -153,9 +156,10 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
   };
   const { whatsNormal, needsAttention } = partitionIndicators();
 
-  const personalizedGreeting = hasLabValues 
-    ? `Analysis complete! We found ${validIndicators.length} laboratory parameters in your report.`
-    : "We've analyzed your report and extracted the available health information.";
+  // Generate personalized greeting based on extraction success
+  const personalizedGreeting = hasLabValues && validIndicators.length > 0
+    ? `Analysis complete! We successfully extracted ${validIndicators.length} laboratory parameters from your report.`
+    : "Report processed but specific laboratory values could not be automatically extracted.";
 
   // Generate type-specific risk factors based on abnormal values
   const getTypeSpecificRiskFactors = () => {
@@ -180,13 +184,11 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
       }
     });
 
-    // Add some general risk factors if we have abnormal values
     if (needsAttention.length > 0) {
-      riskFactors.push('Metabolic syndrome risk due to multiple parameter deviations');
-      riskFactors.push('Increased inflammation markers requiring lifestyle modifications');
+      riskFactors.push('Multiple parameter deviations requiring medical evaluation');
     }
 
-    return [...new Set(riskFactors)]; // Remove duplicates
+    return [...new Set(riskFactors)];
   };
 
   // Generate follow-up recommendations based on analysis
@@ -207,6 +209,9 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
     if (validIndicators.length > 0) {
       recommendations.push('Annual health screening to track parameter trends');
       recommendations.push('Maintain current healthy lifestyle practices for normal parameters');
+    } else {
+      recommendations.push('Manual review of original report for specific numerical values');
+      recommendations.push('Consult healthcare provider for detailed interpretation of results');
     }
 
     return recommendations;
@@ -240,7 +245,7 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
           </div>
         </CardHeader>
         <CardContent className="py-5">
-          {hasLabValues ? (
+          {hasLabValues && validIndicators.length > 0 ? (
             <>
               <div className="mb-2">
                 <SummaryCard
@@ -323,15 +328,36 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
             </>
           ) : (
             <div className="text-center py-8">
-              <Microscope className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-600 mb-2">Report Analysis Complete</h3>
+              <Search className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-600 mb-2">Values Not Automatically Extracted</h3>
               <p className="text-gray-500 mb-4">
-                We've analyzed your report but couldn't extract specific numerical lab values. This might be due to the report format or image quality.
+                The AI couldn't automatically extract specific numerical lab values from this report. This can happen with certain file formats or image quality.
               </p>
-              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 max-w-md mx-auto">
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 max-w-md mx-auto mb-4">
                 <p className="text-sm text-blue-800">
-                  <strong>Don't worry!</strong> You can still get insights by asking our AI Doctor about your report.
+                  <strong>What you can do:</strong>
+                  <br />• Ask our AI Doctor about your report
+                  <br />• Try uploading a clearer scan/photo
+                  <br />• Upload the report in PDF format if possible
+                  <br />• Manually review the original document
                 </p>
+              </div>
+              <div className="flex gap-3 justify-center">
+                <Button 
+                  onClick={() => window.location.assign('/chat')}
+                  className="bg-medical-primary hover:bg-medical-dark text-white"
+                >
+                  <Brain className="h-4 w-4 mr-2" />
+                  Ask AI Doctor About Your Report
+                </Button>
+                <Button 
+                  onClick={() => window.location.assign('/upload')}
+                  variant="outline"
+                  className="border-medical-primary text-medical-primary hover:bg-medical-primary hover:text-white"
+                >
+                  <Upload className="h-4 w-4 mr-2" />
+                  Try Uploading Again
+                </Button>
               </div>
             </div>
           )}
@@ -435,14 +461,14 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
                 </Badge>
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                {hasLabValues 
+                {hasLabValues && validIndicators.length > 0
                   ? `Comprehensive analysis of ${validIndicators.length} extracted laboratory values with detailed clinical interpretations`
                   : "Analysis of available health information from your report"
                 }
               </p>
             </CardHeader>
             <CardContent>
-              {hasLabValues ? (
+              {hasLabValues && validIndicators.length > 0 ? (
                 <div className="space-y-6">
                   {validIndicators.map((indicator, index) => (
                     <div key={index} className="border-2 rounded-xl p-6 space-y-4 bg-white shadow-lg hover:shadow-xl transition-shadow">
@@ -547,7 +573,7 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
                 </div>
               ) : (
                 <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                  <Microscope className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <Search className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-gray-600 mb-2">No Specific Lab Values Extracted</h3>
                   <p className="text-gray-500 mb-4">The AI couldn't extract specific numerical test values from this report format.</p>
                   <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 max-w-md mx-auto mb-4">
@@ -559,12 +585,23 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
                       <br />• Values are embedded in paragraphs
                     </p>
                   </div>
-                  <Button 
-                    onClick={() => window.location.assign('/chat')}
-                    className="bg-medical-primary hover:bg-medical-dark text-white"
-                  >
-                    Ask AI Doctor About Your Report
-                  </Button>
+                  <div className="flex gap-3 justify-center">
+                    <Button 
+                      onClick={() => window.location.assign('/chat')}
+                      className="bg-medical-primary hover:bg-medical-dark text-white"
+                    >
+                      <Brain className="h-4 w-4 mr-2" />
+                      Ask AI Doctor About Your Report
+                    </Button>
+                    <Button 
+                      onClick={() => window.location.assign('/upload')}
+                      variant="outline"
+                      className="border-medical-primary text-medical-primary hover:bg-medical-primary hover:text-white"
+                    >
+                      <Upload className="h-4 w-4 mr-2" />
+                      Try Uploading Again
+                    </Button>
+                  </div>
                 </div>
               )}
             </CardContent>
@@ -587,7 +624,7 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
                   <div>
                     <h3 className="text-lg font-semibold">Overall Health Risk Level</h3>
                     <p className="text-2xl font-bold capitalize mt-1">
-                      {analysis.riskAssessment?.overallRisk || 'Not assessed'}
+                      {analysis.riskAssessment?.overallRisk || 'Assessment pending'}
                     </p>
                   </div>
                 </div>
