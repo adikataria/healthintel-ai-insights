@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -15,7 +16,9 @@ import {
   Clock,
   FileText,
   BarChart3,
-  Target
+  Target,
+  Stethoscope,
+  TestTube
 } from 'lucide-react';
 import { SummaryCard } from './SummaryCard';
 import { MetricInfoDialog } from './MetricInfoDialog';
@@ -24,28 +27,48 @@ interface HealthIndicator {
   parameter: string;
   value: string;
   normalRange: string;
-  status: 'normal' | 'borderline' | 'abnormal';
+  status: 'normal' | 'borderline' | 'abnormal' | 'critical';
   explanation: string;
+  clinicalSignificance?: string;
+  reportTypeRelevance?: string;
+}
+
+interface ReportTypeInfo {
+  detectedType: string;
+  category: string;
+  specializedFocus: string;
+  commonParameters: string[];
+}
+
+interface SpecializedInsights {
+  reportTypeSpecificAnalysis: string;
+  categoricalAssessment: string;
+  typeSpecificRisks: string[];
+  followUpRecommendations: string[];
 }
 
 interface RiskAssessment {
   overallRisk: 'low' | 'moderate' | 'high';
-  specificConcerns: string[];
+  specificConcerns?: string[];
+  reportTypeSpecificConcerns?: string[];
   urgentFlags: string[];
 }
 
 interface Recommendations {
+  reportTypeSpecific?: string[];
   lifestyle: string[];
   dietary: string[];
-  exercise: string[];
+  exercise?: string[];
   monitoring: string[];
   consultation: string[];
 }
 
 interface AnalysisData {
+  reportTypeInfo?: ReportTypeInfo;
   summary: string;
   keyFindings: string[];
   healthIndicators: HealthIndicator[];
+  specializedInsights?: SpecializedInsights;
   riskAssessment: RiskAssessment;
   recommendations: Recommendations;
   disclaimer: string;
@@ -54,15 +77,18 @@ interface AnalysisData {
 }
 
 interface ReportAnalysisProps {
-  analysis: AnalysisData;
-  reportTitle: string;
+  reportData: {
+    ai_insights: AnalysisData;
+    file_name: string;
+  };
 }
 
 export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
-  analysis,
-  reportTitle
+  reportData
 }) => {
   const [activeTab, setActiveTab] = useState('overview');
+  const analysis = reportData.ai_insights;
+  const reportTitle = reportData.file_name;
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -71,6 +97,7 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
       case 'borderline':
         return <AlertCircle className="h-5 w-5 text-yellow-600" />;
       case 'abnormal':
+      case 'critical':
         return <AlertCircle className="h-5 w-5 text-red-600" />;
       default:
         return <Activity className="h-5 w-5 text-gray-600" />;
@@ -84,6 +111,7 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
       case 'borderline':
         return 'bg-yellow-50 text-yellow-800 border-yellow-200';
       case 'abnormal':
+      case 'critical':
         return 'bg-red-50 text-red-800 border-red-200';
       default:
         return 'bg-gray-50 text-gray-800 border-gray-200';
@@ -116,206 +144,36 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
     }
   };
 
-  // Helper to segment metrics (for "What's Normal", "Needs Attention" etc.)
-  const partitionIndicators = () => {
-    const whatsNormal = [];
-    const needsAttention = [];
-    (analysis.healthIndicators || []).forEach(h => {
-      if (h.status === "normal") whatsNormal.push(h);
-      else needsAttention.push(h);
-    });
-    return { whatsNormal, needsAttention };
-  };
-  const { whatsNormal, needsAttention } = partitionIndicators();
-
-  // Personalized greeting logic (example: age/gender/history could be used if available)
-  const personalizedGreeting = "Here's a plain language summary of your lab report. We translate the results into easy steps you can use—no medical jargon!";
-
-  // Example actionable next steps
-  const nextSteps = (analysis.recommendations?.lifestyle || [])
-    .slice(0, 2)
-    .concat((analysis.recommendations?.consultation || []).slice(0, 1));
-
-  // Find key metric explanations for popup
-  const infoForMetric = (metric: string) =>
-    analysis.healthIndicators?.find(h => h.parameter === metric)?.explanation ||
-    "No further details available.";
-
-  // Visual indicator slider/graph for up to 3 key metrics (for demo: display if ranges are present)
-  const KeyRangeVisuals = () => (
-    <div className="flex flex-col md:flex-row gap-4 mt-4">
-      {analysis.healthIndicators?.slice(0, 3).map((ind, idx) => {
-        const value = parseFloat(ind.value.match(/[\d.]+/)?.[0] || "0");
-        // crude parsing: normalRange like "12-16 g/dL"
-        let min = 0, max = 100;
-        const match = ind.normalRange?.match(/(\d+\.?\d*)\s*-\s*(\d+\.?\d*)/);
-        if (match) {
-          min = parseFloat(match[1]);
-          max = parseFloat(match[2]);
-        }
-        const range = max - min;
-        const percent = range > 0 ? Math.min(100, Math.max(0, ((value - min) / range) * 100)) : 0;
-        return (
-          <div key={idx} className="w-full max-w-xs px-2">
-            <div className="text-sm font-semibold mb-1 flex items-center gap-1">
-              <MetricInfoDialog
-                trigger={ind.parameter}
-                title={ind.parameter}
-                description={ind.explanation}
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs">{min}</span>
-              <div className={`relative w-full h-3 rounded-full ${ind.status==="normal"?"bg-green-100":"bg-yellow-100"}`}>
-                <div
-                  style={{ left: `${percent}%` }}
-                  className={
-                    `absolute top-0 h-3 w-0.5 bg-blue-600 rounded`
-                  }
-                />
-                <div
-                  style={{ width: `${percent}%` }}
-                  className={
-                    ind.status === 'normal'
-                      ? 'bg-green-500 h-3 rounded-l-full absolute left-0 top-0'
-                      : 'bg-yellow-400 h-3 rounded-l-full absolute left-0 top-0'
-                  }
-                />
-              </div>
-              <span className="text-xs">{max}</span>
-            </div>
-            <div className="text-xs mt-1">
-              <span className={`font-bold ${ind.status==='normal'?'text-green-600':'text-yellow-700'}`}>{ind.value}</span>
-              <span className="ml-1 text-gray-500">({ind.status})</span>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
-      {/* Summary Section */}
-      <Card className="mb-10 border-2 border-medical-primary/40 animate-fade-in">
-        <CardHeader className="bg-medical-primary text-white rounded-t-xl">
-          <div className="flex justify-between items-center">
-            <div>
-              <CardTitle className="text-lg md:text-2xl flex gap-2 items-center">
-                🩺 Report Summary
-              </CardTitle>
-              <p className="text-white/90 text-base md:text-lg mt-2">
-                {personalizedGreeting}
-              </p>
+      {/* Report Type Detection Header */}
+      {analysis.reportTypeInfo && (
+        <Card className="border-2 border-medical-primary/40 bg-gradient-to-r from-medical-light/20 to-medical-primary/10">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-lg bg-medical-primary/20">
+                  <TestTube className="h-8 w-8 text-medical-primary" />
+                </div>
+                <div>
+                  <CardTitle className="text-2xl text-medical-primary">
+                    {analysis.reportTypeInfo.detectedType}
+                  </CardTitle>
+                  <p className="text-lg text-medical-dark font-medium">
+                    {analysis.reportTypeInfo.category}
+                  </p>
+                  <p className="text-sm text-accent mt-1">
+                    {analysis.reportTypeInfo.specializedFocus}
+                  </p>
+                </div>
+              </div>
+              <Badge className="bg-medical-primary text-white px-4 py-2 text-sm">
+                Specialized Analysis
+              </Badge>
             </div>
-            <Button
-              variant="secondary"
-              className="bg-white text-medical-primary shadow-sm border font-semibold px-3"
-              onClick={() => window.location.assign('/chat')}
-              size="sm"
-            >
-              Ask AI Doctor
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="py-5">
-          <div className="mb-2">
-            {/* Critical findings highlight */}
-            <SummaryCard
-              title="Highlights"
-              iconType={(analysis.riskAssessment?.urgentFlags?.length || 0) > 0 ? "alert" : "check"}
-              color={(analysis.riskAssessment?.urgentFlags?.length || 0) > 0 ? "red" : "green"}
-              description={
-                analysis.riskAssessment?.urgentFlags?.length
-                  ? analysis.riskAssessment.urgentFlags[0]
-                  : analysis.keyFindings?.[0] ||
-                    "Your results are within optimal ranges. Keep up the good work!"
-              }
-            />
-          </div>
-          <div className="md:flex gap-4 mb-3">
-            <div className="flex-1">
-              <SummaryCard
-                title="What's Normal"
-                iconType="check"
-                color="green"
-                description={
-                  whatsNormal.length
-                    ? (
-                        <>
-                          The following results are in the healthy range:&nbsp;
-                          {whatsNormal.slice(0, 3).map((n, i) => (
-                            <React.Fragment key={n.parameter}>
-                              <MetricInfoDialog
-                                trigger={n.parameter}
-                                title={n.parameter}
-                                description={n.explanation}
-                              />
-                              {i < whatsNormal.slice(0, 3).length - 1 && <span>, </span>}
-                            </React.Fragment>
-                          ))}
-                        </>
-                      )
-                    : "No results are in the normal range."
-                }
-              />
-            </div>
-            <div className="flex-1">
-              <SummaryCard
-                title="Needs Attention"
-                iconType="alert"
-                color={needsAttention.length ? "yellow" : "green"}
-                description={
-                  needsAttention.length
-                    ? (
-                        <>
-                          Monitor these metrics carefully:&nbsp;
-                          {needsAttention.slice(0, 3).map((n, i) => (
-                            <React.Fragment key={n.parameter}>
-                              <MetricInfoDialog
-                                trigger={n.parameter}
-                                title={n.parameter}
-                                description={n.explanation}
-                              />
-                              {i < needsAttention.slice(0, 3).length - 1 && <span>, </span>}
-                            </React.Fragment>
-                          ))}
-                        </>
-                      )
-                    : "Great job! No flagged results."
-                }
-              />
-            </div>
-          </div>
-
-          {/* Key Metric Sliders / Visuals */}
-          <KeyRangeVisuals />
-
-          {/* Next Steps */}
-          <div className="mt-4">
-            <SummaryCard
-              title="Next Steps"
-              iconType="info"
-              color="blue"
-              description={
-                nextSteps.length > 0
-                  ? nextSteps.map((step, idx) => <div key={idx}>• {step}</div>)
-                  : "No immediate actions required. Maintain your healthy habits!"
-              }
-            />
-            <div className="text-xs text-gray-600 mt-2">
-              Not sure what to do next?{" "}
-              <span
-                className="underline text-blue-600 cursor-pointer"
-                onClick={() => window.location.assign('/chat')}
-              >
-                Ask our AI Doctor
-              </span>{" "}
-              for personalized advice.
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardHeader>
+        </Card>
+      )}
 
       {/* Header Section */}
       <Card className="health-card border-medical-primary/20">
@@ -356,17 +214,54 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
         </CardContent>
       </Card>
 
+      {/* Specialized Insights Section */}
+      {analysis.specializedInsights && (
+        <Card className="health-card border-blue-200 bg-blue-50/30">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-blue-800">
+              <Stethoscope className="h-5 w-5" />
+              Specialized Analysis for {analysis.reportTypeInfo?.detectedType}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <h4 className="font-semibold text-blue-800 mb-2">Report-Specific Analysis</h4>
+              <p className="text-blue-700">{analysis.specializedInsights.reportTypeSpecificAnalysis}</p>
+            </div>
+            
+            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <h4 className="font-semibold text-blue-800 mb-2">Category Assessment</h4>
+              <p className="text-blue-700">{analysis.specializedInsights.categoricalAssessment}</p>
+            </div>
+
+            {analysis.specializedInsights.typeSpecificRisks?.length > 0 && (
+              <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                <h4 className="font-semibold text-yellow-800 mb-2">Type-Specific Risk Factors</h4>
+                <ul className="space-y-1">
+                  {analysis.specializedInsights.typeSpecificRisks.map((risk, index) => (
+                    <li key={index} className="text-yellow-700 flex items-start gap-2">
+                      <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                      {risk}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {/* Key Findings Overview */}
       <Card className="health-card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Lightbulb className="h-5 w-5 text-medical-primary" />
-            Key Findings at a Glance
+            Key Findings for {analysis.reportTypeInfo?.detectedType || 'Laboratory Report'}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {analysis.keyFindings?.slice(0, 3).map((finding, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {analysis.keyFindings?.slice(0, 6).map((finding, index) => (
               <div key={index} className="p-4 bg-medical-light/10 rounded-lg border border-medical-primary/20">
                 <div className="flex items-start gap-3">
                   <div className="p-1 rounded-full bg-medical-primary/20">
@@ -382,7 +277,7 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
 
       {/* Main Analysis Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-4">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview" className="text-xs sm:text-sm">
             <BarChart3 className="h-4 w-4 mr-1" />
             Test Results
@@ -395,9 +290,9 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
             <Target className="h-4 w-4 mr-1" />
             Action Plan
           </TabsTrigger>
-          <TabsTrigger value="details" className="text-xs sm:text-sm hidden lg:flex">
-            <FileText className="h-4 w-4 mr-1" />
-            Details
+          <TabsTrigger value="specialized" className="text-xs sm:text-sm">
+            <TestTube className="h-4 w-4 mr-1" />
+            Specialized
           </TabsTrigger>
         </TabsList>
 
@@ -406,7 +301,7 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Activity className="h-5 w-5 text-medical-primary" />
-                Your Test Results Explained
+                Your {analysis.reportTypeInfo?.detectedType || 'Test'} Results Explained
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -437,7 +332,21 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
                       
                       <div className="bg-medical-light/10 p-4 rounded-lg border border-medical-primary/20">
                         <h5 className="font-medium text-medical-dark mb-2">What this means:</h5>
-                        <p className="text-sm text-accent leading-relaxed">{indicator.explanation}</p>
+                        <p className="text-sm text-accent leading-relaxed mb-2">{indicator.explanation}</p>
+                        
+                        {indicator.clinicalSignificance && (
+                          <div className="mt-3 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                            <h6 className="font-medium text-blue-800 mb-1">Clinical Significance:</h6>
+                            <p className="text-sm text-blue-700">{indicator.clinicalSignificance}</p>
+                          </div>
+                        )}
+                        
+                        {indicator.reportTypeRelevance && (
+                          <div className="mt-3 p-3 bg-green-50 rounded-lg border-l-4 border-green-400">
+                            <h6 className="font-medium text-green-800 mb-1">Relevance to {analysis.reportTypeInfo?.detectedType}:</h6>
+                            <p className="text-sm text-green-700">{indicator.reportTypeRelevance}</p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -458,7 +367,7 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-medical-primary" />
-                Health Risk Assessment
+                Health Risk Assessment for {analysis.reportTypeInfo?.detectedType || 'Your Report'}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -474,6 +383,28 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
                   </div>
                 </div>
               </div>
+
+              {/* Report Type Specific Concerns */}
+              {analysis.riskAssessment?.reportTypeSpecificConcerns?.length > 0 && (
+                <Card className="border-orange-200 bg-orange-50">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-orange-800 flex items-center gap-2">
+                      <AlertCircle className="h-5 w-5" />
+                      {analysis.reportTypeInfo?.detectedType} Specific Concerns
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {analysis.riskAssessment.reportTypeSpecificConcerns.map((concern, index) => (
+                        <div key={index} className="flex items-start gap-3 p-3 bg-orange-100 rounded-lg">
+                          <AlertCircle className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                          <p className="text-orange-800 font-medium">{concern}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Urgent Flags */}
               {analysis.riskAssessment?.urgentFlags?.length > 0 && (
@@ -496,30 +427,33 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
                   </CardContent>
                 </Card>
               )}
-
-              {/* Specific Concerns */}
-              {analysis.riskAssessment?.specificConcerns?.length > 0 && (
-                <Card className="health-card">
-                  <CardHeader>
-                    <CardTitle className="text-yellow-700">Areas to Monitor</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {analysis.riskAssessment.specificConcerns.map((concern, index) => (
-                        <div key={index} className="flex items-start gap-3 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                          <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
-                          <p className="text-yellow-800">{concern}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="recommendations" className="space-y-4">
+          {/* Report Type Specific Recommendations */}
+          {analysis.recommendations?.reportTypeSpecific?.length > 0 && (
+            <Card className="health-card border-medical-primary/30 bg-medical-light/5">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-medical-primary">
+                  <TestTube className="h-5 w-5" />
+                  Recommendations for {analysis.reportTypeInfo?.detectedType}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {analysis.recommendations.reportTypeSpecific.map((item, index) => (
+                    <div key={index} className="flex items-start gap-3 p-4 bg-medical-light/10 rounded-lg border border-medical-primary/20">
+                      <CheckCircle className="h-5 w-5 text-medical-primary mt-0.5 flex-shrink-0" />
+                      <p className="text-medical-dark font-medium">{item}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Lifestyle & Diet */}
             <Card className="health-card">
@@ -560,29 +494,15 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
               </CardContent>
             </Card>
 
-            {/* Exercise & Monitoring */}
+            {/* Monitoring & Consultation */}
             <Card className="health-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Activity className="h-5 w-5 text-medical-primary" />
-                  Exercise & Monitoring
+                  Monitoring & Follow-up
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-5">
-                {analysis.recommendations?.exercise?.length > 0 && (
-                  <div>
-                    <h5 className="font-semibold mb-3 text-accent">Exercise Guidelines</h5>
-                    <div className="space-y-2">
-                      {analysis.recommendations.exercise.map((item, index) => (
-                        <div key={index} className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg">
-                          <Activity className="h-4 w-4 text-purple-600 mt-0.5 flex-shrink-0" />
-                          <p className="text-sm text-purple-800">{item}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 {analysis.recommendations?.monitoring?.length > 0 && (
                   <div>
                     <h5 className="font-semibold mb-3 text-accent">Health Monitoring</h5>
@@ -596,62 +516,71 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
                     </div>
                   </div>
                 )}
+
+                {analysis.recommendations?.consultation?.length > 0 && (
+                  <div>
+                    <h5 className="font-semibold mb-3 text-accent">Professional Consultation</h5>
+                    <div className="space-y-2">
+                      {analysis.recommendations.consultation.map((item, index) => (
+                        <div key={index} className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg">
+                          <Shield className="h-4 w-4 text-purple-600 mt-0.5 flex-shrink-0" />
+                          <p className="text-sm text-purple-800">{item}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
-
-          {/* Consultation Recommendations */}
-          {analysis.recommendations?.consultation?.length > 0 && (
-            <Card className="health-card border-medical-primary/30 bg-medical-light/5">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-medical-primary">
-                  <Shield className="h-5 w-5" />
-                  When to See a Healthcare Provider
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {analysis.recommendations.consultation.map((item, index) => (
-                    <div key={index} className="flex items-start gap-3 p-4 bg-medical-light/10 rounded-lg border border-medical-primary/20">
-                      <AlertCircle className="h-5 w-5 text-medical-primary mt-0.5 flex-shrink-0" />
-                      <p className="text-medical-dark font-medium">{item}</p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
         </TabsContent>
 
-        <TabsContent value="details" className="space-y-4">
-          <Card className="health-card">
-            <CardHeader>
-              <CardTitle>Complete Analysis Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {analysis.keyFindings?.length > 0 && (
-                <div>
-                  <h4 className="font-semibold mb-3">All Key Findings</h4>
-                  <div className="space-y-2">
-                    {analysis.keyFindings.map((finding, index) => (
-                      <div key={index} className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                        <CheckCircle className="h-4 w-4 text-medical-primary mt-0.5 flex-shrink-0" />
-                        <p className="text-sm">{finding}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+        <TabsContent value="specialized" className="space-y-4">
+          {analysis.specializedInsights && (
+            <div className="space-y-6">
+              {/* Follow-up Recommendations */}
+              {analysis.specializedInsights.followUpRecommendations?.length > 0 && (
+                <Card className="health-card border-green-200 bg-green-50/30">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-green-800">
+                      <Target className="h-5 w-5" />
+                      Follow-up Recommendations for {analysis.reportTypeInfo?.detectedType}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {analysis.specializedInsights.followUpRecommendations.map((item, index) => (
+                        <div key={index} className="flex items-start gap-3 p-4 bg-green-50 rounded-lg border border-green-200">
+                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <p className="text-green-800 font-medium">{item}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
               )}
 
-              {analysis.processingNote && (
-                <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <p className="text-sm text-blue-800">
-                    <strong>Processing Note:</strong> {analysis.processingNote}
-                  </p>
-                </div>
+              {/* Common Parameters for this Report Type */}
+              {analysis.reportTypeInfo?.commonParameters?.length > 0 && (
+                <Card className="health-card">
+                  <CardHeader>
+                    <CardTitle className="text-medical-primary">
+                      Common Parameters in {analysis.reportTypeInfo.detectedType}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {analysis.reportTypeInfo.commonParameters.map((param, index) => (
+                        <div key={index} className="p-3 bg-medical-light/10 rounded-lg border border-medical-primary/20">
+                          <p className="text-sm text-accent">{param}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          )}
         </TabsContent>
       </Tabs>
 

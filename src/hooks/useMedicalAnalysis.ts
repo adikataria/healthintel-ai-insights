@@ -25,7 +25,7 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UseMedicalAnalysisPro
     setIsAnalyzing(true);
 
     try {
-      console.log('Starting comprehensive medical report analysis with enhanced data extraction...');
+      console.log('Starting specialized medical report analysis with report type detection...');
       console.log('Report content preview:', pendingAnalysis.content.substring(0, 1000));
 
       const { data, error } = await supabase.functions.invoke('analyze-medical-report', {
@@ -35,35 +35,24 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UseMedicalAnalysisPro
           reportType: pendingAnalysis.type,
           fileName: pendingAnalysis.fileName,
           userConsent: true,
-          extractionLevel: 'complete_comprehensive',
+          extractionLevel: 'specialized_report_type_analysis',
           requireCompleteData: true,
-          zeroMissingDataMode: true
+          detectReportType: true,
+          specializedAnalysis: true
         }
       });
 
       if (error) {
         console.error('Analysis error:', error);
-        throw new Error(error.message || 'Comprehensive analysis failed');
+        throw new Error(error.message || 'Specialized analysis failed');
       }
 
-      console.log('Comprehensive analysis completed successfully');
-      console.log('Analysis result quality metrics:', data?.qualityMetrics);
+      console.log('Specialized analysis completed successfully');
+      console.log('Detected report type:', data?.analysis?.reportTypeInfo);
       
-      // Validate that we have complete data
-      if (data?.analysis?.healthIndicators) {
-        const missingDataIndicators = data.analysis.healthIndicators.filter(indicator => 
-          !indicator.value || 
-          indicator.value.toLowerCase().includes('missing') ||
-          indicator.value.toLowerCase().includes('unknown') ||
-          indicator.value === 'N/A'
-        );
-        
-        if (missingDataIndicators.length > 0) {
-          console.warn('Some indicators still have missing data:', missingDataIndicators);
-          toast.warning(`Analysis completed but ${missingDataIndicators.length} parameters need manual review`);
-        } else {
-          toast.success('Complete analysis with all data extracted successfully!');
-        }
+      // Validate that we have report type detection and specialized analysis
+      if (data?.analysis?.reportTypeInfo) {
+        toast.success(`${data.analysis.reportTypeInfo.detectedType} analysis completed successfully!`);
       } else {
         toast.success('Report analysis completed successfully!');
       }
@@ -75,40 +64,12 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UseMedicalAnalysisPro
       return data.analysis;
 
     } catch (error) {
-      console.error('Comprehensive medical analysis error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Complete analysis failed';
-      toast.error(`Analysis failed: ${errorMessage}. Retrying with enhanced extraction...`);
+      console.error('Specialized medical analysis error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Specialized analysis failed';
+      toast.error(`Analysis failed: ${errorMessage}`);
       
-      // Attempt retry with fallback mode
-      try {
-        console.log('Attempting retry with enhanced fallback extraction...');
-        const retryData = await supabase.functions.invoke('analyze-medical-report', {
-          body: {
-            reportId: pendingAnalysis.reportId,
-            reportContent: pendingAnalysis.content,
-            reportType: pendingAnalysis.type,
-            fileName: pendingAnalysis.fileName,
-            userConsent: true,
-            extractionLevel: 'fallback_comprehensive',
-            requireCompleteData: true,
-            zeroMissingDataMode: true,
-            retryAttempt: true
-          }
-        });
-
-        if (retryData.error) throw retryData.error;
-        
-        toast.success('Analysis completed successfully on retry!');
-        if (onSuccess) {
-          onSuccess(retryData.data.analysis);
-        }
-        return retryData.data.analysis;
-
-      } catch (retryError) {
-        console.error('Retry also failed:', retryError);
-        if (onError) {
-          onError(errorMessage);
-        }
+      if (onError) {
+        onError(errorMessage);
       }
     } finally {
       setIsAnalyzing(false);
