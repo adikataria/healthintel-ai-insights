@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Brain, Database, Smartphone, Activity, Globe, Shield, ArrowRight, CheckCircle, Target, Heart, Bell } from 'lucide-react';
+import { Brain, Database, Smartphone, Activity, Globe, Shield, ArrowRight, CheckCircle, Target, Heart, Bell, BarChart3, Clock, Users, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const TabbedFeatures = () => {
@@ -13,103 +13,127 @@ const TabbedFeatures = () => {
       id: 'ai-analysis',
       title: 'AI Health Analysis',
       icon: Brain,
-      pricing: 'Starting from Free',
       description: 'Advanced AI-powered health insights and medical report analysis.',
-      image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=600&h=400&fit=crop&crop=center',
-      highlights: [
-        'Instant medical report analysis with 90% accuracy',
-        'Personalized health recommendations based on your data',
-        'Multiple analysis formats supporting various medical reports'
+      mainFeature: {
+        title: 'Smart Health Report Analysis',
+        description: 'Upload your medical reports and get instant AI-powered insights with 90% accuracy. Our advanced algorithms analyze lab results, imaging reports, and medical documents to provide clear, actionable health recommendations.',
+        image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=600&h=400&fit=crop&crop=center',
+        features: [
+          { icon: CheckCircle, title: 'Instant Analysis', description: 'Get results in under 30 seconds' },
+          { icon: Target, title: '90% Accuracy', description: 'Clinically validated AI algorithms' },
+          { icon: FileText, title: 'Multiple Formats', description: 'Supports PDF, images, and text reports' }
+        ]
+      },
+      additionalCards: [
+        {
+          title: 'Health Trend Tracking',
+          description: 'Monitor your health metrics over time with intelligent trend analysis and predictive insights.',
+          icon: BarChart3,
+          color: 'bg-blue-50 border-blue-200'
+        },
+        {
+          title: 'Personalized Recommendations',
+          description: 'Receive tailored health advice based on your unique medical history and current condition.',
+          icon: Heart,
+          color: 'bg-rose-50 border-rose-200'
+        }
       ]
     },
     {
       id: 'ai-doctor',
       title: 'AI Doctor Assistant',
       icon: Heart,
-      pricing: 'Starting from $9.99/month',
       description: '24/7 AI doctor for instant health guidance and symptom analysis.',
-      image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&h=400&fit=crop&crop=center',
-      highlights: [
-        'Real-time symptom analysis and health recommendations',
-        'Available 24/7 for immediate health guidance',
-        'Conversational interface with medical expertise'
+      mainFeature: {
+        title: '24/7 AI Health Companion',
+        description: 'Chat with our AI doctor assistant anytime for instant health guidance, symptom analysis, and medical advice. Get professional-grade responses backed by medical knowledge.',
+        image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&h=400&fit=crop&crop=center',
+        features: [
+          { icon: Clock, title: 'Always Available', description: '24/7 instant medical guidance' },
+          { icon: Brain, title: 'Smart Responses', description: 'Medically validated AI responses' },
+          { icon: Shield, title: 'Safe & Reliable', description: 'HIPAA compliant conversations' }
+        ]
+      },
+      additionalCards: [
+        {
+          title: 'Symptom Checker',
+          description: 'Describe your symptoms and get preliminary assessments with recommended next steps.',
+          icon: Activity,
+          color: 'bg-green-50 border-green-200'
+        },
+        {
+          title: 'Drug Interactions',
+          description: 'Check for potential medication interactions and get safety recommendations.',
+          icon: Shield,
+          color: 'bg-purple-50 border-purple-200'
+        }
       ]
     },
     {
       id: 'health-tracking',
       title: 'Health Tracking',
       icon: Activity,
-      pricing: 'Starting from $4.99/month',
       description: 'Comprehensive health monitoring and goal tracking system.',
-      image: 'https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=600&h=400&fit=crop&crop=center',
-      highlights: [
-        'Set and track personalized health goals',
-        'Monitor vital signs and health metrics',
-        'Progress visualization with detailed analytics'
-      ]
-    },
-    {
-      id: 'family-care',
-      title: 'Family Health',
-      icon: Shield,
-      pricing: 'Starting from $14.99/month',
-      description: 'Manage health profiles for your entire family in one place.',
-      image: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=600&h=400&fit=crop&crop=center',
-      highlights: [
-        'Multiple family member profiles with individual tracking',
-        'Shared health insights and family health dashboard',
-        'Secure data management with HIPAA compliance'
-      ]
-    },
-    {
-      id: 'mobile-access',
-      title: 'Mobile Access',
-      icon: Smartphone,
-      pricing: 'Starting from Free',
-      description: 'Access your health data anywhere with our mobile-optimized platform.',
-      image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600&h=400&fit=crop&crop=center',
-      highlights: [
-        'Responsive design works on all devices',
-        'Offline access to your health records',
-        'Push notifications for health reminders'
+      mainFeature: {
+        title: 'Comprehensive Health Monitoring',
+        description: 'Track vital signs, medications, symptoms, and health goals all in one place. Set personalized targets and monitor your progress with detailed analytics.',
+        image: 'https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=600&h=400&fit=crop&crop=center',
+        features: [
+          { icon: Target, title: 'Goal Setting', description: 'Set and track health objectives' },
+          { icon: BarChart3, title: 'Progress Analytics', description: 'Detailed health trend analysis' },
+          { icon: Bell, title: 'Smart Reminders', description: 'Medication and appointment alerts' }
+        ]
+      },
+      additionalCards: [
+        {
+          title: 'Vital Signs Monitor',
+          description: 'Track blood pressure, heart rate, weight, and other key health metrics automatically.',
+          icon: Activity,
+          color: 'bg-red-50 border-red-200'
+        },
+        {
+          title: 'Medication Manager',
+          description: 'Never miss a dose with smart medication tracking and refill reminders.',
+          icon: Clock,
+          color: 'bg-orange-50 border-orange-200'
+        }
       ]
     }
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-br from-gray-50 to-white">
+    <section className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-16">
           <Badge className="mb-4 bg-medical-primary/10 text-medical-primary border-medical-primary/30">
             <CheckCircle className="h-4 w-4 mr-2" />
-            PRODUCTS
+            FEATURES
           </Badge>
           <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6 max-w-4xl mx-auto">
-            AI-powered health solutions to revolutionize
+            Deliver a first-class personalized
             <br />
-            <span className="text-medical-primary">your wellness journey</span>
+            <span className="text-medical-primary">health experience</span>
           </h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Deliver a comprehensive and seamless health management experience tailored to your needs, 
+            ensuring a positive journey that aligns with your wellness goals.
+          </p>
         </div>
 
         {/* Tabs */}
         <Tabs defaultValue="ai-analysis" className="w-full">
           {/* Tab Navigation */}
           <div className="flex justify-center mb-12">
-            <TabsList className="grid w-full max-w-5xl grid-cols-5 h-auto p-2 bg-white shadow-lg border border-gray-200 rounded-2xl">
+            <TabsList className="grid w-full max-w-2xl grid-cols-3 h-auto p-2 bg-white shadow-lg border border-gray-200 rounded-2xl">
               {features.map((feature) => (
                 <TabsTrigger
                   key={feature.id}
                   value={feature.id}
-                  className="flex flex-col items-center gap-2 p-4 rounded-xl data-[state=active]:bg-medical-primary data-[state=active]:text-white data-[state=active]:shadow-lg transition-all duration-300"
+                  className="flex flex-col items-center gap-2 p-4 rounded-xl data-[state=active]:bg-black data-[state=active]:text-white transition-all duration-300"
                 >
-                  <div className="p-2 rounded-lg bg-gray-100 data-[state=active]:bg-white/20 transition-colors">
-                    <feature.icon className="h-6 w-6" />
-                  </div>
-                  <div className="text-center">
-                    <div className="font-semibold text-sm">{feature.title}</div>
-                    <div className="text-xs opacity-75 mt-1">{feature.pricing}</div>
-                  </div>
+                  <feature.icon className="h-5 w-5" />
+                  <span className="font-medium text-sm">{feature.title}</span>
                 </TabsTrigger>
               ))}
             </TabsList>
@@ -118,103 +142,105 @@ const TabbedFeatures = () => {
           {/* Tab Content */}
           {features.map((feature) => (
             <TabsContent key={feature.id} value={feature.id} className="mt-0">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
-                {/* Left Content */}
-                <div className="space-y-6">
-                  <div>
-                    <Badge className="mb-4 bg-medical-secondary/20 text-medical-secondary border-medical-secondary/30">
-                      <Target className="h-4 w-4 mr-2" />
-                      Guaranteed High Performance
-                    </Badge>
-                    <h3 className="text-3xl font-bold text-gray-900 mb-4">
-                      High-Speed, Reliable<br />
-                      {feature.title}
-                    </h3>
-                    <p className="text-lg text-gray-600 mb-6">
-                      {feature.description} Efficient, affordable, and built to deliver fast, secure connections to your health data.
-                    </p>
-                  </div>
-
-                  {/* Feature Highlights */}
-                  <div className="space-y-4">
-                    {feature.highlights.map((highlight, index) => (
-                      <div key={index} className="flex items-start gap-3">
-                        <div className="h-6 w-6 bg-medical-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <CheckCircle className="h-4 w-4 text-medical-primary" />
+              <div className="max-w-7xl mx-auto">
+                {/* Main Feature Card */}
+                <Card className="mb-8 border-0 shadow-xl rounded-3xl overflow-hidden bg-white">
+                  <CardContent className="p-0">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
+                      {/* Left Content */}
+                      <div className="p-8 lg:p-12 flex flex-col justify-center">
+                        <div className="mb-6">
+                          <div className="p-3 bg-medical-primary/10 rounded-2xl w-fit mb-6">
+                            <feature.icon className="h-8 w-8 text-medical-primary" />
+                          </div>
+                          <h3 className="text-3xl font-bold text-gray-900 mb-4">
+                            {feature.mainFeature.title}
+                          </h3>
+                          <p className="text-lg text-gray-600 mb-8">
+                            {feature.mainFeature.description}
+                          </p>
                         </div>
-                        <p className="text-gray-700">{highlight}</p>
+
+                        {/* Feature List */}
+                        <div className="space-y-4 mb-8">
+                          {feature.mainFeature.features.map((item, index) => (
+                            <div key={index} className="flex items-start gap-4">
+                              <div className="p-2 bg-medical-primary/10 rounded-lg">
+                                <item.icon className="h-5 w-5 text-medical-primary" />
+                              </div>
+                              <div>
+                                <h4 className="font-semibold text-gray-900 mb-1">{item.title}</h4>
+                                <p className="text-gray-600">{item.description}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <Link to="/auth">
+                          <Button className="bg-black hover:bg-gray-800 text-white px-8 py-3 rounded-xl w-fit">
+                            Learn more
+                            <ArrowRight className="ml-2 h-4 w-4" />
+                          </Button>
+                        </Link>
                       </div>
-                    ))}
-                  </div>
 
-                  <Link to="/auth">
-                    <Button className="bg-medical-primary hover:bg-medical-dark text-white px-8 py-3 rounded-xl">
-                      Get Started
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </Link>
-                </div>
-
-                {/* Right Visual */}
-                <div className="relative">
-                  <Card className="bg-gradient-to-br from-medical-primary to-medical-secondary border-0 shadow-2xl rounded-3xl overflow-hidden">
-                    <CardContent className="p-0">
-                      <div className="relative h-96">
+                      {/* Right Image */}
+                      <div className="relative h-96 lg:h-auto">
                         <img 
-                          src={feature.image} 
-                          alt={feature.title}
+                          src={feature.mainFeature.image} 
+                          alt={feature.mainFeature.title}
                           className="w-full h-full object-cover"
                         />
-                        
-                        {/* Overlay Content */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-medical-primary/80 via-transparent to-transparent">
-                          <div className="absolute bottom-0 left-0 right-0 p-6">
-                            {/* Mock UI Elements */}
-                            <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-4 mb-4">
+                        {/* Overlay with demo UI */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent">
+                          <div className="absolute bottom-6 left-6 right-6">
+                            <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-4">
                               <div className="flex items-center gap-3 mb-3">
                                 <div className="flex gap-1">
-                                  <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-                                  <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                                  <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                                  <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                                 </div>
+                                <span className="text-xs text-gray-500">DocLumen AI</span>
                               </div>
-                              
-                              <div className="space-y-3">
-                                <div className="flex items-center gap-3">
-                                  <div className="p-2 bg-medical-primary/10 rounded-lg">
-                                    <feature.icon className="h-5 w-5 text-medical-primary" />
-                                  </div>
-                                  <div className="p-2 bg-medical-secondary/10 rounded-lg">
-                                    <Activity className="h-5 w-5 text-medical-secondary" />
-                                  </div>
-                                </div>
-                                
-                                {/* Mock flags/indicators */}
-                                <div className="flex gap-2">
-                                  <div className="w-8 h-6 bg-gradient-to-r from-blue-500 to-red-500 rounded-sm flex items-center justify-center">
-                                    <span className="text-white text-xs font-bold">US</span>
-                                  </div>
-                                  <div className="w-8 h-6 bg-gradient-to-r from-blue-500 via-white to-red-500 rounded-sm flex items-center justify-center">
-                                    <span className="text-blue-500 text-xs font-bold">UK</span>
-                                  </div>
-                                  <div className="w-8 h-6 bg-gradient-to-r from-black via-red-500 to-yellow-500 rounded-sm"></div>
-                                </div>
-                                
-                                <Button size="sm" className="w-full bg-medical-primary hover:bg-medical-dark text-white rounded-lg">
-                                  Analyze Health Data
-                                </Button>
+                              <div className="space-y-2">
+                                <div className="h-2 bg-gray-200 rounded w-3/4"></div>
+                                <div className="h-2 bg-gray-200 rounded w-1/2"></div>
+                                <div className="h-2 bg-medical-primary/30 rounded w-2/3"></div>
                               </div>
                             </div>
                           </div>
                         </div>
-                        
-                        {/* Floating 3D Element */}
-                        <div className="absolute -top-4 -right-4 bg-medical-primary text-white p-4 rounded-2xl shadow-2xl transform rotate-12 hover:rotate-0 transition-transform duration-300">
-                          <feature.icon className="h-8 w-8" />
-                        </div>
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Additional Feature Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {feature.additionalCards.map((card, index) => (
+                    <Card key={index} className={`border-0 shadow-lg rounded-2xl ${card.color}`}>
+                      <CardContent className="p-8">
+                        <div className="flex items-start gap-4">
+                          <div className="p-3 bg-white rounded-xl shadow-sm">
+                            <card.icon className="h-6 w-6 text-gray-700" />
+                          </div>
+                          <div className="flex-1">
+                            <h4 className="text-xl font-bold text-gray-900 mb-3">
+                              {card.title}
+                            </h4>
+                            <p className="text-gray-600 mb-4">
+                              {card.description}
+                            </p>
+                            <Button variant="ghost" className="text-black hover:bg-white/50 p-0">
+                              Learn more
+                              <ArrowRight className="ml-2 h-4 w-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
               </div>
             </TabsContent>
