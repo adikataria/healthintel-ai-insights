@@ -15,7 +15,10 @@ import {
   Clock,
   FileText,
   BarChart3,
-  Target
+  Target,
+  ChevronDown,
+  ChevronUp,
+  Info
 } from 'lucide-react';
 import { SummaryCard } from './SummaryCard';
 import { MetricInfoDialog } from './MetricInfoDialog';
@@ -63,6 +66,17 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
   reportTitle
 }) => {
   const [activeTab, setActiveTab] = useState('overview');
+  const [expandedIndicators, setExpandedIndicators] = useState<Set<number>>(new Set());
+
+  const toggleIndicatorExpansion = (index: number) => {
+    const newExpanded = new Set(expandedIndicators);
+    if (newExpanded.has(index)) {
+      newExpanded.delete(index);
+    } else {
+      newExpanded.add(index);
+    }
+    setExpandedIndicators(newExpanded);
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -385,7 +399,7 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
         <TabsList className="grid w-full grid-cols-3 lg:grid-cols-4">
           <TabsTrigger value="overview" className="text-xs sm:text-sm">
             <BarChart3 className="h-4 w-4 mr-1" />
-            Test Results
+            Lab Results
           </TabsTrigger>
           <TabsTrigger value="risks" className="text-xs sm:text-sm">
             <TrendingUp className="h-4 w-4 mr-1" />
@@ -406,47 +420,150 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Activity className="h-5 w-5 text-medical-primary" />
-                Your Test Results Explained
+                Complete Laboratory Results Analysis
+                <Badge className="ml-2 bg-medical-primary/10 text-medical-primary">
+                  {analysis.healthIndicators?.length || 0} Parameters
+                </Badge>
               </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Comprehensive analysis of all extracted laboratory values with detailed clinical interpretations
+              </p>
             </CardHeader>
             <CardContent>
               {analysis.healthIndicators?.length > 0 ? (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   {analysis.healthIndicators.map((indicator, index) => (
-                    <div key={index} className="border rounded-xl p-5 space-y-4 bg-white shadow-sm">
+                    <div key={index} className="border-2 rounded-xl p-6 space-y-4 bg-white shadow-lg hover:shadow-xl transition-shadow">
+                      {/* Header Section */}
                       <div className="flex items-center justify-between">
-                        <h4 className="font-semibold text-lg">{indicator.parameter}</h4>
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 rounded-lg bg-medical-light/20">
+                            <BarChart3 className="h-5 w-5 text-medical-primary" />
+                          </div>
+                          <div>
+                            <h4 className="font-bold text-xl text-medical-dark">{indicator.parameter}</h4>
+                            <p className="text-sm text-muted-foreground">Laboratory Parameter #{index + 1}</p>
+                          </div>
+                        </div>
                         <div className="flex items-center gap-2">
                           {getStatusIcon(indicator.status)}
-                          <Badge className={`${getStatusColor(indicator.status)} border`}>
+                          <Badge className={`${getStatusColor(indicator.status)} border font-medium`}>
                             {indicator.status.toUpperCase()}
                           </Badge>
                         </div>
                       </div>
                       
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                          <p className="text-sm font-medium text-gray-600">Your Result</p>
-                          <p className="text-xl font-bold text-medical-primary">{indicator.value}</p>
+                      {/* Results Grid */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-gray-50 p-4 rounded-lg">
+                        <div className="text-center">
+                          <p className="text-sm font-medium text-gray-600 mb-1">Your Result</p>
+                          <p className="text-2xl font-bold text-medical-primary">{indicator.value}</p>
+                          <p className="text-xs text-gray-500 mt-1">Measured Value</p>
                         </div>
-                        <div className="space-y-1">
-                          <p className="text-sm font-medium text-gray-600">Normal Range</p>
-                          <p className="text-lg text-gray-700">{indicator.normalRange}</p>
+                        <div className="text-center">
+                          <p className="text-sm font-medium text-gray-600 mb-1">Normal Range</p>
+                          <p className="text-lg font-semibold text-gray-700">{indicator.normalRange}</p>
+                          <p className="text-xs text-gray-500 mt-1">Reference Values</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-sm font-medium text-gray-600 mb-1">Clinical Status</p>
+                          <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(indicator.status)}`}>
+                            {getStatusIcon(indicator.status)}
+                            {indicator.status.charAt(0).toUpperCase() + indicator.status.slice(1)}
+                          </div>
                         </div>
                       </div>
                       
-                      <div className="bg-medical-light/10 p-4 rounded-lg border border-medical-primary/20">
-                        <h5 className="font-medium text-medical-dark mb-2">What this means:</h5>
-                        <p className="text-sm text-accent leading-relaxed">{indicator.explanation}</p>
+                      {/* Clinical Interpretation */}
+                      <div className="bg-medical-light/10 p-5 rounded-lg border-l-4 border-medical-primary">
+                        <div className="flex items-start gap-3">
+                          <Info className="h-5 w-5 text-medical-primary mt-0.5 flex-shrink-0" />
+                          <div className="flex-1">
+                            <h5 className="font-semibold text-medical-dark mb-2 flex items-center gap-2">
+                              Clinical Interpretation & Significance
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => toggleIndicatorExpansion(index)}
+                                className="h-6 w-6 p-0"
+                              >
+                                {expandedIndicators.has(index) ? 
+                                  <ChevronUp className="h-4 w-4" /> : 
+                                  <ChevronDown className="h-4 w-4" />
+                                }
+                              </Button>
+                            </h5>
+                            <div className="space-y-3">
+                              <p className="text-sm text-accent leading-relaxed font-medium">
+                                {indicator.explanation}
+                              </p>
+                              
+                              {expandedIndicators.has(index) && (
+                                <div className="space-y-4 pt-3 border-t border-medical-primary/20">
+                                  {/* Additional Clinical Context */}
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="bg-white p-3 rounded border">
+                                      <h6 className="font-medium text-sm text-medical-primary mb-2">Test Purpose</h6>
+                                      <p className="text-xs text-gray-600">
+                                        This test measures {indicator.parameter.toLowerCase()} levels to assess {
+                                          indicator.parameter.toLowerCase().includes('cholesterol') ? 'cardiovascular health and lipid metabolism' :
+                                          indicator.parameter.toLowerCase().includes('glucose') ? 'blood sugar control and diabetes risk' :
+                                          indicator.parameter.toLowerCase().includes('hemoglobin') ? 'oxygen-carrying capacity and anemia status' :
+                                          indicator.parameter.toLowerCase().includes('creatinine') ? 'kidney function and waste filtration' :
+                                          indicator.parameter.toLowerCase().includes('liver') || indicator.parameter.toLowerCase().includes('alt') || indicator.parameter.toLowerCase().includes('ast') ? 'liver function and hepatic health' :
+                                          'overall health status and organ function'
+                                        }.
+                                      </p>
+                                    </div>
+                                    <div className="bg-white p-3 rounded border">
+                                      <h6 className="font-medium text-sm text-medical-primary mb-2">Clinical Relevance</h6>
+                                      <p className="text-xs text-gray-600">
+                                        {indicator.status === 'normal' ? 
+                                          'This result indicates optimal function and suggests good health in this parameter.' :
+                                          indicator.status === 'borderline' ?
+                                          'This result warrants monitoring and may benefit from lifestyle modifications or further evaluation.' :
+                                          'This result requires attention and may indicate a need for medical intervention or further testing.'
+                                        }
+                                      </p>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Measurement Details */}
+                                  <div className="bg-blue-50 p-3 rounded border border-blue-200">
+                                    <h6 className="font-medium text-sm text-blue-800 mb-2">Measurement Details</h6>
+                                    <div className="grid grid-cols-2 gap-2 text-xs">
+                                      <div>
+                                        <span className="font-medium text-blue-700">Result:</span>
+                                        <span className="ml-1 text-blue-600">{indicator.value}</span>
+                                      </div>
+                                      <div>
+                                        <span className="font-medium text-blue-700">Units:</span>
+                                        <span className="ml-1 text-blue-600">
+                                          {indicator.normalRange.match(/[a-zA-Z\/μ%³⁶]+$/)?.[0] || 'Standard units'}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600">No specific test values were identified in this report.</p>
-                  <p className="text-sm text-gray-500 mt-2">The AI analysis focused on overall health insights.</p>
+                <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                  <BarChart3 className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-600 mb-2">No Laboratory Values Extracted</h3>
+                  <p className="text-gray-500 mb-4">The AI analysis could not extract specific test values from this report.</p>
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 max-w-md mx-auto">
+                    <p className="text-sm text-blue-800">
+                      <strong>Note:</strong> This may occur with image-based reports or complex PDF formats. 
+                      The AI focused on overall health insights instead of individual parameter extraction.
+                    </p>
+                  </div>
                 </div>
               )}
             </CardContent>
