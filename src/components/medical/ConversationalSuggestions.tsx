@@ -46,24 +46,24 @@ export const ConversationalSuggestions: React.FC<ConversationalSuggestionsProps>
   return (
     <div className="space-y-3 animate-fade-in">
       <div className="text-center mb-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">How can I help you today?</h3>
-        <p className="text-sm text-gray-600">Choose a topic or ask me anything about your health</p>
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">How can I help you today?</h3>
+        <p className="text-xs sm:text-sm text-gray-600">Choose a topic or ask me anything about your health</p>
       </div>
       
-      <div className="grid gap-3">
+      <div className="grid gap-2 sm:gap-3">
         {suggestions.map((suggestion, index) => (
           <Button
             key={index}
             variant="outline"
             onClick={() => onSuggestionClick(suggestion.text)}
-            className="h-auto p-4 text-left justify-start bg-gradient-to-r from-white to-gray-50 hover:from-medical-light hover:to-medical-light/50 border border-gray-200 hover:border-medical-primary/30 transition-all duration-300 hover:shadow-md group"
+            className="h-auto p-3 sm:p-4 text-left justify-start bg-gradient-to-r from-white to-gray-50 hover:from-medical-light hover:to-medical-light/50 border border-gray-200 hover:border-medical-primary/30 transition-all duration-300 hover:shadow-md group"
           >
-            <div className="flex items-start gap-3 w-full">
-              <div className="w-10 h-10 rounded-lg bg-medical-primary/10 flex items-center justify-center group-hover:bg-medical-primary/20 transition-colors">
-                <suggestion.icon className="h-5 w-5 text-medical-primary" />
+            <div className="flex items-start gap-2 sm:gap-3 w-full">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-medical-primary/10 flex items-center justify-center group-hover:bg-medical-primary/20 transition-colors flex-shrink-0">
+                <suggestion.icon className="h-4 w-4 sm:h-5 sm:w-5 text-medical-primary" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 mb-1">{suggestion.text}</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-900 mb-1 leading-tight">{suggestion.text}</p>
                 <p className="text-xs text-gray-500 capitalize">{suggestion.category}</p>
               </div>
             </div>
