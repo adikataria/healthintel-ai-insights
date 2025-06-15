@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -18,6 +17,8 @@ import {
   BarChart3,
   Target
 } from 'lucide-react';
+import { SummaryCard } from './SummaryCard';
+import { MetricInfoDialog } from './MetricInfoDialog';
 
 interface HealthIndicator {
   parameter: string;
@@ -115,8 +116,195 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
     }
   };
 
+  // Helper to segment metrics (for "What's Normal", "Needs Attention" etc.)
+  const partitionIndicators = () => {
+    const whatsNormal = [];
+    const needsAttention = [];
+    (analysis.healthIndicators || []).forEach(h => {
+      if (h.status === "normal") whatsNormal.push(h);
+      else needsAttention.push(h);
+    });
+    return { whatsNormal, needsAttention };
+  };
+  const { whatsNormal, needsAttention } = partitionIndicators();
+
+  // Personalized greeting logic (example: age/gender/history could be used if available)
+  const personalizedGreeting = "Here's a plain language summary of your lab report. We translate the results into easy steps you can use—no medical jargon!";
+
+  // Example actionable next steps
+  const nextSteps = (analysis.recommendations?.lifestyle || [])
+    .slice(0, 2)
+    .concat((analysis.recommendations?.consultation || []).slice(0, 1));
+
+  // Find key metric explanations for popup
+  const infoForMetric = (metric: string) =>
+    analysis.healthIndicators?.find(h => h.parameter === metric)?.explanation ||
+    "No further details available.";
+
+  // Visual indicator slider/graph for up to 3 key metrics (for demo: display if ranges are present)
+  const KeyRangeVisuals = () => (
+    <div className="flex flex-col md:flex-row gap-4 mt-4">
+      {analysis.healthIndicators?.slice(0, 3).map((ind, idx) => {
+        const value = parseFloat(ind.value.match(/[\d.]+/)?.[0] || "0");
+        // crude parsing: normalRange like "12-16 g/dL"
+        let min = 0, max = 100;
+        const match = ind.normalRange?.match(/(\d+\.?\d*)\s*-\s*(\d+\.?\d*)/);
+        if (match) {
+          min = parseFloat(match[1]);
+          max = parseFloat(match[2]);
+        }
+        const range = max - min;
+        const percent = range > 0 ? Math.min(100, Math.max(0, ((value - min) / range) * 100)) : 0;
+        return (
+          <div key={idx} className="w-full max-w-xs px-2">
+            <div className="text-sm font-semibold mb-1 flex items-center gap-1">
+              <MetricInfoDialog
+                trigger={ind.parameter}
+                title={ind.parameter}
+                description={ind.explanation}
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs">{min}</span>
+              <div className={`relative w-full h-3 rounded-full ${ind.status==="normal"?"bg-green-100":"bg-yellow-100"}`}>
+                <div
+                  style={{ left: `${percent}%` }}
+                  className={
+                    `absolute top-0 h-3 w-0.5 bg-blue-600 rounded`
+                  }
+                />
+                <div
+                  style={{ width: `${percent}%` }}
+                  className={
+                    ind.status === 'normal'
+                      ? 'bg-green-500 h-3 rounded-l-full absolute left-0 top-0'
+                      : 'bg-yellow-400 h-3 rounded-l-full absolute left-0 top-0'
+                  }
+                />
+              </div>
+              <span className="text-xs">{max}</span>
+            </div>
+            <div className="text-xs mt-1">
+              <span className={`font-bold ${ind.status==='normal'?'text-green-600':'text-yellow-700'}`}>{ind.value}</span>
+              <span className="ml-1 text-gray-500">({ind.status})</span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
+      {/* Summary Section */}
+      <Card className="mb-10 border-2 border-medical-primary/40 animate-fade-in">
+        <CardHeader className="bg-medical-primary text-white rounded-t-xl">
+          <div className="flex justify-between items-center">
+            <div>
+              <CardTitle className="text-lg md:text-2xl flex gap-2 items-center">
+                🩺 Report Summary
+              </CardTitle>
+              <p className="text-white/90 text-base md:text-lg mt-2">
+                {personalizedGreeting}
+              </p>
+            </div>
+            <Button
+              variant="secondary"
+              className="bg-white text-medical-primary shadow-sm border font-semibold px-3"
+              onClick={() => window.location.assign('/chat')}
+              size="sm"
+            >
+              Ask AI Doctor
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="py-5">
+          <div className="mb-2">
+            {/* Critical findings highlight */}
+            <SummaryCard
+              title="Highlights"
+              iconType={(analysis.riskAssessment?.urgentFlags?.length || 0) > 0 ? "alert" : "check"}
+              color={(analysis.riskAssessment?.urgentFlags?.length || 0) > 0 ? "red" : "green"}
+              description={
+                analysis.riskAssessment?.urgentFlags?.length
+                  ? analysis.riskAssessment.urgentFlags[0]
+                  : analysis.keyFindings?.[0] ||
+                    "Your results are within optimal ranges. Keep up the good work!"
+              }
+            />
+          </div>
+          <div className="md:flex gap-4 mb-3">
+            <div className="flex-1">
+              <SummaryCard
+                title="What's Normal"
+                iconType="check"
+                color="green"
+                description={
+                  whatsNormal.length
+                    ? "The following results are in the healthy range: " +
+                      whatsNormal.slice(0, 3).map((n) => (
+                        <MetricInfoDialog
+                          key={n.parameter}
+                          trigger={n.parameter}
+                          title={n.parameter}
+                          description={n.explanation}
+                        />
+                      ))
+                    : "No results are in the normal range."
+                }
+              />
+            </div>
+            <div className="flex-1">
+              <SummaryCard
+                title="Needs Attention"
+                iconType="alert"
+                color={needsAttention.length ? "yellow" : "green"}
+                description={
+                  needsAttention.length
+                    ? "Monitor these metrics carefully: " +
+                      needsAttention.slice(0, 3).map((n) => (
+                        <MetricInfoDialog
+                          key={n.parameter}
+                          trigger={n.parameter}
+                          title={n.parameter}
+                          description={n.explanation}
+                        />
+                      ))
+                    : "Great job! No flagged results."
+                }
+              />
+            </div>
+          </div>
+
+          {/* Key Metric Sliders / Visuals */}
+          <KeyRangeVisuals />
+
+          {/* Next Steps */}
+          <div className="mt-4">
+            <SummaryCard
+              title="Next Steps"
+              iconType="info"
+              color="blue"
+              description={
+                nextSteps.length > 0
+                  ? nextSteps.map((step, idx) => <div key={idx}>• {step}</div>)
+                  : "No immediate actions required. Maintain your healthy habits!"
+              }
+            />
+            <div className="text-xs text-gray-600 mt-2">
+              Not sure what to do next?{" "}
+              <span
+                className="underline text-blue-600 cursor-pointer"
+                onClick={() => window.location.assign('/chat')}
+              >
+                Ask our AI Doctor
+              </span>{" "}
+              for personalized advice.
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Header Section */}
       <Card className="health-card border-medical-primary/20">
         <CardHeader className="bg-medical-primary text-white">
@@ -475,3 +663,5 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
     </div>
   );
 };
+
+export default ReportAnalysis;
