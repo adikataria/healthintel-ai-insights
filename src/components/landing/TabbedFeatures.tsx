@@ -17,7 +17,7 @@ const TabbedFeatures = () => {
       mainFeature: {
         title: 'Smart Health Report Analysis',
         description: 'Upload your medical reports and get instant AI-powered insights with 90% accuracy. Our advanced algorithms analyze lab results, imaging reports, and medical documents to provide clear, actionable health recommendations.',
-        image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=600&h=400&fit=crop&crop=center',
+        image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=600&fit=crop&crop=center',
         features: [
           { icon: CheckCircle, title: 'Instant Analysis', description: 'Get results in under 30 seconds' },
           { icon: Target, title: '90% Accuracy', description: 'Clinically validated AI algorithms' },
@@ -47,7 +47,7 @@ const TabbedFeatures = () => {
       mainFeature: {
         title: '24/7 AI Health Companion',
         description: 'Chat with our AI doctor assistant anytime for instant health guidance, symptom analysis, and medical advice. Get professional-grade responses backed by medical knowledge.',
-        image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&h=400&fit=crop&crop=center',
+        image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop&crop=center',
         features: [
           { icon: Clock, title: 'Always Available', description: '24/7 instant medical guidance' },
           { icon: Brain, title: 'Smart Responses', description: 'Medically validated AI responses' },
@@ -77,7 +77,7 @@ const TabbedFeatures = () => {
       mainFeature: {
         title: 'Comprehensive Health Monitoring',
         description: 'Track vital signs, medications, symptoms, and health goals all in one place. Set personalized targets and monitor your progress with detailed analytics.',
-        image: 'https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=600&h=400&fit=crop&crop=center',
+        image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=600&fit=crop&crop=center',
         features: [
           { icon: Target, title: 'Goal Setting', description: 'Set and track health objectives' },
           { icon: BarChart3, title: 'Progress Analytics', description: 'Detailed health trend analysis' },
@@ -102,20 +102,20 @@ const TabbedFeatures = () => {
   ];
 
   return (
-    <section className="py-20 bg-gray-50">
+    <section className="py-12 sm:py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12 sm:mb-16">
           <Badge className="mb-4 bg-medical-primary/10 text-medical-primary border-medical-primary/30">
             <CheckCircle className="h-4 w-4 mr-2" />
             FEATURES
           </Badge>
-          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6 max-w-4xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 max-w-4xl mx-auto px-4">
             Deliver a first-class personalized
-            <br />
-            <span className="text-medical-primary">health experience</span>
+            <br className="hidden sm:block" />
+            <span className="text-medical-primary"> health experience</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto px-4">
             Deliver a comprehensive and seamless health management experience tailored to your needs, 
             ensuring a positive journey that aligns with your wellness goals.
           </p>
@@ -123,17 +123,17 @@ const TabbedFeatures = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="ai-analysis" className="w-full">
-          {/* Tab Navigation */}
-          <div className="flex justify-center mb-12">
-            <TabsList className="grid w-full max-w-2xl grid-cols-3 h-auto p-2 bg-white shadow-lg border border-gray-200 rounded-2xl">
+          {/* Tab Navigation - Mobile Responsive */}
+          <div className="flex justify-center mb-8 sm:mb-12">
+            <TabsList className="grid w-full max-w-sm sm:max-w-2xl grid-cols-3 h-auto p-1 sm:p-2 bg-white shadow-lg border border-gray-200 rounded-xl sm:rounded-2xl">
               {features.map((feature) => (
                 <TabsTrigger
                   key={feature.id}
                   value={feature.id}
-                  className="flex flex-col items-center gap-2 p-4 rounded-xl data-[state=active]:bg-black data-[state=active]:text-white transition-all duration-300"
+                  className="flex flex-col items-center gap-1 sm:gap-2 p-2 sm:p-4 rounded-lg sm:rounded-xl data-[state=active]:bg-black data-[state=active]:text-white transition-all duration-300"
                 >
-                  <feature.icon className="h-5 w-5" />
-                  <span className="font-medium text-sm">{feature.title}</span>
+                  <feature.icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <span className="font-medium text-xs sm:text-sm text-center leading-tight">{feature.title}</span>
                 </TabsTrigger>
               ))}
             </TabsList>
@@ -143,41 +143,41 @@ const TabbedFeatures = () => {
           {features.map((feature) => (
             <TabsContent key={feature.id} value={feature.id} className="mt-0">
               <div className="max-w-7xl mx-auto">
-                {/* Main Feature Card */}
-                <Card className="mb-8 border-0 shadow-xl rounded-3xl overflow-hidden bg-white">
+                {/* Main Feature Card - Mobile Responsive */}
+                <Card className="mb-6 sm:mb-8 border-0 shadow-xl rounded-2xl sm:rounded-3xl overflow-hidden bg-white">
                   <CardContent className="p-0">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
                       {/* Left Content */}
-                      <div className="p-8 lg:p-12 flex flex-col justify-center">
+                      <div className="p-6 sm:p-8 lg:p-12 flex flex-col justify-center order-2 lg:order-1">
                         <div className="mb-6">
-                          <div className="p-3 bg-medical-primary/10 rounded-2xl w-fit mb-6">
-                            <feature.icon className="h-8 w-8 text-medical-primary" />
+                          <div className="p-2 sm:p-3 bg-medical-primary/10 rounded-xl sm:rounded-2xl w-fit mb-4 sm:mb-6">
+                            <feature.icon className="h-6 w-6 sm:h-8 sm:w-8 text-medical-primary" />
                           </div>
-                          <h3 className="text-3xl font-bold text-gray-900 mb-4">
+                          <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
                             {feature.mainFeature.title}
                           </h3>
-                          <p className="text-lg text-gray-600 mb-8">
+                          <p className="text-base sm:text-lg text-gray-600 mb-6 sm:mb-8">
                             {feature.mainFeature.description}
                           </p>
                         </div>
 
                         {/* Feature List */}
-                        <div className="space-y-4 mb-8">
+                        <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
                           {feature.mainFeature.features.map((item, index) => (
-                            <div key={index} className="flex items-start gap-4">
-                              <div className="p-2 bg-medical-primary/10 rounded-lg">
-                                <item.icon className="h-5 w-5 text-medical-primary" />
+                            <div key={index} className="flex items-start gap-3 sm:gap-4">
+                              <div className="p-1.5 sm:p-2 bg-medical-primary/10 rounded-lg flex-shrink-0">
+                                <item.icon className="h-4 w-4 sm:h-5 sm:w-5 text-medical-primary" />
                               </div>
                               <div>
-                                <h4 className="font-semibold text-gray-900 mb-1">{item.title}</h4>
-                                <p className="text-gray-600">{item.description}</p>
+                                <h4 className="font-semibold text-gray-900 mb-1 text-sm sm:text-base">{item.title}</h4>
+                                <p className="text-gray-600 text-sm sm:text-base">{item.description}</p>
                               </div>
                             </div>
                           ))}
                         </div>
 
                         <Link to="/auth">
-                          <Button className="bg-black hover:bg-gray-800 text-white px-8 py-3 rounded-xl w-fit">
+                          <Button className="bg-black hover:bg-gray-800 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-xl w-fit text-sm sm:text-base">
                             Learn more
                             <ArrowRight className="ml-2 h-4 w-4" />
                           </Button>
@@ -185,7 +185,7 @@ const TabbedFeatures = () => {
                       </div>
 
                       {/* Right Image */}
-                      <div className="relative h-96 lg:h-auto">
+                      <div className="relative h-64 sm:h-80 lg:h-auto order-1 lg:order-2">
                         <img 
                           src={feature.mainFeature.image} 
                           alt={feature.mainFeature.title}
@@ -193,20 +193,20 @@ const TabbedFeatures = () => {
                         />
                         {/* Overlay with demo UI */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent">
-                          <div className="absolute bottom-6 left-6 right-6">
-                            <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-4">
-                              <div className="flex items-center gap-3 mb-3">
+                          <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6">
+                            <div className="bg-white/95 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4">
+                              <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
                                 <div className="flex gap-1">
-                                  <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-                                  <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-400 rounded-full"></div>
+                                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full"></div>
+                                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full"></div>
                                 </div>
                                 <span className="text-xs text-gray-500">DocLumen AI</span>
                               </div>
-                              <div className="space-y-2">
-                                <div className="h-2 bg-gray-200 rounded w-3/4"></div>
-                                <div className="h-2 bg-gray-200 rounded w-1/2"></div>
-                                <div className="h-2 bg-medical-primary/30 rounded w-2/3"></div>
+                              <div className="space-y-1.5 sm:space-y-2">
+                                <div className="h-1.5 sm:h-2 bg-gray-200 rounded w-3/4"></div>
+                                <div className="h-1.5 sm:h-2 bg-gray-200 rounded w-1/2"></div>
+                                <div className="h-1.5 sm:h-2 bg-medical-primary/30 rounded w-2/3"></div>
                               </div>
                             </div>
                           </div>
@@ -216,25 +216,25 @@ const TabbedFeatures = () => {
                   </CardContent>
                 </Card>
 
-                {/* Additional Feature Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Additional Feature Cards - Mobile Responsive */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                   {feature.additionalCards.map((card, index) => (
-                    <Card key={index} className={`border-0 shadow-lg rounded-2xl ${card.color}`}>
-                      <CardContent className="p-8">
-                        <div className="flex items-start gap-4">
-                          <div className="p-3 bg-white rounded-xl shadow-sm">
-                            <card.icon className="h-6 w-6 text-gray-700" />
+                    <Card key={index} className={`border-0 shadow-lg rounded-xl sm:rounded-2xl ${card.color}`}>
+                      <CardContent className="p-6 sm:p-8">
+                        <div className="flex items-start gap-3 sm:gap-4">
+                          <div className="p-2 sm:p-3 bg-white rounded-lg sm:rounded-xl shadow-sm flex-shrink-0">
+                            <card.icon className="h-5 w-5 sm:h-6 sm:w-6 text-gray-700" />
                           </div>
-                          <div className="flex-1">
-                            <h4 className="text-xl font-bold text-gray-900 mb-3">
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3">
                               {card.title}
                             </h4>
-                            <p className="text-gray-600 mb-4">
+                            <p className="text-gray-600 mb-3 sm:mb-4 text-sm sm:text-base">
                               {card.description}
                             </p>
-                            <Button variant="ghost" className="text-black hover:bg-white/50 p-0">
+                            <Button variant="ghost" className="text-black hover:bg-white/50 p-0 text-sm sm:text-base">
                               Learn more
-                              <ArrowRight className="ml-2 h-4 w-4" />
+                              <ArrowRight className="ml-2 h-3 w-3 sm:h-4 sm:w-4" />
                             </Button>
                           </div>
                         </div>
