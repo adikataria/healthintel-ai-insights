@@ -18,7 +18,9 @@ import {
   Target,
   ChevronDown,
   ChevronUp,
-  Info
+  Info,
+  AlertTriangle,
+  Microscope
 } from 'lucide-react';
 import { SummaryCard } from './SummaryCard';
 import { MetricInfoDialog } from './MetricInfoDialog';
@@ -85,7 +87,7 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
       case 'borderline':
         return <AlertCircle className="h-5 w-5 text-yellow-600" />;
       case 'abnormal':
-        return <AlertCircle className="h-5 w-5 text-red-600" />;
+        return <AlertTriangle className="h-5 w-5 text-red-600" />;
       default:
         return <Activity className="h-5 w-5 text-gray-600" />;
     }
@@ -124,17 +126,23 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
       case 'moderate':
         return <AlertCircle className="h-5 w-5 text-yellow-600" />;
       case 'high':
-        return <AlertCircle className="h-5 w-5 text-red-600" />;
+        return <AlertTriangle className="h-5 w-5 text-red-600" />;
       default:
         return <Shield className="h-5 w-5 text-gray-600" />;
     }
   };
 
-  // Helper to segment metrics (for "What's Normal", "Needs Attention" etc.)
+  // Check if we have valid health indicators
+  const hasLabValues = analysis.healthIndicators && analysis.healthIndicators.length > 0;
+  const validIndicators = hasLabValues ? analysis.healthIndicators.filter(indicator => 
+    indicator.parameter && indicator.value && indicator.value !== 'N/A'
+  ) : [];
+
+  // Helper to segment metrics
   const partitionIndicators = () => {
     const whatsNormal = [];
     const needsAttention = [];
-    (analysis.healthIndicators || []).forEach(h => {
+    validIndicators.forEach(h => {
       if (h.status === "normal") whatsNormal.push(h);
       else needsAttention.push(h);
     });
@@ -142,71 +150,9 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
   };
   const { whatsNormal, needsAttention } = partitionIndicators();
 
-  // Personalized greeting logic (example: age/gender/history could be used if available)
-  const personalizedGreeting = "Here's a plain language summary of your lab report. We translate the results into easy steps you can use—no medical jargon!";
-
-  // Example actionable next steps
-  const nextSteps = (analysis.recommendations?.lifestyle || [])
-    .slice(0, 2)
-    .concat((analysis.recommendations?.consultation || []).slice(0, 1));
-
-  // Find key metric explanations for popup
-  const infoForMetric = (metric: string) =>
-    analysis.healthIndicators?.find(h => h.parameter === metric)?.explanation ||
-    "No further details available.";
-
-  // Visual indicator slider/graph for up to 3 key metrics (for demo: display if ranges are present)
-  const KeyRangeVisuals = () => (
-    <div className="flex flex-col md:flex-row gap-4 mt-4">
-      {analysis.healthIndicators?.slice(0, 3).map((ind, idx) => {
-        const value = parseFloat(ind.value.match(/[\d.]+/)?.[0] || "0");
-        // crude parsing: normalRange like "12-16 g/dL"
-        let min = 0, max = 100;
-        const match = ind.normalRange?.match(/(\d+\.?\d*)\s*-\s*(\d+\.?\d*)/);
-        if (match) {
-          min = parseFloat(match[1]);
-          max = parseFloat(match[2]);
-        }
-        const range = max - min;
-        const percent = range > 0 ? Math.min(100, Math.max(0, ((value - min) / range) * 100)) : 0;
-        return (
-          <div key={idx} className="w-full max-w-xs px-2">
-            <div className="text-sm font-semibold mb-1 flex items-center gap-1">
-              <MetricInfoDialog
-                trigger={ind.parameter}
-                title={ind.parameter}
-                description={ind.explanation}
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs">{min}</span>
-              <div className={`relative w-full h-3 rounded-full ${ind.status==="normal"?"bg-green-100":"bg-yellow-100"}`}>
-                <div
-                  style={{ left: `${percent}%` }}
-                  className={
-                    `absolute top-0 h-3 w-0.5 bg-blue-600 rounded`
-                  }
-                />
-                <div
-                  style={{ width: `${percent}%` }}
-                  className={
-                    ind.status === 'normal'
-                      ? 'bg-green-500 h-3 rounded-l-full absolute left-0 top-0'
-                      : 'bg-yellow-400 h-3 rounded-l-full absolute left-0 top-0'
-                  }
-                />
-              </div>
-              <span className="text-xs">{max}</span>
-            </div>
-            <div className="text-xs mt-1">
-              <span className={`font-bold ${ind.status==='normal'?'text-green-600':'text-yellow-700'}`}>{ind.value}</span>
-              <span className="ml-1 text-gray-500">({ind.status})</span>
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
+  const personalizedGreeting = hasLabValues 
+    ? `Analysis complete! We found ${validIndicators.length} laboratory parameters in your report.`
+    : "We've analyzed your report and extracted the available health information.";
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
@@ -216,7 +162,7 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
           <div className="flex justify-between items-center">
             <div>
               <CardTitle className="text-lg md:text-2xl flex gap-2 items-center">
-                🩺 Report Summary
+                🩺 Report Analysis Summary
               </CardTitle>
               <p className="text-white/90 text-base md:text-lg mt-2">
                 {personalizedGreeting}
@@ -233,101 +179,57 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
           </div>
         </CardHeader>
         <CardContent className="py-5">
-          <div className="mb-2">
-            {/* Critical findings highlight */}
-            <SummaryCard
-              title="Highlights"
-              iconType={(analysis.riskAssessment?.urgentFlags?.length || 0) > 0 ? "alert" : "check"}
-              color={(analysis.riskAssessment?.urgentFlags?.length || 0) > 0 ? "red" : "green"}
-              description={
-                analysis.riskAssessment?.urgentFlags?.length
-                  ? analysis.riskAssessment.urgentFlags[0]
-                  : analysis.keyFindings?.[0] ||
-                    "Your results are within optimal ranges. Keep up the good work!"
-              }
-            />
-          </div>
-          <div className="md:flex gap-4 mb-3">
-            <div className="flex-1">
-              <SummaryCard
-                title="What's Normal"
-                iconType="check"
-                color="green"
-                description={
-                  whatsNormal.length
-                    ? (
-                        <>
-                          The following results are in the healthy range:&nbsp;
-                          {whatsNormal.slice(0, 3).map((n, i) => (
-                            <React.Fragment key={n.parameter}>
-                              <MetricInfoDialog
-                                trigger={n.parameter}
-                                title={n.parameter}
-                                description={n.explanation}
-                              />
-                              {i < whatsNormal.slice(0, 3).length - 1 && <span>, </span>}
-                            </React.Fragment>
-                          ))}
-                        </>
-                      )
-                    : "No results are in the normal range."
-                }
-              />
+          {hasLabValues ? (
+            <>
+              <div className="mb-2">
+                <SummaryCard
+                  title="Analysis Complete"
+                  iconType="check"
+                  color="green"
+                  description={`Successfully extracted ${validIndicators.length} laboratory parameters from your report.`}
+                />
+              </div>
+              <div className="md:flex gap-4 mb-3">
+                <div className="flex-1">
+                  <SummaryCard
+                    title="Normal Results"
+                    iconType="check"
+                    color="green"
+                    description={
+                      whatsNormal.length > 0
+                        ? `${whatsNormal.length} parameters are in healthy ranges: ${whatsNormal.slice(0, 3).map(n => n.parameter).join(', ')}${whatsNormal.length > 3 ? '...' : ''}`
+                        : "No parameters are currently in normal range."
+                    }
+                  />
+                </div>
+                <div className="flex-1">
+                  <SummaryCard
+                    title="Requires Attention"
+                    iconType={needsAttention.length > 0 ? "alert" : "check"}
+                    color={needsAttention.length > 0 ? "yellow" : "green"}
+                    description={
+                      needsAttention.length > 0
+                        ? `${needsAttention.length} parameters need monitoring: ${needsAttention.slice(0, 3).map(n => n.parameter).join(', ')}${needsAttention.length > 3 ? '...' : ''}`
+                        : "All parameters are within acceptable ranges!"
+                    }
+                  />
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-8">
+              <Microscope className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-600 mb-2">Report Analysis Complete</h3>
+              <p className="text-gray-500 mb-4">
+                We've analyzed your report but couldn't extract specific numerical lab values. This might be due to the report format or image quality.
+              </p>
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 max-w-md mx-auto">
+                <p className="text-sm text-blue-800">
+                  <strong>Don't worry!</strong> You can still get insights by asking our AI Doctor about your report.
+                </p>
+              </div>
             </div>
-            <div className="flex-1">
-              <SummaryCard
-                title="Needs Attention"
-                iconType="alert"
-                color={needsAttention.length ? "yellow" : "green"}
-                description={
-                  needsAttention.length
-                    ? (
-                        <>
-                          Monitor these metrics carefully:&nbsp;
-                          {needsAttention.slice(0, 3).map((n, i) => (
-                            <React.Fragment key={n.parameter}>
-                              <MetricInfoDialog
-                                trigger={n.parameter}
-                                title={n.parameter}
-                                description={n.explanation}
-                              />
-                              {i < needsAttention.slice(0, 3).length - 1 && <span>, </span>}
-                            </React.Fragment>
-                          ))}
-                        </>
-                      )
-                    : "Great job! No flagged results."
-                }
-              />
-            </div>
-          </div>
-
-          {/* Key Metric Sliders / Visuals */}
-          <KeyRangeVisuals />
-
-          {/* Next Steps */}
-          <div className="mt-4">
-            <SummaryCard
-              title="Next Steps"
-              iconType="info"
-              color="blue"
-              description={
-                nextSteps.length > 0
-                  ? nextSteps.map((step, idx) => <div key={idx}>• {step}</div>)
-                  : "No immediate actions required. Maintain your healthy habits!"
-              }
-            />
-            <div className="text-xs text-gray-600 mt-2">
-              Not sure what to do next?{" "}
-              <span
-                className="underline text-blue-600 cursor-pointer"
-                onClick={() => window.location.assign('/chat')}
-              >
-                Ask our AI Doctor
-              </span>{" "}
-              for personalized advice.
-            </div>
-          </div>
+          )}
         </CardContent>
       </Card>
 
@@ -371,28 +273,30 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
       </Card>
 
       {/* Key Findings Overview */}
-      <Card className="health-card">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Lightbulb className="h-5 w-5 text-medical-primary" />
-            Key Findings at a Glance
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {analysis.keyFindings?.slice(0, 3).map((finding, index) => (
-              <div key={index} className="p-4 bg-medical-light/10 rounded-lg border border-medical-primary/20">
-                <div className="flex items-start gap-3">
-                  <div className="p-1 rounded-full bg-medical-primary/20">
-                    <CheckCircle className="h-4 w-4 text-medical-primary" />
+      {analysis.keyFindings?.length > 0 && (
+        <Card className="health-card">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Lightbulb className="h-5 w-5 text-medical-primary" />
+              Key Findings at a Glance
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {analysis.keyFindings.slice(0, 3).map((finding, index) => (
+                <div key={index} className="p-4 bg-medical-light/10 rounded-lg border border-medical-primary/20">
+                  <div className="flex items-start gap-3">
+                    <div className="p-1 rounded-full bg-medical-primary/20">
+                      <CheckCircle className="h-4 w-4 text-medical-primary" />
+                    </div>
+                    <p className="text-sm font-medium text-accent">{finding}</p>
                   </div>
-                  <p className="text-sm font-medium text-accent">{finding}</p>
                 </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Main Analysis Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -420,25 +324,28 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Activity className="h-5 w-5 text-medical-primary" />
-                Complete Laboratory Results Analysis
+                Laboratory Results Analysis
                 <Badge className="ml-2 bg-medical-primary/10 text-medical-primary">
-                  {analysis.healthIndicators?.length || 0} Parameters
+                  {validIndicators.length} Parameters
                 </Badge>
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                Comprehensive analysis of all extracted laboratory values with detailed clinical interpretations
+                {hasLabValues 
+                  ? `Comprehensive analysis of ${validIndicators.length} extracted laboratory values with detailed clinical interpretations`
+                  : "Analysis of available health information from your report"
+                }
               </p>
             </CardHeader>
             <CardContent>
-              {analysis.healthIndicators?.length > 0 ? (
+              {hasLabValues ? (
                 <div className="space-y-6">
-                  {analysis.healthIndicators.map((indicator, index) => (
+                  {validIndicators.map((indicator, index) => (
                     <div key={index} className="border-2 rounded-xl p-6 space-y-4 bg-white shadow-lg hover:shadow-xl transition-shadow">
                       {/* Header Section */}
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="p-2 rounded-lg bg-medical-light/20">
-                            <BarChart3 className="h-5 w-5 text-medical-primary" />
+                            <Microscope className="h-5 w-5 text-medical-primary" />
                           </div>
                           <div>
                             <h4 className="font-bold text-xl text-medical-dark">{indicator.parameter}</h4>
@@ -500,23 +407,9 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
                               
                               {expandedIndicators.has(index) && (
                                 <div className="space-y-4 pt-3 border-t border-medical-primary/20">
-                                  {/* Additional Clinical Context */}
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="bg-white p-3 rounded border">
-                                      <h6 className="font-medium text-sm text-medical-primary mb-2">Test Purpose</h6>
-                                      <p className="text-xs text-gray-600">
-                                        This test measures {indicator.parameter.toLowerCase()} levels to assess {
-                                          indicator.parameter.toLowerCase().includes('cholesterol') ? 'cardiovascular health and lipid metabolism' :
-                                          indicator.parameter.toLowerCase().includes('glucose') ? 'blood sugar control and diabetes risk' :
-                                          indicator.parameter.toLowerCase().includes('hemoglobin') ? 'oxygen-carrying capacity and anemia status' :
-                                          indicator.parameter.toLowerCase().includes('creatinine') ? 'kidney function and waste filtration' :
-                                          indicator.parameter.toLowerCase().includes('liver') || indicator.parameter.toLowerCase().includes('alt') || indicator.parameter.toLowerCase().includes('ast') ? 'liver function and hepatic health' :
-                                          'overall health status and organ function'
-                                        }.
-                                      </p>
-                                    </div>
-                                    <div className="bg-white p-3 rounded border">
-                                      <h6 className="font-medium text-sm text-medical-primary mb-2">Clinical Relevance</h6>
+                                      <h6 className="font-medium text-sm text-medical-primary mb-2">Clinical Significance</h6>
                                       <p className="text-xs text-gray-600">
                                         {indicator.status === 'normal' ? 
                                           'This result indicates optimal function and suggests good health in this parameter.' :
@@ -526,22 +419,16 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
                                         }
                                       </p>
                                     </div>
-                                  </div>
-                                  
-                                  {/* Measurement Details */}
-                                  <div className="bg-blue-50 p-3 rounded border border-blue-200">
-                                    <h6 className="font-medium text-sm text-blue-800 mb-2">Measurement Details</h6>
-                                    <div className="grid grid-cols-2 gap-2 text-xs">
-                                      <div>
-                                        <span className="font-medium text-blue-700">Result:</span>
-                                        <span className="ml-1 text-blue-600">{indicator.value}</span>
-                                      </div>
-                                      <div>
-                                        <span className="font-medium text-blue-700">Units:</span>
-                                        <span className="ml-1 text-blue-600">
-                                          {indicator.normalRange.match(/[a-zA-Z\/μ%³⁶]+$/)?.[0] || 'Standard units'}
-                                        </span>
-                                      </div>
+                                    <div className="bg-white p-3 rounded border">
+                                      <h6 className="font-medium text-sm text-medical-primary mb-2">Next Steps</h6>
+                                      <p className="text-xs text-gray-600">
+                                        {indicator.status === 'normal' ? 
+                                          'Continue current health practices and monitor during routine check-ups.' :
+                                          indicator.status === 'borderline' ?
+                                          'Consider lifestyle changes and retest in 3-6 months, or as recommended by your doctor.' :
+                                          'Consult with your healthcare provider promptly to discuss treatment options and follow-up care.'
+                                        }
+                                      </p>
                                     </div>
                                   </div>
                                 </div>
@@ -555,15 +442,24 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
                 </div>
               ) : (
                 <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                  <BarChart3 className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-600 mb-2">No Laboratory Values Extracted</h3>
-                  <p className="text-gray-500 mb-4">The AI analysis could not extract specific test values from this report.</p>
-                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 max-w-md mx-auto">
+                  <Microscope className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-600 mb-2">No Specific Lab Values Extracted</h3>
+                  <p className="text-gray-500 mb-4">The AI couldn't extract specific numerical test values from this report format.</p>
+                  <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 max-w-md mx-auto mb-4">
                     <p className="text-sm text-blue-800">
-                      <strong>Note:</strong> This may occur with image-based reports or complex PDF formats. 
-                      The AI focused on overall health insights instead of individual parameter extraction.
+                      <strong>This can happen when:</strong>
+                      <br />• Report is image-based with unclear text
+                      <br />• PDF format is complex or scanned
+                      <br />• Report contains primarily narrative text
+                      <br />• Values are embedded in paragraphs
                     </p>
                   </div>
+                  <Button 
+                    onClick={() => window.location.assign('/chat')}
+                    className="bg-medical-primary hover:bg-medical-dark text-white"
+                  >
+                    Ask AI Doctor About Your Report
+                  </Button>
                 </div>
               )}
             </CardContent>
@@ -597,7 +493,7 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
                 <Card className="border-red-200 bg-red-50">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-red-800 flex items-center gap-2">
-                      <AlertCircle className="h-5 w-5" />
+                      <AlertTriangle className="h-5 w-5" />
                       Requires Immediate Attention
                     </CardTitle>
                   </CardHeader>
@@ -605,7 +501,7 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
                     <div className="space-y-3">
                       {analysis.riskAssessment.urgentFlags.map((flag, index) => (
                         <div key={index} className="flex items-start gap-3 p-3 bg-red-100 rounded-lg">
-                          <AlertCircle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                          <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
                           <p className="text-red-800 font-medium">{flag}</p>
                         </div>
                       ))}

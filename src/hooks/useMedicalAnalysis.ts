@@ -25,8 +25,12 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UseMedicalAnalysisPro
     setIsAnalyzing(true);
 
     try {
-      console.log('Starting comprehensive medical report analysis with enhanced data extraction...');
-      console.log('Report content preview:', pendingAnalysis.content.substring(0, 1000));
+      console.log('Starting medical report analysis with enhanced extraction...');
+      console.log('Report data:', {
+        type: pendingAnalysis.type,
+        fileName: pendingAnalysis.fileName,
+        contentLength: pendingAnalysis.content?.length || 0
+      });
 
       const { data, error } = await supabase.functions.invoke('analyze-medical-report', {
         body: {
@@ -35,37 +39,57 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UseMedicalAnalysisPro
           reportType: pendingAnalysis.type,
           fileName: pendingAnalysis.fileName,
           userConsent: true,
-          extractionLevel: 'complete_comprehensive',
-          requireCompleteData: true,
-          zeroMissingDataMode: true
+          extractionMode: 'comprehensive',
+          requireLabValues: true,
+          enhancedParsing: true,
+          forceExtraction: true
         }
       });
 
       if (error) {
         console.error('Analysis error:', error);
-        throw new Error(error.message || 'Comprehensive analysis failed');
+        throw new Error(error.message || 'Analysis failed');
       }
 
-      console.log('Comprehensive analysis completed successfully');
-      console.log('Analysis result quality metrics:', data?.qualityMetrics);
+      console.log('Analysis completed successfully:', data);
       
-      // Validate that we have complete data
-      if (data?.analysis?.healthIndicators) {
-        const missingDataIndicators = data.analysis.healthIndicators.filter(indicator => 
-          !indicator.value || 
-          indicator.value.toLowerCase().includes('missing') ||
-          indicator.value.toLowerCase().includes('unknown') ||
-          indicator.value === 'N/A'
-        );
-        
-        if (missingDataIndicators.length > 0) {
-          console.warn('Some indicators still have missing data:', missingDataIndicators);
-          toast.warning(`Analysis completed but ${missingDataIndicators.length} parameters need manual review`);
-        } else {
-          toast.success('Complete analysis with all data extracted successfully!');
-        }
+      // Validate that we have extracted lab values
+      if (data?.analysis?.healthIndicators && data.analysis.healthIndicators.length > 0) {
+        console.log(`Successfully extracted ${data.analysis.healthIndicators.length} lab values`);
+        toast.success(`Analysis complete! Found ${data.analysis.healthIndicators.length} lab parameters`);
       } else {
-        toast.success('Report analysis completed successfully!');
+        console.warn('No lab values extracted, attempting enhanced extraction...');
+        
+        // Retry with different extraction parameters
+        const retryData = await supabase.functions.invoke('analyze-medical-report', {
+          body: {
+            reportId: pendingAnalysis.reportId,
+            reportContent: pendingAnalysis.content,
+            reportType: pendingAnalysis.type,
+            fileName: pendingAnalysis.fileName,
+            userConsent: true,
+            extractionMode: 'aggressive',
+            parseNumericValues: true,
+            extractAllParameters: true,
+            includeUnits: true,
+            retryAttempt: true
+          }
+        });
+
+        if (retryData.error) {
+          throw new Error('Enhanced extraction also failed');
+        }
+
+        if (retryData.data?.analysis?.healthIndicators?.length > 0) {
+          console.log(`Enhanced extraction found ${retryData.data.analysis.healthIndicators.length} parameters`);
+          toast.success(`Enhanced analysis complete! Found ${retryData.data.analysis.healthIndicators.length} lab parameters`);
+          if (onSuccess) {
+            onSuccess(retryData.data.analysis);
+          }
+          return retryData.data.analysis;
+        } else {
+          toast.warning('Analysis completed but no specific lab values could be extracted from this report format');
+        }
       }
       
       if (onSuccess) {
@@ -75,40 +99,12 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UseMedicalAnalysisPro
       return data.analysis;
 
     } catch (error) {
-      console.error('Comprehensive medical analysis error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Complete analysis failed';
-      toast.error(`Analysis failed: ${errorMessage}. Retrying with enhanced extraction...`);
+      console.error('Medical analysis error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Analysis failed';
+      toast.error(`Analysis failed: ${errorMessage}`);
       
-      // Attempt retry with fallback mode
-      try {
-        console.log('Attempting retry with enhanced fallback extraction...');
-        const retryData = await supabase.functions.invoke('analyze-medical-report', {
-          body: {
-            reportId: pendingAnalysis.reportId,
-            reportContent: pendingAnalysis.content,
-            reportType: pendingAnalysis.type,
-            fileName: pendingAnalysis.fileName,
-            userConsent: true,
-            extractionLevel: 'fallback_comprehensive',
-            requireCompleteData: true,
-            zeroMissingDataMode: true,
-            retryAttempt: true
-          }
-        });
-
-        if (retryData.error) throw retryData.error;
-        
-        toast.success('Analysis completed successfully on retry!');
-        if (onSuccess) {
-          onSuccess(retryData.data.analysis);
-        }
-        return retryData.data.analysis;
-
-      } catch (retryError) {
-        console.error('Retry also failed:', retryError);
-        if (onError) {
-          onError(errorMessage);
-        }
+      if (onError) {
+        onError(errorMessage);
       }
     } finally {
       setIsAnalyzing(false);
