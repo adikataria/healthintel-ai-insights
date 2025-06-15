@@ -241,15 +241,21 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
                 color="green"
                 description={
                   whatsNormal.length
-                    ? "The following results are in the healthy range: " +
-                      whatsNormal.slice(0, 3).map((n) => (
-                        <MetricInfoDialog
-                          key={n.parameter}
-                          trigger={n.parameter}
-                          title={n.parameter}
-                          description={n.explanation}
-                        />
-                      ))
+                    ? (
+                        <>
+                          The following results are in the healthy range:&nbsp;
+                          {whatsNormal.slice(0, 3).map((n, i) => (
+                            <React.Fragment key={n.parameter}>
+                              <MetricInfoDialog
+                                trigger={n.parameter}
+                                title={n.parameter}
+                                description={n.explanation}
+                              />
+                              {i < whatsNormal.slice(0, 3).length - 1 && <span>, </span>}
+                            </React.Fragment>
+                          ))}
+                        </>
+                      )
                     : "No results are in the normal range."
                 }
               />
@@ -261,15 +267,21 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
                 color={needsAttention.length ? "yellow" : "green"}
                 description={
                   needsAttention.length
-                    ? "Monitor these metrics carefully: " +
-                      needsAttention.slice(0, 3).map((n) => (
-                        <MetricInfoDialog
-                          key={n.parameter}
-                          trigger={n.parameter}
-                          title={n.parameter}
-                          description={n.explanation}
-                        />
-                      ))
+                    ? (
+                        <>
+                          Monitor these metrics carefully:&nbsp;
+                          {needsAttention.slice(0, 3).map((n, i) => (
+                            <React.Fragment key={n.parameter}>
+                              <MetricInfoDialog
+                                trigger={n.parameter}
+                                title={n.parameter}
+                                description={n.explanation}
+                              />
+                              {i < needsAttention.slice(0, 3).length - 1 && <span>, </span>}
+                            </React.Fragment>
+                          ))}
+                        </>
+                      )
                     : "Great job! No flagged results."
                 }
               />
