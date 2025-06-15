@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -203,8 +202,12 @@ const Chat = () => {
               {messages.length === 0 && (
                 <CardContent className="p-8">
                   <div className="text-center mb-8">
-                    <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-medical-primary/20 to-medical-secondary/20 rounded-full flex items-center justify-center">
-                      <Bot className="h-10 w-10 text-medical-primary" />
+                    <div className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center overflow-hidden bg-white shadow-lg">
+                      <img 
+                        src="/lovable-uploads/f53de30c-14ea-4f2b-ad69-1ada86812a6b.png" 
+                        alt="DocLumen AI" 
+                        className="w-full h-full object-contain"
+                      />
                     </div>
                     <h2 className="text-2xl font-bold text-gray-900 mb-3">
                       Welcome to DocLumen AI Doctor
