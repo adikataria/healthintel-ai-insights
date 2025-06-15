@@ -288,7 +288,7 @@ export const ComprehensiveReportAnalysis: React.FC<ComprehensiveReportAnalysisPr
                         {getStatusIcon(indicator.status)}
                         <div>
                           <h4 className="font-medium">{indicator.parameter}</h4>
-                          <Badge className={getStatusColor(indicator.status)} size="sm">
+                          <Badge className={getStatusColor(indicator.status)}>
                             {indicator.status}
                           </Badge>
                         </div>
