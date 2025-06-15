@@ -27,41 +27,79 @@ import {
   Target,
   Bell,
   Menu,
-  X
+  X,
+  User,
+  LogOut,
+  Home,
+  FileText,
+  BarChart3,
+  History
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
+
+type WidgetSize = 'small' | 'medium' | 'large';
+
+interface Widget {
+  id: string;
+  title: string;
+  component: string;
+  size: WidgetSize;
+  enabled: boolean;
+}
 
 export const EnhancedHealthInsightsDashboard = () => {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { currentSubscription } = useSubscription();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [widgets, setWidgets] = useState([
-    { id: 'overview', title: 'Health Overview', component: 'HealthOverviewWidget', size: 'medium' as const, enabled: true },
-    { id: 'stats', title: 'Quick Stats', component: 'QuickStatsWidget', size: 'medium' as const, enabled: true },
-    { id: 'goals', title: 'Goal Progress', component: 'GoalProgressWidget', size: 'medium' as const, enabled: true },
-    { id: 'reports', title: 'Recent Reports', component: 'RecentReportsWidget', size: 'medium' as const, enabled: true },
-    { id: 'education', title: 'Health Tips', component: 'EducationalWidget', size: 'medium' as const, enabled: true },
+  const [widgets, setWidgets] = useState<Widget[]>([
+    { id: 'overview', title: 'Health Overview', component: 'HealthOverviewWidget', size: 'medium', enabled: true },
+    { id: 'stats', title: 'Quick Stats', component: 'QuickStatsWidget', size: 'medium', enabled: true },
+    { id: 'goals', title: 'Goal Progress', component: 'GoalProgressWidget', size: 'medium', enabled: true },
+    { id: 'reports', title: 'Recent Reports', component: 'RecentReportsWidget', size: 'medium', enabled: true },
+    { id: 'education', title: 'Health Tips', component: 'EducationalWidget', size: 'medium', enabled: true },
   ]);
 
   const hasActiveSubscription = currentSubscription?.status === 'active' && currentSubscription?.subscription_plans?.name !== 'Free';
 
-  const quickActions = [
-    { icon: Upload, label: 'Upload Report', action: () => navigate('/upload'), color: 'bg-emerald-600' },
-    { icon: TrendingUp, label: 'View Trends', action: () => navigate('/trends'), color: 'bg-blue-600' },
-    { icon: Target, label: 'Set Goals', action: () => navigate('/goals'), color: 'bg-purple-600' },
-    { icon: MessageSquare, label: 'AI Doctor', action: () => navigate('/chat'), color: 'bg-green-600' },
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
+  const navigationLinks = [
+    { href: '/dashboard', label: 'Dashboard', icon: Home },
+    { href: '/upload', label: 'Upload', icon: Upload },
+    { href: '/insights', label: 'Insights', icon: FileText },
+    { href: '/goals', label: 'Goals', icon: Target },
+    { href: '/health-history', label: 'History', icon: History },
+    { href: '/chat', label: 'AI Assistant', icon: MessageSquare },
+    { href: '/trends', label: 'Trends', icon: BarChart3 },
   ];
 
-  const renderWidget = (widget: any) => {
+  const quickActions = [
+    { icon: Upload, label: 'Upload Report', action: () => navigate('/upload'), color: 'bg-emerald-500 hover:bg-emerald-600' },
+    { icon: TrendingUp, label: 'View Trends', action: () => navigate('/trends'), color: 'bg-blue-500 hover:bg-blue-600' },
+    { icon: Target, label: 'Set Goals', action: () => navigate('/goals'), color: 'bg-indigo-500 hover:bg-indigo-600' },
+    { icon: MessageSquare, label: 'AI Doctor', action: () => navigate('/chat'), color: 'bg-teal-500 hover:bg-teal-600' },
+  ];
+
+  const renderWidget = (widget: Widget) => {
     const commonProps = {
       id: widget.id,
       title: widget.title,
       size: widget.size,
       onRemove: (id: string) => setWidgets(prev => prev.filter(w => w.id !== id)),
       onResize: (id: string) => setWidgets(prev => prev.map(w => 
-        w.id === id ? { ...w, size: w.size === 'large' ? 'medium' : 'large' } : w
+        w.id === id ? { ...w, size: w.size === 'large' ? 'medium' as WidgetSize : 'large' as WidgetSize } : w
       ))
     };
 
@@ -102,11 +140,38 @@ export const EnhancedHealthInsightsDashboard = () => {
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
+    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark bg-slate-900' : 'bg-slate-50'}`}>
       {/* Sticky Navigation */}
-      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 px-4 py-3">
+      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
+            {/* Desktop Navigation Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="hidden md:flex items-center gap-2">
+                  <Menu className="h-4 w-4" />
+                  <span>Menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56">
+                {navigationLinks.map((link) => {
+                  const Icon = link.icon;
+                  return (
+                    <DropdownMenuItem key={link.href} asChild>
+                      <button
+                        onClick={() => navigate(link.href)}
+                        className="flex items-center w-full"
+                      >
+                        <Icon className="mr-2 h-4 w-4" />
+                        <span>{link.label}</span>
+                      </button>
+                    </DropdownMenuItem>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
+            {/* Mobile Menu Button */}
             <Button
               variant="ghost"
               size="sm"
@@ -118,12 +183,12 @@ export const EnhancedHealthInsightsDashboard = () => {
             
             {/* Quick Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input
                 placeholder="Search reports, insights..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 w-64 h-9"
+                className="pl-10 w-64 h-9 bg-slate-100 border-slate-200"
               />
             </div>
           </div>
@@ -142,29 +207,75 @@ export const EnhancedHealthInsightsDashboard = () => {
             {!hasActiveSubscription && (
               <Button 
                 onClick={() => navigate('/pricing')}
-                className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold px-4 py-2 rounded-lg text-sm flex items-center gap-2"
+                className="bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white font-semibold px-4 py-2 rounded-lg text-sm flex items-center gap-2"
               >
                 <Crown className="h-4 w-4" />
                 UPGRADE
               </Button>
             )}
 
-            <Button variant="ghost" size="sm" onClick={() => navigate('/settings')}>
-              <Settings className="h-4 w-4" />
-            </Button>
+            {/* User Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                  <div className="w-7 h-7 bg-slate-200 rounded-full flex items-center justify-center">
+                    <User className="h-4 w-4 text-slate-600" />
+                  </div>
+                  <span className="hidden md:block text-sm font-medium text-slate-700 max-w-24 truncate">
+                    {user?.email?.split('@')[0]}
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem asChild>
+                  <button onClick={() => navigate('/settings')} className="flex items-center w-full">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </button>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Sign out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
         {/* Mobile Quick Actions */}
         {isMobileMenuOpen && (
-          <div className="md:hidden mt-3 p-3 bg-gray-50 rounded-lg">
+          <div className="md:hidden mt-3 p-3 bg-slate-100 rounded-lg">
+            <div className="grid grid-cols-1 gap-2 mb-4">
+              {navigationLinks.map((link) => {
+                const Icon = link.icon;
+                return (
+                  <Button
+                    key={link.href}
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      navigate(link.href);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="flex items-center gap-2 justify-start"
+                  >
+                    <Icon className="h-4 w-4" />
+                    {link.label}
+                  </Button>
+                );
+              })}
+            </div>
             <div className="grid grid-cols-2 gap-2">
               {quickActions.map((action, index) => (
                 <Button
                   key={index}
                   variant="outline"
                   size="sm"
-                  onClick={action.action}
+                  onClick={() => {
+                    action.action();
+                    setIsMobileMenuOpen(false);
+                  }}
                   className="flex items-center gap-2 justify-start"
                 >
                   <action.icon className="h-4 w-4" />
@@ -188,7 +299,7 @@ export const EnhancedHealthInsightsDashboard = () => {
             <Button
               key={index}
               onClick={action.action}
-              className={`${action.color} hover:opacity-90 text-white p-6 h-auto flex flex-col items-center gap-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200`}
+              className={`${action.color} text-white p-6 h-auto flex flex-col items-center gap-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200`}
             >
               <action.icon className="h-8 w-8" />
               <span className="font-semibold">{action.label}</span>
@@ -211,7 +322,7 @@ export const EnhancedHealthInsightsDashboard = () => {
 
         {/* Add Widget Button */}
         <div className="mt-8 text-center">
-          <Button variant="outline" className="border-dashed border-2">
+          <Button variant="outline" className="border-dashed border-2 border-slate-300 text-slate-600 hover:border-slate-400">
             <Plus className="h-4 w-4 mr-2" />
             Add Widget
           </Button>
