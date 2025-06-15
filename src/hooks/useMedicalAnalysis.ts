@@ -25,7 +25,7 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UseMedicalAnalysisPro
     setIsAnalyzing(true);
 
     try {
-      console.log('Starting medical report analysis with enhanced extraction...');
+      console.log('Starting medical report analysis with enhanced value extraction...');
       console.log('Report data:', {
         type: pendingAnalysis.type,
         fileName: pendingAnalysis.fileName,
@@ -39,10 +39,14 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UseMedicalAnalysisPro
           reportType: pendingAnalysis.type,
           fileName: pendingAnalysis.fileName,
           userConsent: true,
-          extractionMode: 'comprehensive',
+          extractionMode: 'comprehensive_values',
           requireLabValues: true,
           enhancedParsing: true,
-          forceExtraction: true
+          forceExtraction: true,
+          extractRealValues: true,
+          parseNumericData: true,
+          includeUnits: true,
+          detailedAnalysis: true
         }
       });
 
@@ -53,43 +57,66 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UseMedicalAnalysisPro
 
       console.log('Analysis completed successfully:', data);
       
-      // Validate that we have extracted lab values
+      // Validate that we have extracted real lab values (not generic messages)
       if (data?.analysis?.healthIndicators && data.analysis.healthIndicators.length > 0) {
-        console.log(`Successfully extracted ${data.analysis.healthIndicators.length} lab values`);
-        toast.success(`Analysis complete! Found ${data.analysis.healthIndicators.length} lab parameters`);
-      } else {
-        console.warn('No lab values extracted, attempting enhanced extraction...');
+        const realValues = data.analysis.healthIndicators.filter(indicator => 
+          indicator.value && 
+          indicator.value !== 'N/A' && 
+          !indicator.value.includes('Clinical assessment completed') &&
+          !indicator.value.includes('refer to full report') &&
+          indicator.value.trim() !== ''
+        );
         
-        // Retry with different extraction parameters
-        const retryData = await supabase.functions.invoke('analyze-medical-report', {
-          body: {
-            reportId: pendingAnalysis.reportId,
-            reportContent: pendingAnalysis.content,
-            reportType: pendingAnalysis.type,
-            fileName: pendingAnalysis.fileName,
-            userConsent: true,
-            extractionMode: 'aggressive',
-            parseNumericValues: true,
-            extractAllParameters: true,
-            includeUnits: true,
-            retryAttempt: true
-          }
-        });
-
-        if (retryData.error) {
-          throw new Error('Enhanced extraction also failed');
-        }
-
-        if (retryData.data?.analysis?.healthIndicators?.length > 0) {
-          console.log(`Enhanced extraction found ${retryData.data.analysis.healthIndicators.length} parameters`);
-          toast.success(`Enhanced analysis complete! Found ${retryData.data.analysis.healthIndicators.length} lab parameters`);
-          if (onSuccess) {
-            onSuccess(retryData.data.analysis);
-          }
-          return retryData.data.analysis;
+        if (realValues.length > 0) {
+          console.log(`Successfully extracted ${realValues.length} real lab values`);
+          toast.success(`Analysis complete! Found ${realValues.length} specific lab parameters with values`);
         } else {
-          toast.warning('Analysis completed but no specific lab values could be extracted from this report format');
+          console.warn('No real lab values extracted, attempting enhanced extraction...');
+          
+          // Retry with ultra-aggressive extraction parameters
+          const retryData = await supabase.functions.invoke('analyze-medical-report', {
+            body: {
+              reportId: pendingAnalysis.reportId,
+              reportContent: pendingAnalysis.content,
+              reportType: pendingAnalysis.type,
+              fileName: pendingAnalysis.fileName,
+              userConsent: true,
+              extractionMode: 'ultra_aggressive',
+              parseNumericValues: true,
+              extractAllParameters: true,
+              includeUnits: true,
+              retryAttempt: true,
+              forceRealValues: true,
+              skipGenericMessages: true,
+              requireSpecificValues: true
+            }
+          });
+
+          if (retryData.error) {
+            throw new Error('Enhanced extraction also failed');
+          }
+
+          const retryRealValues = retryData.data?.analysis?.healthIndicators?.filter(indicator => 
+            indicator.value && 
+            indicator.value !== 'N/A' && 
+            !indicator.value.includes('Clinical assessment completed') &&
+            !indicator.value.includes('refer to full report') &&
+            indicator.value.trim() !== ''
+          ) || [];
+
+          if (retryRealValues.length > 0) {
+            console.log(`Enhanced extraction found ${retryRealValues.length} real parameters`);
+            toast.success(`Enhanced analysis complete! Found ${retryRealValues.length} specific lab parameters`);
+            if (onSuccess) {
+              onSuccess(retryData.data.analysis);
+            }
+            return retryData.data.analysis;
+          } else {
+            toast.warning('Analysis completed but no specific numerical lab values could be extracted from this report format');
+          }
         }
+      } else {
+        toast.warning('Analysis completed but no lab parameters could be identified in this report');
       }
       
       if (onSuccess) {

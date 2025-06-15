@@ -20,7 +20,10 @@ import {
   ChevronUp,
   Info,
   AlertTriangle,
-  Microscope
+  Microscope,
+  Users,
+  Calendar,
+  TrendingDown
 } from 'lucide-react';
 import { SummaryCard } from './SummaryCard';
 import { MetricInfoDialog } from './MetricInfoDialog';
@@ -135,7 +138,7 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
   // Check if we have valid health indicators
   const hasLabValues = analysis.healthIndicators && analysis.healthIndicators.length > 0;
   const validIndicators = hasLabValues ? analysis.healthIndicators.filter(indicator => 
-    indicator.parameter && indicator.value && indicator.value !== 'N/A'
+    indicator.parameter && indicator.value && indicator.value !== 'N/A' && !indicator.value.includes('Clinical assessment completed')
   ) : [];
 
   // Helper to segment metrics
@@ -153,6 +156,64 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
   const personalizedGreeting = hasLabValues 
     ? `Analysis complete! We found ${validIndicators.length} laboratory parameters in your report.`
     : "We've analyzed your report and extracted the available health information.";
+
+  // Generate type-specific risk factors based on abnormal values
+  const getTypeSpecificRiskFactors = () => {
+    const riskFactors = [];
+    
+    needsAttention.forEach(indicator => {
+      const param = indicator.parameter.toLowerCase();
+      if (param.includes('cholesterol') || param.includes('ldl')) {
+        riskFactors.push('Cardiovascular disease risk due to elevated cholesterol levels');
+      }
+      if (param.includes('glucose') || param.includes('hba1c')) {
+        riskFactors.push('Diabetes risk due to elevated blood sugar levels');
+      }
+      if (param.includes('blood pressure') || param.includes('bp')) {
+        riskFactors.push('Hypertension and related cardiovascular complications');
+      }
+      if (param.includes('liver') || param.includes('alt') || param.includes('ast')) {
+        riskFactors.push('Liver function concerns requiring monitoring');
+      }
+      if (param.includes('kidney') || param.includes('creatinine') || param.includes('urea')) {
+        riskFactors.push('Kidney function concerns requiring evaluation');
+      }
+    });
+
+    // Add some general risk factors if we have abnormal values
+    if (needsAttention.length > 0) {
+      riskFactors.push('Metabolic syndrome risk due to multiple parameter deviations');
+      riskFactors.push('Increased inflammation markers requiring lifestyle modifications');
+    }
+
+    return [...new Set(riskFactors)]; // Remove duplicates
+  };
+
+  // Generate follow-up recommendations based on analysis
+  const getFollowUpRecommendations = () => {
+    const recommendations = [];
+    
+    if (needsAttention.length > 0) {
+      recommendations.push('Follow up with healthcare provider within 2-4 weeks to discuss abnormal results');
+      recommendations.push('Repeat laboratory tests in 3-6 months to monitor progress');
+      recommendations.push('Consider consultation with specialist if multiple parameters remain abnormal');
+    }
+
+    if (needsAttention.length >= 3) {
+      recommendations.push('Comprehensive metabolic panel review with endocrinologist');
+      recommendations.push('Cardiovascular risk assessment with cardiologist');
+    }
+
+    if (validIndicators.length > 0) {
+      recommendations.push('Annual health screening to track parameter trends');
+      recommendations.push('Maintain current healthy lifestyle practices for normal parameters');
+    }
+
+    return recommendations;
+  };
+
+  const typeSpecificRiskFactors = getTypeSpecificRiskFactors();
+  const followUpRecommendations = getFollowUpRecommendations();
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
@@ -189,7 +250,7 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
                   description={`Successfully extracted ${validIndicators.length} laboratory parameters from your report.`}
                 />
               </div>
-              <div className="md:flex gap-4 mb-3">
+              <div className="md:flex gap-4 mb-4">
                 <div className="flex-1">
                   <SummaryCard
                     title="Normal Results"
@@ -215,6 +276,50 @@ export const ReportAnalysis: React.FC<ReportAnalysisProps> = ({
                   />
                 </div>
               </div>
+
+              {/* Type-Specific Risk Factors Section */}
+              {typeSpecificRiskFactors.length > 0 && (
+                <Card className="mb-4 border-orange-200 bg-orange-50">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-orange-800 flex items-center gap-2 text-lg">
+                      <Users className="h-5 w-5" />
+                      Type-Specific Risk Factors
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {typeSpecificRiskFactors.map((factor, index) => (
+                        <div key={index} className="flex items-start gap-3 p-3 bg-orange-100 rounded-lg border border-orange-200">
+                          <TrendingDown className="h-4 w-4 text-orange-600 mt-0.5 flex-shrink-0" />
+                          <p className="text-orange-800 text-sm font-medium">{factor}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Follow-up Recommendations Section */}
+              {followUpRecommendations.length > 0 && (
+                <Card className="mb-4 border-blue-200 bg-blue-50">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-blue-800 flex items-center gap-2 text-lg">
+                      <Calendar className="h-5 w-5" />
+                      Follow-up Recommendations
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {followUpRecommendations.map((recommendation, index) => (
+                        <div key={index} className="flex items-start gap-3 p-3 bg-blue-100 rounded-lg border border-blue-200">
+                          <Clock className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                          <p className="text-blue-800 text-sm font-medium">{recommendation}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </>
           ) : (
             <div className="text-center py-8">
