@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,11 +36,36 @@ const Chat = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Conversational flow state
+  const [showFlow, setShowFlow] = useState(false);
+  const [flowQuestions] = useState([
+    {
+      id: 'symptoms',
+      question: 'What symptoms are you experiencing?',
+      type: 'text' as const
+    },
+    {
+      id: 'duration',
+      question: 'How long have you been experiencing these symptoms?',
+      type: 'multiple-choice' as const,
+      options: ['Less than 24 hours', '1-3 days', '1 week', 'More than a week']
+    }
+  ]);
+
   const hasActiveSubscription = currentSubscription?.status === 'active' && currentSubscription?.subscription_plans?.name !== 'Free';
 
   const handleSignOut = async () => {
     await signOut();
     navigate('/');
+  };
+
+  const handleAnswerSubmit = (questionId: string, answer: string) => {
+    console.log('Answer submitted:', questionId, answer);
+  };
+
+  const handleFlowComplete = (answers: Record<string, string>) => {
+    console.log('Flow completed with answers:', answers);
+    setShowFlow(false);
   };
 
   return (
@@ -142,7 +168,20 @@ const Chat = () => {
         </div>
 
         <div className="h-[calc(100vh-200px)] max-w-4xl mx-auto">
-          <ConversationalFlow />
+          <ConversationalFlow 
+            questions={flowQuestions}
+            onAnswerSubmit={handleAnswerSubmit}
+            onFlowComplete={handleFlowComplete}
+            isActive={showFlow}
+          />
+          
+          {!showFlow && (
+            <div className="flex justify-center">
+              <Button onClick={() => setShowFlow(true)} className="bg-medical-primary hover:bg-medical-dark text-white">
+                Start Health Consultation
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>

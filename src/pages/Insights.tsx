@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/hooks/useSubscription';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { NotificationCenter } from '@/components/notifications/NotificationCenter';
 import { 
   Brain, 
@@ -25,7 +26,9 @@ import {
   Zap,
   Target,
   FileText,
-  Calendar
+  Calendar,
+  CheckCircle,
+  MessageCircle
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -34,6 +37,18 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import { 
+  ChartContainer, 
+  ChartTooltip, 
+  ChartTooltipContent 
+} from '@/components/ui/chart';
+import { 
+  ResponsiveContainer, 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis 
+} from 'recharts';
 import { useMedicalReports } from '@/hooks/useMedicalReports';
 
 const Insights = () => {
