@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,7 +32,9 @@ import {
   Home,
   FileText,
   BarChart3,
-  History
+  History,
+  Activity,
+  Stethoscope
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -42,6 +43,14 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 type WidgetSize = 'small' | 'medium' | 'large';
 
@@ -60,6 +69,7 @@ export const EnhancedHealthInsightsDashboard = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAddWidgetOpen, setIsAddWidgetOpen] = useState(false);
   const [widgets, setWidgets] = useState<Widget[]>([
     { id: 'overview', title: 'Health Overview', component: 'HealthOverviewWidget', size: 'medium', enabled: true },
     { id: 'stats', title: 'Quick Stats', component: 'QuickStatsWidget', size: 'medium', enabled: true },
@@ -75,6 +85,33 @@ export const EnhancedHealthInsightsDashboard = () => {
     navigate('/');
   };
 
+  const handleViewProgress = () => {
+    navigate('/goals');
+  };
+
+  const handleQuickHealthCheck = () => {
+    navigate('/chat');
+  };
+
+  const handleAddWidget = (widgetType: string) => {
+    const newWidget: Widget = {
+      id: Date.now().toString(),
+      title: widgetType,
+      component: `${widgetType}Widget`,
+      size: 'medium',
+      enabled: true,
+    };
+    setWidgets(prev => [...prev, newWidget]);
+    setIsAddWidgetOpen(false);
+  };
+
+  const availableWidgets = [
+    { id: 'chart', title: 'Health Chart', description: 'Interactive health metrics chart' },
+    { id: 'reminders', title: 'Reminders', description: 'Medication and appointment reminders' },
+    { id: 'nutrition', title: 'Nutrition Tracker', description: 'Daily nutrition insights' },
+    { id: 'exercise', title: 'Exercise Log', description: 'Track your fitness activities' },
+  ];
+
   const navigationLinks = [
     { href: '/dashboard', label: 'Dashboard', icon: Home },
     { href: '/upload', label: 'Upload', icon: Upload },
@@ -86,10 +123,10 @@ export const EnhancedHealthInsightsDashboard = () => {
   ];
 
   const quickActions = [
-    { icon: Upload, label: 'Upload Report', action: () => navigate('/upload'), color: 'bg-emerald-500 hover:bg-emerald-600' },
-    { icon: TrendingUp, label: 'View Trends', action: () => navigate('/trends'), color: 'bg-blue-500 hover:bg-blue-600' },
-    { icon: Target, label: 'Set Goals', action: () => navigate('/goals'), color: 'bg-indigo-500 hover:bg-indigo-600' },
-    { icon: MessageSquare, label: 'AI Doctor', action: () => navigate('/chat'), color: 'bg-teal-500 hover:bg-teal-600' },
+    { icon: Upload, label: 'Upload Report', action: () => navigate('/upload'), color: 'bg-slate-500 hover:bg-slate-600' },
+    { icon: Activity, label: 'View Progress', action: handleViewProgress, color: 'bg-blue-500 hover:bg-blue-600' },
+    { icon: Stethoscope, label: 'Quick Health Check', action: handleQuickHealthCheck, color: 'bg-teal-500 hover:bg-teal-600' },
+    { icon: MessageSquare, label: 'AI Doctor', action: () => navigate('/chat'), color: 'bg-emerald-500 hover:bg-emerald-600' },
   ];
 
   const renderWidget = (widget: Widget) => {
@@ -135,7 +172,13 @@ export const EnhancedHealthInsightsDashboard = () => {
           </DashboardWidget>
         );
       default:
-        return null;
+        return (
+          <DashboardWidget {...commonProps} description="Custom widget">
+            <div className="p-4 text-center text-slate-500">
+              <p>Widget coming soon...</p>
+            </div>
+          </DashboardWidget>
+        );
     }
   };
 
@@ -322,10 +365,34 @@ export const EnhancedHealthInsightsDashboard = () => {
 
         {/* Add Widget Button */}
         <div className="mt-8 text-center">
-          <Button variant="outline" className="border-dashed border-2 border-slate-300 text-slate-600 hover:border-slate-400">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Widget
-          </Button>
+          <Dialog open={isAddWidgetOpen} onOpenChange={setIsAddWidgetOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="border-dashed border-2 border-slate-300 text-slate-600 hover:border-slate-400">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Widget
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Add New Widget</DialogTitle>
+                <DialogDescription>
+                  Choose a widget to add to your dashboard
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                {availableWidgets.map((widget) => (
+                  <div
+                    key={widget.id}
+                    className="p-3 border rounded-lg hover:bg-slate-50 cursor-pointer transition-colors"
+                    onClick={() => handleAddWidget(widget.title)}
+                  >
+                    <h4 className="font-medium text-slate-800">{widget.title}</h4>
+                    <p className="text-sm text-slate-600">{widget.description}</p>
+                  </div>
+                ))}
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>
