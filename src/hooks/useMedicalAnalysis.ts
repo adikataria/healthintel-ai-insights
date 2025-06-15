@@ -12,7 +12,6 @@ interface UsemedicalAnalysisProps {
 interface UploadReportData {
   file: File;
   title: string;
-  description?: string;
 }
 
 export const useMedicalAnalysis = ({ onSuccess, onError }: UsemedicalAnalysisProps = {}) => {
@@ -22,7 +21,7 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UsemedicalAnalysisPro
 
   const uploadReport = useMutation({
     mutationFn: async (data: UploadReportData) => {
-      const { file, title, description } = data;
+      const { file, title } = data;
       
       // Upload file to Supabase storage
       const fileExt = file.name.split('.').pop();
@@ -36,16 +35,21 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UsemedicalAnalysisPro
         throw new Error('Failed to upload file');
       }
 
-      // Create report record in database
+      // Get the public URL for the uploaded file
+      const { data: { publicUrl } } = supabase.storage
+        .from('medical-reports')
+        .getPublicUrl(uploadData.path);
+
+      // Create report record in database with only valid columns
       const { data: reportData, error: reportError } = await supabase
         .from('medical_reports')
         .insert({
           title,
-          description,
           file_name: file.name,
-          file_path: uploadData.path,
+          file_url: publicUrl,
           file_size: file.size,
-          mime_type: file.type
+          file_type: file.type,
+          user_id: (await supabase.auth.getUser()).data.user?.id
         })
         .select()
         .single();
