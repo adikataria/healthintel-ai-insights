@@ -1,15 +1,22 @@
+
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Send, Bot, User, Heart, Activity, AlertCircle, Brain, Shield, Sparkles, MessageCircle, Plus, Stethoscope, Zap } from "lucide-react";
+import { Send, Bot, Plus, Sparkles, MessageCircle, Stethoscope, Zap, Settings } from "lucide-react";
 import { ConsentModal } from "@/components/medical/ConsentModal";
 import { SymptomChecker } from "@/components/medical/SymptomChecker";
 import { useAIDoctorChat } from "@/hooks/useAIDoctorChat";
 import { useAuth } from "@/contexts/AuthContext";
+import { EnhancedMessageBubble } from "@/components/medical/EnhancedMessageBubble";
+import { SmartMemoryPanel } from "@/components/medical/SmartMemoryPanel";
+import { ConversationalSuggestions } from "@/components/medical/ConversationalSuggestions";
+import { ConversationalFlow } from "@/components/medical/ConversationalFlow";
+import { EnhancedChatFooter } from "@/components/medical/EnhancedChatFooter";
+import { useTextToSpeech } from "@/hooks/useTextToSpeech";
+import { toast } from "sonner";
 
 const Chat = () => {
   const { user } = useAuth();
@@ -19,8 +26,21 @@ const Chat = () => {
   const [pendingSymptoms, setPendingSymptoms] = useState(null);
   const [activeTab, setActiveTab] = useState("chat");
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const { speak } = useTextToSpeech();
 
-  const { messages, isLoading, sendMessage, sendSymptomAnalysis, userProfile, userReports } = useAIDoctorChat();
+  const { 
+    messages, 
+    isLoading, 
+    sendMessage, 
+    sendSymptomAnalysis, 
+    userProfile, 
+    userReports, 
+    recentInteractions,
+    healthTrends,
+    activeFollowUp,
+    handleFollowUpComplete,
+    recallInteraction
+  } = useAIDoctorChat();
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -29,24 +49,18 @@ const Chat = () => {
     }
   }, [messages]);
 
-  const suggestedQuestions = [
-    "What tests can identify the cause of my ongoing fatigue?",
-    "How can lifestyle changes help manage my fatigue?",
-    "What do my recent lab results suggest about my health?",
-    "Can you analyze my symptoms and provide risk assessment?"
-  ];
-
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim()) return;
+  const handleSendMessage = async (message?: string) => {
+    const messageToSend = message || inputMessage;
+    if (!messageToSend.trim()) return;
 
     // Check if this is the first message and show consent
     if (messages.length === 0) {
-      setPendingMessage(inputMessage);
+      setPendingMessage(messageToSend);
       setShowConsentModal(true);
       return;
     }
 
-    await sendMessage(inputMessage);
+    await sendMessage(messageToSend);
     setInputMessage("");
   };
 
@@ -59,7 +73,7 @@ const Chat = () => {
     }
 
     await sendSymptomAnalysis(symptoms, additionalContext);
-    setActiveTab("chat"); // Switch to chat tab to see results
+    setActiveTab("chat");
   };
 
   const handleConsentAccepted = async () => {
@@ -84,8 +98,13 @@ const Chat = () => {
     setPendingSymptoms(null);
   };
 
-  const handleSuggestedQuestion = (question: string) => {
-    setInputMessage(question);
+  const handleSpeak = (text: string) => {
+    speak(text);
+  };
+
+  const handleFeedback = (messageId: string, feedback: 'positive' | 'negative') => {
+    toast.success(`Thank you for your ${feedback} feedback!`);
+    // Here you could send feedback to backend
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -95,65 +114,68 @@ const Chat = () => {
     }
   };
 
-  // Add initial AI message if no messages exist
-  const displayMessages = messages.length === 0 ? [{
-    id: 'welcome',
-    role: 'assistant' as const,
-    content: `Hello! I'm DocLumen AI, your advanced health assistant. I can help you with:
+  // Get user context for smart suggestions
+  const userContext = {
+    hasSymptoms: messages.some(m => m.content.toLowerCase().includes('symptom')),
+    hasPreviousVisit: recentInteractions.length > 0,
+    hasLabReports: userReports > 0
+  };
 
-🔹 **Symptom Analysis** - Detailed assessment with risk levels and urgency
-🔹 **Lab Report Integration** - Correlate your reports with symptoms
-🔹 **Personalized Insights** - Tailored advice based on your health profile
-🔹 **Preventive Guidance** - Risk predictions and wellness recommendations
-
-${userProfile ? '✅ Your health profile is loaded for personalized insights' : '📝 Complete your health profile for better personalization'}
-${userReports > 0 ? `✅ ${userReports} lab reports available for analysis` : '📋 Upload lab reports for comprehensive analysis'}
-
-⚠️ **Important**: This AI provides educational information only and does not replace professional medical advice.`,
-    timestamp: new Date(),
-    isStreaming: false
-  }] : messages;
+  const lastAIMessage = messages.filter(m => m.role === 'assistant').pop()?.content;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Mobile-Optimized Header */}
-      <div className="bg-white border-b border-gray-200 px-3 sm:px-4 py-2 sm:py-3">
+    <div className="min-h-screen bg-gradient-to-br from-medical-light/20 via-white to-blue-50/30">
+      {/* Enhanced Header */}
+      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 px-4 py-3 sticky top-0 z-10">
         <div className="flex items-center justify-between max-w-6xl mx-auto">
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-teal-100 rounded-lg flex items-center justify-center flex-shrink-0 relative">
-              <Brain className="h-3 w-3 sm:h-4 sm:w-4 text-teal-600" />
-              {/* Real-time indicator */}
-              <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="w-10 h-10 bg-gradient-to-br from-medical-primary to-medical-secondary rounded-xl flex items-center justify-center shadow-sm">
+                <Bot className="h-5 w-5 text-white" />
+              </div>
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full animate-pulse border-2 border-white"></div>
             </div>
-            <div className="min-w-0">
-              <h1 className="font-semibold text-sm sm:text-base text-gray-900 truncate flex items-center gap-1">
-                DocLumen AI - Enhanced
-                <Zap className="h-3 w-3 text-yellow-500" />
+            <div>
+              <h1 className="font-semibold text-gray-900 flex items-center gap-2">
+                DocLumen AI Doctor
+                <Sparkles className="h-4 w-4 text-yellow-500" />
               </h1>
-              <p className="text-xs text-gray-500 hidden sm:block">Fast & Real-time Health Assistant</p>
+              <p className="text-sm text-gray-600">Your intelligent health companion</p>
             </div>
           </div>
-          <Button variant="outline" size="sm" className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
-            <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
-            <span className="hidden sm:inline">New Chat</span>
-            <span className="sm:hidden">New</span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" className="gap-2">
+              <Settings className="h-4 w-4" />
+              Settings
+            </Button>
+            <Button variant="outline" size="sm" className="gap-2">
+              <Plus className="h-4 w-4" />
+              New Chat
+            </Button>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto p-2 sm:p-4">
-        {/* Mobile-Responsive Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-3 sm:space-y-6">
-          <TabsList className="grid w-full grid-cols-2 h-9 sm:h-10">
-            <TabsTrigger value="chat" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
-              <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Chat Interface</span>
-              <span className="sm:hidden">Chat</span>
+      <div className="max-w-6xl mx-auto p-4">
+        {/* Smart Memory Panel */}
+        <SmartMemoryPanel
+          userProfile={userProfile}
+          recentInteractions={recentInteractions}
+          healthTrends={healthTrends}
+          onRecallInteraction={recallInteraction}
+          onViewHistory={() => toast.info('Chat history feature coming soon')}
+        />
+
+        {/* Main Interface Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2 h-12 bg-white/80 backdrop-blur-sm">
+            <TabsTrigger value="chat" className="flex items-center gap-2 data-[state=active]:bg-medical-primary data-[state=active]:text-white">
+              <MessageCircle className="h-4 w-4" />
+              Chat Interface
             </TabsTrigger>
-            <TabsTrigger value="symptoms" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm">
-              <Stethoscope className="h-3 w-3 sm:h-4 sm:w-4" />
-              <span className="hidden sm:inline">Symptom Checker</span>
-              <span className="sm:hidden">Symptoms</span>
+            <TabsTrigger value="symptoms" className="flex items-center gap-2 data-[state=active]:bg-medical-primary data-[state=active]:text-white">
+              <Stethoscope className="h-4 w-4" />
+              Symptom Checker
             </TabsTrigger>
           </TabsList>
 
@@ -165,136 +187,72 @@ ${userReports > 0 ? `✅ ${userReports} lab reports available for analysis` : '�
           </TabsContent>
 
           <TabsContent value="chat">
-            {/* Mobile-Optimized Chat Area */}
-            <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-200 mb-3 sm:mb-6">
-              {/* AI Avatar Section - Mobile Optimized */}
-              {messages.length === 0 && (
-                <div className="text-center py-6 sm:py-16 px-3 sm:px-6">
-                  <div className="w-16 h-16 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6 bg-gradient-to-br from-teal-100 to-blue-100 rounded-full flex items-center justify-center relative">
-                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center shadow-sm relative">
-                      <Brain className="h-6 w-6 sm:h-8 sm:w-8 text-teal-600" />
-                      <div className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 w-4 h-4 sm:w-6 sm:h-6 bg-green-500 rounded-full flex items-center justify-center">
-                        <Sparkles className="h-2 w-2 sm:h-3 sm:w-3 text-white" />
-                      </div>
-                    </div>
-                    {/* Fast response indicator */}
-                    <div className="absolute -bottom-1 -right-1 bg-yellow-500 rounded-full p-1">
-                      <Zap className="h-2 w-2 text-white" />
-                    </div>
-                  </div>
-                  
-                  <h2 className="text-lg sm:text-2xl font-semibold text-gray-900 mb-1 sm:mb-2 flex items-center justify-center gap-2">
-                    DocLumen AI - Enhanced
-                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">FAST</span>
-                  </h2>
-                  <p className="text-sm sm:text-base text-gray-600 mb-1">
-                    Your advanced health assistant with real-time responses
-                  </p>
-                  <p className="text-xs sm:text-sm text-gray-500 mb-4 sm:mb-8">
-                    Now with ultra-fast symptom analysis & instant insights
-                  </p>
+            {/* Conversational Flow */}
+            {activeFollowUp.length > 0 && (
+              <ConversationalFlow
+                questions={activeFollowUp}
+                onAnswerSubmit={() => {}}
+                onFlowComplete={handleFollowUpComplete}
+                isActive={true}
+              />
+            )}
 
-                  {/* Fixed Mobile-Optimized Suggested Questions */}
-                  <div className="mb-4 sm:mb-8">
-                    <p className="text-xs sm:text-sm text-gray-600 mb-3 sm:mb-4">Pick a suggested question or ask your own</p>
-                    <div className="space-y-2 sm:space-y-3 max-w-4xl mx-auto px-2 sm:px-0">
-                      {suggestedQuestions.map((question, index) => (
-                        <Button
-                          key={index}
-                          variant="outline"
-                          onClick={() => handleSuggestedQuestion(question)}
-                          className="w-full h-auto p-3 sm:p-4 text-left justify-start bg-gray-50 hover:bg-teal-50 border border-gray-200 hover:border-teal-200 transition-all duration-200"
-                          disabled={isLoading}
-                        >
-                          <div className="flex items-start gap-2 sm:gap-3 w-full">
-                            <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-teal-500 flex items-center justify-center flex-shrink-0 mt-0.5">
-                              <span className="text-white text-xs">→</span>
-                            </div>
-                            <span className="text-gray-700 text-xs sm:text-sm text-left leading-relaxed break-words">{question}</span>
-                          </div>
-                        </Button>
-                      ))}
+            {/* Main Chat Interface */}
+            <Card className="shadow-lg border-0 bg-white/95 backdrop-blur-sm">
+              {/* Welcome State */}
+              {messages.length === 0 && (
+                <CardContent className="p-8">
+                  <div className="text-center mb-8">
+                    <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-medical-primary/20 to-medical-secondary/20 rounded-full flex items-center justify-center">
+                      <Bot className="h-10 w-10 text-medical-primary" />
                     </div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                      Welcome to DocLumen AI Doctor
+                    </h2>
+                    <p className="text-gray-600 max-w-2xl mx-auto">
+                      I'm here to provide personalized health guidance, answer your medical questions, 
+                      and help you understand your symptoms. Let's start a conversation about your health.
+                    </p>
                   </div>
-                </div>
+
+                  <ConversationalSuggestions
+                    onSuggestionClick={handleSendMessage}
+                    userContext={userContext}
+                  />
+                </CardContent>
               )}
 
-              {/* Mobile-Optimized Messages Area */}
+              {/* Messages Area */}
               {messages.length > 0 && (
-                <ScrollArea className="h-[400px] sm:h-[500px] p-3 sm:p-6" ref={scrollAreaRef}>
-                  <div className="space-y-4 sm:space-y-6">
-                    {displayMessages.map((message) => (
-                      <div
+                <ScrollArea className="h-[500px] p-6" ref={scrollAreaRef}>
+                  <div className="space-y-6">
+                    {messages.map((message) => (
+                      <EnhancedMessageBubble
                         key={message.id}
-                        className={`flex gap-2 sm:gap-4 ${message.role === 'user' ? 'flex-row-reverse' : ''}`}
-                      >
-                        <Avatar className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0">
-                          {message.role === 'assistant' ? (
-                            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-teal-100 rounded-full flex items-center justify-center relative">
-                              <Brain className="h-3 w-3 sm:h-4 sm:w-4 text-teal-600" />
-                              {message.isStreaming && (
-                                <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                              )}
-                            </div>
-                          ) : (
-                            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                              <User className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600" />
-                            </div>
-                          )}
-                          <AvatarFallback>
-                            {message.role === 'assistant' ? 'AI' : 'U'}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className={`max-w-[85%] sm:max-w-[80%] ${message.role === 'user' ? 'text-right' : ''}`}>
-                          <div
-                            className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl ${
-                              message.role === 'assistant'
-                                ? 'bg-gray-50 border border-gray-100'
-                                : 'bg-blue-500 text-white'
-                            }`}
-                          >
-                            <p className="text-xs sm:text-sm whitespace-pre-line leading-relaxed">
-                              {message.content}
-                              {message.isStreaming && (
-                                <span className="inline-flex items-center ml-2">
-                                  <div className="flex space-x-1">
-                                    <div className="w-1 h-1 bg-teal-500 rounded-full animate-bounce"></div>
-                                    <div className="w-1 h-1 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                                    <div className="w-1 h-1 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                                  </div>
-                                </span>
-                              )}
-                            </p>
-                          </div>
-                          <p className="text-xs text-gray-500 mt-1 sm:mt-2 flex items-center gap-1">
-                            {message.timestamp.toLocaleTimeString([], { 
-                              hour: '2-digit', 
-                              minute: '2-digit' 
-                            })}
-                            {message.role === 'assistant' && message.metadata?.optimizedForSpeed && (
-                              <Zap className="h-3 w-3 text-yellow-500" />
-                            )}
-                          </p>
-                        </div>
-                      </div>
+                        role={message.role}
+                        content={message.content}
+                        timestamp={message.timestamp}
+                        isStreaming={message.isStreaming}
+                        messageId={message.id}
+                        onSpeak={handleSpeak}
+                        onFeedback={handleFeedback}
+                      />
                     ))}
                     
                     {isLoading && (
-                      <div className="flex gap-2 sm:gap-4">
-                        <Avatar className="w-6 h-6 sm:w-8 sm:h-8">
-                          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-teal-100 rounded-full flex items-center justify-center relative">
-                            <Brain className="h-3 w-3 sm:h-4 sm:w-4 text-teal-600" />
-                            <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                      <div className="flex gap-3">
+                        <div className="w-8 h-8 bg-gradient-to-br from-medical-primary to-medical-secondary rounded-full flex items-center justify-center">
+                          <Bot className="h-4 w-4 text-white" />
+                        </div>
+                        <div className="bg-white border border-gray-200 p-4 rounded-2xl rounded-tl-sm shadow-sm">
+                          <div className="flex items-center gap-2">
+                            <div className="flex space-x-1">
+                              <div className="w-2 h-2 bg-medical-primary rounded-full animate-bounce"></div>
+                              <div className="w-2 h-2 bg-medical-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                              <div className="w-2 h-2 bg-medical-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                            </div>
+                            <span className="text-sm text-gray-600">Analyzing your health query...</span>
                           </div>
-                          <AvatarFallback>AI</AvatarFallback>
-                        </Avatar>
-                        <div className="bg-gray-50 border border-gray-100 p-3 sm:p-4 rounded-xl sm:rounded-2xl flex items-center gap-2">
-                          <div className="flex space-x-1">
-                            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-teal-500 rounded-full animate-bounce"></div>
-                            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-teal-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                          </div>
-                          <span className="text-xs text-gray-500">Analyzing...</span>
                         </div>
                       </div>
                     )}
@@ -302,127 +260,54 @@ ${userReports > 0 ? `✅ ${userReports} lab reports available for analysis` : '�
                 </ScrollArea>
               )}
               
-              {/* Mobile-Optimized Input Area */}
-              <div className="border-t border-gray-100 p-3 sm:p-4">
-                <div className="flex gap-2 sm:gap-3">
-                  <div className="flex-1 relative">
+              {/* Enhanced Chat Footer */}
+              {messages.length > 0 && (
+                <div className="border-t border-gray-100 p-4">
+                  <EnhancedChatFooter
+                    value={inputMessage}
+                    suggested={[
+                      "Can you explain this in simpler terms?",
+                      "What should I do next?",
+                      "Are there any warning signs to watch for?"
+                    ]}
+                    onChange={setInputMessage}
+                    onSend={handleSendMessage}
+                    disabled={isLoading}
+                    lastAIMessage={lastAIMessage}
+                    allowCorrection={true}
+                    onRequestCorrection={() => handleSendMessage("Could you please clarify or provide more details about your previous response?")}
+                  />
+                </div>
+              )}
+
+              {/* Simple Input for Welcome State */}
+              {messages.length === 0 && (
+                <div className="border-t border-gray-100 p-6">
+                  <div className="flex gap-3">
                     <Input
                       value={inputMessage}
                       onChange={(e) => setInputMessage(e.target.value)}
                       onKeyPress={handleKeyPress}
-                      placeholder="Type your question here..."
-                      className="h-10 sm:h-12 border-gray-200 focus:border-teal-300 rounded-lg sm:rounded-xl text-sm"
+                      placeholder="Type your health question here..."
+                      className="flex-1 h-12 border-gray-200 focus:border-medical-primary rounded-xl"
                       disabled={isLoading}
                     />
-                    {!isLoading && (
-                      <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
-                        <Zap className="h-3 w-3 text-yellow-500" />
-                      </div>
-                    )}
+                    <Button 
+                      onClick={() => handleSendMessage()}
+                      disabled={!inputMessage.trim() || isLoading}
+                      className="h-12 px-6 bg-medical-primary hover:bg-medical-dark text-white rounded-xl"
+                    >
+                      <Send className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <Button 
-                    onClick={handleSendMessage}
-                    disabled={!inputMessage.trim() || isLoading}
-                    className="h-10 sm:h-12 px-3 sm:px-6 bg-teal-500 hover:bg-teal-600 text-white rounded-lg sm:rounded-xl"
-                  >
-                    <Send className="h-3 w-3 sm:h-4 sm:w-4" />
-                  </Button>
+                  <p className="text-xs text-gray-500 mt-2 text-center">
+                    Press Enter to send • Your conversations are private and secure
+                  </p>
                 </div>
-              </div>
-            </div>
+              )}
+            </Card>
           </TabsContent>
         </Tabs>
-
-        {/* Mobile-Responsive Information Cards */}
-        <div className="grid grid-cols-1 gap-3 sm:gap-6">
-          {/* Enhanced AI Capabilities - Mobile Optimized */}
-          <Card className="shadow-sm border border-gray-200">
-            <CardHeader className="pb-3 sm:pb-4">
-              <CardTitle className="text-base sm:text-lg flex items-center gap-2 text-gray-900">
-                <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
-                Enhanced AI Capabilities
-                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full ml-auto">FAST</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 sm:space-y-4">
-              <div className="flex items-start gap-2 sm:gap-3">
-                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Stethoscope className="h-3 w-3 sm:h-4 sm:w-4 text-red-500" />
-                </div>
-                <div>
-                  <p className="text-xs sm:text-sm font-medium text-gray-700">Advanced Symptom Analysis</p>
-                  <p className="text-xs text-gray-600">Multi-symptom assessment with context, duration & intensity</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2 sm:gap-3">
-                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Activity className="h-3 w-3 sm:h-4 sm:w-4 text-green-500" />
-                </div>
-                <div>
-                  <p className="text-xs sm:text-sm font-medium text-gray-700">Personalized Health Insights</p>
-                  <p className="text-xs text-gray-600">Tailored advice based on your profile & medical history</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2 sm:gap-3">
-                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Brain className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500" />
-                </div>
-                <div>
-                  <p className="text-xs sm:text-sm font-medium text-gray-700">Predictive Risk Analysis</p>
-                  <p className="text-xs text-gray-600">Early warnings & preventive recommendations</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2 sm:gap-3">
-                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Shield className="h-3 w-3 sm:h-4 sm:w-4 text-purple-500" />
-                </div>
-                <div>
-                  <p className="text-xs sm:text-sm font-medium text-gray-700">Lab Report Integration</p>
-                  <p className="text-xs text-gray-600">Correlates symptoms with your uploaded lab results</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Medical Disclaimer - Mobile Optimized */}
-          <Card className="shadow-sm border border-orange-200 bg-orange-50">
-            <CardHeader className="pb-3 sm:pb-4">
-              <CardTitle className="text-base sm:text-lg flex items-center gap-2 text-orange-800">
-                <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500" />
-                Medical Disclaimer & Compliance
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 sm:space-y-4">
-              <div className="flex items-start gap-2 sm:gap-3">
-                <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500 flex-shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="font-semibold text-xs sm:text-sm text-orange-800 mb-1">Educational Purpose Only</h4>
-                  <p className="text-xs text-orange-700">
-                    This AI provides general health information and should not replace professional medical advice.
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2 sm:gap-3">
-                <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500 flex-shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="font-semibold text-xs sm:text-sm text-blue-800 mb-1">Privacy Protected</h4>
-                  <p className="text-xs text-blue-700">
-                    Your data is protected under India's DPDP Act, 2023 and processed securely.
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-2 sm:gap-3">
-                <Heart className="h-4 w-4 sm:h-5 sm:w-5 text-red-500 flex-shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="font-semibold text-xs sm:text-sm text-red-800 mb-1">Consult Healthcare Providers</h4>
-                  <p className="text-xs text-red-700">
-                    Always consult qualified healthcare providers for medical decisions and treatment plans.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       </div>
 
       {/* Consent Modal */}
