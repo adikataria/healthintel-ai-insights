@@ -83,21 +83,21 @@ export const AuthForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row">
-      {/* Left Section: Illustration, tagline */}
-      <div className="relative flex-1 flex flex-col justify-center items-center p-8 bg-medical-primary rounded-b-3xl md:rounded-b-none md:rounded-l-3xl overflow-hidden z-10">
+    <div className="min-h-screen flex flex-col lg:flex-row">
+      {/* Left Section: Illustration, tagline - Hidden on mobile, visible on large screens */}
+      <div className="hidden lg:flex relative flex-1 flex-col justify-center items-center p-8 bg-medical-primary rounded-l-3xl overflow-hidden z-10">
         {/* Logo */}
         <div className="flex items-center gap-3 mb-8">
           <span className="w-14 h-14 flex items-center justify-center rounded-2xl bg-medical-secondary shadow-lg">
             <Heart className="h-8 w-8 text-white" />
           </span>
-          <span className="text-3xl md:text-4xl font-montserrat font-bold text-white">DocLumen</span>
+          <span className="text-3xl xl:text-4xl font-montserrat font-bold text-white">DocLumen</span>
         </div>
         {/* Tagline and Illustration */}
-        <h2 className="text-xl md:text-2xl font-bold text-white/90 mb-4 text-center">
+        <h2 className="text-xl xl:text-2xl font-bold text-white/90 mb-4 text-center">
           Your Intelligent Health Companion
         </h2>
-        <p className="mb-9 max-w-xs text-white/80 text-center md:text-lg">
+        <p className="mb-9 max-w-xs text-white/80 text-center xl:text-lg">
           Empowering you and your family with AI-driven health insights and care, anytime, anywhere.
         </p>
         <div className="flex flex-col gap-9 w-full max-w-xs">
@@ -130,32 +130,49 @@ export const AuthForm = () => {
           </div>
         </div>
       </div>
+
+      {/* Mobile Header - Only visible on mobile */}
+      <div className="lg:hidden bg-medical-primary text-white p-6 text-center">
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <span className="w-10 h-10 flex items-center justify-center rounded-xl bg-medical-secondary shadow-lg">
+            <Heart className="h-6 w-6 text-white" />
+          </span>
+          <span className="text-2xl font-montserrat font-bold">DocLumen</span>
+        </div>
+        <h2 className="text-lg font-bold text-white/90 mb-2">
+          Your Intelligent Health Companion
+        </h2>
+        <p className="text-white/80 text-sm">
+          AI-driven health insights and care
+        </p>
+      </div>
+
       {/* Right Section: Auth Form */}
-      <div className="flex-1 flex items-center justify-center p-4 md:p-12 bg-white z-20">
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-12 bg-white z-20 min-h-[calc(100vh-200px)] lg:min-h-screen">
         <Card className="w-full max-w-md shadow-xl border-0">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center font-montserrat text-medical-primary tracking-tight">
+          <CardHeader className="space-y-1 px-4 sm:px-6">
+            <CardTitle className="text-xl sm:text-2xl font-bold text-center font-montserrat text-medical-primary tracking-tight">
               Welcome!
             </CardTitle>
-            <CardDescription className="text-center font-roboto">
+            <CardDescription className="text-center font-roboto text-sm">
               Sign in to your DocLumen account or create a new one
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 sm:px-6">
             <Tabs defaultValue="signin" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="signin">Sign In</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 mb-4 sm:mb-6">
+                <TabsTrigger value="signin" className="text-sm">Sign In</TabsTrigger>
+                <TabsTrigger value="signup" className="text-sm">Sign Up</TabsTrigger>
               </TabsList>
 
               {/* SIGN IN */}
-              <TabsContent value="signin" className="space-y-4">
+              <TabsContent value="signin" className="space-y-3 sm:space-y-4">
                 {/* Google Sign In Button */}
                 <Button 
                   onClick={handleGoogleSignIn}
                   disabled={isGoogleLoading}
                   variant="outline"
-                  className="w-full h-11 border-2 hover:bg-gray-50"
+                  className="w-full h-10 sm:h-11 border-2 hover:bg-gray-50 text-sm"
                 >
                   {isGoogleLoading ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -191,9 +208,9 @@ export const AuthForm = () => {
                   </div>
                 </div>
 
-                <form onSubmit={handleSignIn} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-email">Email</Label>
+                <form onSubmit={handleSignIn} className="space-y-3 sm:space-y-4">
+                  <div className="space-y-1 sm:space-y-2">
+                    <Label htmlFor="signin-email" className="text-sm">Email</Label>
                     <Input
                       id="signin-email"
                       type="email"
@@ -202,11 +219,11 @@ export const AuthForm = () => {
                       onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
                       autoComplete="username"
                       required
-                      className="h-11"
+                      className="h-10 sm:h-11 text-sm"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signin-password">Password</Label>
+                  <div className="space-y-1 sm:space-y-2">
+                    <Label htmlFor="signin-password" className="text-sm">Password</Label>
                     <Input
                       id="signin-password"
                       type="password"
@@ -215,12 +232,12 @@ export const AuthForm = () => {
                       onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
                       autoComplete="current-password"
                       required
-                      className="h-11"
+                      className="h-10 sm:h-11 text-sm"
                     />
                   </div>
                   <Button 
                     type="submit" 
-                    className="w-full h-11 bg-medical-primary hover:bg-medical-dark duration-150 ease-in"
+                    className="w-full h-10 sm:h-11 bg-medical-primary hover:bg-medical-dark duration-150 ease-in text-sm"
                     disabled={isLoading}
                   >
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -228,20 +245,20 @@ export const AuthForm = () => {
                   </Button>
                 </form>
                 <div className="w-full flex items-center justify-center mt-2">
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-muted-foreground text-center">
                     Don&apos;t have an account? <a className="text-medical-secondary font-semibold hover:underline" href="#" onClick={e => { e.preventDefault(); document.querySelector('[data-state="signup"]')?.dispatchEvent(new MouseEvent('click', { bubbles: true }))}}>Sign up free</a>
                   </span>
                 </div>
               </TabsContent>
 
               {/* SIGN UP */}
-              <TabsContent value="signup" className="space-y-4">
+              <TabsContent value="signup" className="space-y-3 sm:space-y-4">
                 {/* Google Sign Up Button */}
                 <Button 
                   onClick={handleGoogleSignIn}
                   disabled={isGoogleLoading}
                   variant="outline"
-                  className="w-full h-11 border-2 hover:bg-gray-50"
+                  className="w-full h-10 sm:h-11 border-2 hover:bg-gray-50 text-sm"
                 >
                   {isGoogleLoading ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -277,20 +294,20 @@ export const AuthForm = () => {
                   </div>
                 </div>
 
-                <form onSubmit={handleSignUp} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-name">Full Name</Label>
+                <form onSubmit={handleSignUp} className="space-y-3 sm:space-y-4">
+                  <div className="space-y-1 sm:space-y-2">
+                    <Label htmlFor="signup-name" className="text-sm">Full Name</Label>
                     <Input
                       id="signup-name"
                       type="text"
                       placeholder="Enter your full name"
                       value={signUpData.fullName}
                       onChange={(e) => setSignUpData({ ...signUpData, fullName: e.target.value })}
-                      className="h-11"
+                      className="h-10 sm:h-11 text-sm"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
+                  <div className="space-y-1 sm:space-y-2">
+                    <Label htmlFor="signup-email" className="text-sm">Email</Label>
                     <Input
                       id="signup-email"
                       type="email"
@@ -299,11 +316,11 @@ export const AuthForm = () => {
                       onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
                       autoComplete="email"
                       required
-                      className="h-11"
+                      className="h-10 sm:h-11 text-sm"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password">Password</Label>
+                  <div className="space-y-1 sm:space-y-2">
+                    <Label htmlFor="signup-password" className="text-sm">Password</Label>
                     <Input
                       id="signup-password"
                       type="password"
@@ -312,11 +329,11 @@ export const AuthForm = () => {
                       onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
                       autoComplete="new-password"
                       required
-                      className="h-11"
+                      className="h-10 sm:h-11 text-sm"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-confirm">Confirm Password</Label>
+                  <div className="space-y-1 sm:space-y-2">
+                    <Label htmlFor="signup-confirm" className="text-sm">Confirm Password</Label>
                     <Input
                       id="signup-confirm"
                       type="password"
@@ -324,12 +341,12 @@ export const AuthForm = () => {
                       value={signUpData.confirmPassword}
                       onChange={(e) => setSignUpData({ ...signUpData, confirmPassword: e.target.value })}
                       required
-                      className="h-11"
+                      className="h-10 sm:h-11 text-sm"
                     />
                   </div>
                   <Button 
                     type="submit" 
-                    className="w-full h-11 bg-medical-primary hover:bg-medical-dark duration-150 ease-in"
+                    className="w-full h-10 sm:h-11 bg-medical-primary hover:bg-medical-dark duration-150 ease-in text-sm"
                     disabled={isLoading}
                   >
                     {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

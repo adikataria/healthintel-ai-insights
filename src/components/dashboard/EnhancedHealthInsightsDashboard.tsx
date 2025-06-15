@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,7 +35,8 @@ import {
   BarChart3,
   History,
   Activity,
-  Stethoscope
+  Stethoscope,
+  ChefHat
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -120,13 +122,14 @@ export const EnhancedHealthInsightsDashboard = () => {
     { href: '/health-history', label: 'History', icon: History },
     { href: '/chat', label: 'AI Assistant', icon: MessageSquare },
     { href: '/trends', label: 'Trends', icon: BarChart3 },
+    { href: '/diet-planner', label: 'Diet Planner', icon: ChefHat },
   ];
 
   const quickActions = [
     { icon: Upload, label: 'Upload Report', action: () => navigate('/upload'), color: 'bg-slate-500 hover:bg-slate-600' },
     { icon: Activity, label: 'View Progress', action: handleViewProgress, color: 'bg-blue-500 hover:bg-blue-600' },
     { icon: Stethoscope, label: 'Quick Health Check', action: handleQuickHealthCheck, color: 'bg-teal-500 hover:bg-teal-600' },
-    { icon: MessageSquare, label: 'AI Doctor', action: () => navigate('/chat'), color: 'bg-emerald-500 hover:bg-emerald-600' },
+    { icon: ChefHat, label: 'Diet Planner', action: () => navigate('/diet-planner'), color: 'bg-emerald-500 hover:bg-emerald-600' },
   ];
 
   const renderWidget = (widget: Widget) => {
@@ -184,19 +187,19 @@ export const EnhancedHealthInsightsDashboard = () => {
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark bg-slate-900' : 'bg-slate-50'}`}>
-      {/* Sticky Navigation */}
-      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 py-3">
+      {/* Sticky Navigation - Responsive */}
+      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 px-2 sm:px-4 py-2 sm:py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
             {/* Desktop Navigation Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="hidden md:flex items-center gap-2">
+                <Button variant="ghost" size="sm" className="hidden md:flex items-center gap-2 px-2 sm:px-3">
                   <Menu className="h-4 w-4" />
-                  <span>Menu</span>
+                  <span className="hidden lg:inline">Menu</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56">
+              <DropdownMenuContent align="start" className="w-56 z-50 bg-white">
                 {navigationLinks.map((link) => {
                   const Icon = link.icon;
                   return (
@@ -219,57 +222,70 @@ export const EnhancedHealthInsightsDashboard = () => {
               variant="ghost"
               size="sm"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden"
+              className="md:hidden p-1 sm:p-2"
             >
-              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {isMobileMenuOpen ? <X className="h-4 w-4 sm:h-5 sm:w-5" /> : <Menu className="h-4 w-4 sm:h-5 sm:w-5" />}
             </Button>
             
-            {/* Quick Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+            {/* Quick Search - Responsive */}
+            <div className="relative flex-1 max-w-xs sm:max-w-sm lg:max-w-md">
+              <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-slate-400" />
               <Input
-                placeholder="Search reports, insights..."
+                placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 w-64 h-9 bg-slate-100 border-slate-200"
+                className="pl-7 sm:pl-10 w-full h-8 sm:h-9 bg-slate-100 border-slate-200 text-sm"
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 sm:gap-3">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsDarkMode(!isDarkMode)}
+              className="p-1 sm:p-2"
             >
-              <Moon className="h-4 w-4" />
+              <Moon className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
             
-            <NotificationCenter />
+            <div className="hidden sm:block">
+              <NotificationCenter />
+            </div>
             
             {!hasActiveSubscription && (
               <Button 
                 onClick={() => navigate('/pricing')}
-                className="bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white font-semibold px-4 py-2 rounded-lg text-sm flex items-center gap-2"
+                className="bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white font-semibold px-2 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm flex items-center gap-1 sm:gap-2"
               >
-                <Crown className="h-4 w-4" />
-                UPGRADE
+                <Crown className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">UPGRADE</span>
+                <span className="sm:hidden">UP</span>
               </Button>
             )}
 
             {/* User Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                  <div className="w-7 h-7 bg-slate-200 rounded-full flex items-center justify-center">
-                    <User className="h-4 w-4 text-slate-600" />
+                <Button variant="ghost" size="sm" className="flex items-center gap-1 sm:gap-2 p-1 sm:p-2">
+                  <div className="w-6 h-6 sm:w-7 sm:h-7 bg-slate-200 rounded-full flex items-center justify-center">
+                    <User className="h-3 w-3 sm:h-4 sm:w-4 text-slate-600" />
                   </div>
-                  <span className="hidden md:block text-sm font-medium text-slate-700 max-w-24 truncate">
+                  <span className="hidden lg:block text-sm font-medium text-slate-700 max-w-20 truncate">
                     {user?.email?.split('@')[0]}
                   </span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuContent align="end" className="w-56 z-50 bg-white">
+                <div className="sm:hidden">
+                  <DropdownMenuItem asChild>
+                    <div className="flex items-center p-2">
+                      <Bell className="mr-2 h-4 w-4" />
+                      <span>Notifications</span>
+                    </div>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </div>
                 <DropdownMenuItem asChild>
                   <button onClick={() => navigate('/settings')} className="flex items-center w-full">
                     <Settings className="mr-2 h-4 w-4" />
@@ -301,7 +317,7 @@ export const EnhancedHealthInsightsDashboard = () => {
                       navigate(link.href);
                       setIsMobileMenuOpen(false);
                     }}
-                    className="flex items-center gap-2 justify-start"
+                    className="flex items-center gap-2 justify-start text-sm"
                   >
                     <Icon className="h-4 w-4" />
                     {link.label}
@@ -319,10 +335,10 @@ export const EnhancedHealthInsightsDashboard = () => {
                     action.action();
                     setIsMobileMenuOpen(false);
                   }}
-                  className="flex items-center gap-2 justify-start"
+                  className="flex items-center gap-2 justify-start text-xs"
                 >
-                  <action.icon className="h-4 w-4" />
-                  {action.label}
+                  <action.icon className="h-3 w-3" />
+                  <span className="truncate">{action.label}</span>
                 </Button>
               ))}
             </div>
@@ -330,49 +346,51 @@ export const EnhancedHealthInsightsDashboard = () => {
         )}
       </div>
 
-      <div className="max-w-7xl mx-auto p-4 md:p-6">
+      <div className="max-w-7xl mx-auto p-2 sm:p-4 md:p-6">
         {/* Personalized Greeting */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <PersonalizedGreeting />
         </div>
 
-        {/* Quick Actions Grid - Desktop */}
-        <div className="hidden md:grid grid-cols-4 gap-4 mb-8">
+        {/* Quick Actions Grid - Desktop and Mobile */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 mb-6 sm:mb-8">
           {quickActions.map((action, index) => (
             <Button
               key={index}
               onClick={action.action}
-              className={`${action.color} text-white p-6 h-auto flex flex-col items-center gap-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200`}
+              className={`${action.color} text-white p-3 sm:p-6 h-auto flex flex-col items-center gap-2 sm:gap-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-200`}
             >
-              <action.icon className="h-8 w-8" />
-              <span className="font-semibold">{action.label}</span>
+              <action.icon className="h-5 w-5 sm:h-8 sm:w-8" />
+              <span className="font-semibold text-xs sm:text-base text-center leading-tight">{action.label}</span>
             </Button>
           ))}
         </div>
 
-        {/* Main Dashboard Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-min">
-          {/* Interactive Chart - Always visible, spans 2 columns */}
-          <InteractiveChart />
+        {/* Main Dashboard Grid - Responsive */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 auto-rows-min">
+          {/* Interactive Chart - Always visible, responsive width */}
+          <div className="lg:col-span-2">
+            <InteractiveChart />
+          </div>
 
           {/* Render enabled widgets */}
           {widgets.filter(w => w.enabled).map(widget => (
-            <div key={widget.id}>
+            <div key={widget.id} className="lg:col-span-1">
               {renderWidget(widget)}
             </div>
           ))}
         </div>
 
         {/* Add Widget Button */}
-        <div className="mt-8 text-center">
+        <div className="mt-6 sm:mt-8 text-center">
           <Dialog open={isAddWidgetOpen} onOpenChange={setIsAddWidgetOpen}>
             <DialogTrigger asChild>
-              <Button variant="outline" className="border-dashed border-2 border-slate-300 text-slate-600 hover:border-slate-400">
+              <Button variant="outline" className="border-dashed border-2 border-slate-300 text-slate-600 hover:border-slate-400 text-sm">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Widget
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[425px] mx-4">
               <DialogHeader>
                 <DialogTitle>Add New Widget</DialogTitle>
                 <DialogDescription>
@@ -386,8 +404,8 @@ export const EnhancedHealthInsightsDashboard = () => {
                     className="p-3 border rounded-lg hover:bg-slate-50 cursor-pointer transition-colors"
                     onClick={() => handleAddWidget(widget.title)}
                   >
-                    <h4 className="font-medium text-slate-800">{widget.title}</h4>
-                    <p className="text-sm text-slate-600">{widget.description}</p>
+                    <h4 className="font-medium text-slate-800 text-sm">{widget.title}</h4>
+                    <p className="text-xs text-slate-600">{widget.description}</p>
                   </div>
                 ))}
               </div>
