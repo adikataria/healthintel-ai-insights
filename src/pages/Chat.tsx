@@ -1,346 +1,150 @@
-import { useState, useRef, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Send, Bot, Plus, Sparkles, MessageCircle, Stethoscope, Zap, Settings, AlertTriangle } from "lucide-react";
-import { ConsentModal } from "@/components/medical/ConsentModal";
-import { SymptomChecker } from "@/components/medical/SymptomChecker";
-import { useAIDoctorChat } from "@/hooks/useAIDoctorChat";
-import { useAuth } from "@/contexts/AuthContext";
-import { EnhancedMessageBubble } from "@/components/medical/EnhancedMessageBubble";
-import { SmartMemoryPanel } from "@/components/medical/SmartMemoryPanel";
-import { ConversationalSuggestions } from "@/components/medical/ConversationalSuggestions";
-import { ConversationalFlow } from "@/components/medical/ConversationalFlow";
-import { EnhancedChatFooter } from "@/components/medical/EnhancedChatFooter";
-import { useTextToSpeech } from "@/hooks/useTextToSpeech";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { toast } from "sonner";
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/hooks/useSubscription';
+import { useNavigate } from 'react-router-dom';
+import { NotificationCenter } from '@/components/notifications/NotificationCenter';
+import { 
+  Crown,
+  Search,
+  Settings,
+  Moon,
+  Menu,
+  X,
+  User,
+  LogOut,
+  Bell,
+  MessageSquare,
+  Send
+} from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
+import { ConversationalFlow } from '@/components/medical/ConversationalFlow';
 
 const Chat = () => {
-  const { user } = useAuth();
-  const [inputMessage, setInputMessage] = useState("");
-  const [showConsentModal, setShowConsentModal] = useState(false);
-  const [pendingMessage, setPendingMessage] = useState("");
-  const [pendingSymptoms, setPendingSymptoms] = useState(null);
-  const [activeTab, setActiveTab] = useState("chat");
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const { speak } = useTextToSpeech();
-  const isMobile = useIsMobile();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const { currentSubscription } = useSubscription();
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const { 
-    messages, 
-    isLoading, 
-    sendMessage, 
-    sendSymptomAnalysis, 
-    userProfile, 
-    userReports, 
-    recentInteractions,
-    healthTrends,
-    activeFollowUp,
-    handleFollowUpComplete,
-    recallInteraction
-  } = useAIDoctorChat();
+  const hasActiveSubscription = currentSubscription?.status === 'active' && currentSubscription?.subscription_plans?.name !== 'Free';
 
-  // Auto-scroll to bottom when new messages arrive
-  useEffect(() => {
-    if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
-    }
-  }, [messages]);
-
-  const handleSendMessage = async (message?: string) => {
-    const messageToSend = message || inputMessage;
-    if (!messageToSend.trim()) return;
-
-    // Check if this is the first message and show consent
-    if (messages.length === 0) {
-      setPendingMessage(messageToSend);
-      setShowConsentModal(true);
-      return;
-    }
-
-    await sendMessage(messageToSend);
-    setInputMessage("");
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
   };
-
-  const handleSymptomAnalysis = async (symptoms: any[], additionalContext?: string) => {
-    // Check if this is the first interaction and show consent
-    if (messages.length === 0) {
-      setPendingSymptoms({ symptoms, additionalContext });
-      setShowConsentModal(true);
-      return;
-    }
-
-    await sendSymptomAnalysis(symptoms, additionalContext);
-    setActiveTab("chat");
-  };
-
-  const handleConsentAccepted = async () => {
-    setShowConsentModal(false);
-    
-    if (pendingMessage) {
-      await sendMessage(pendingMessage);
-      setInputMessage("");
-      setPendingMessage("");
-    }
-    
-    if (pendingSymptoms) {
-      await sendSymptomAnalysis(pendingSymptoms.symptoms, pendingSymptoms.additionalContext);
-      setPendingSymptoms(null);
-      setActiveTab("chat");
-    }
-  };
-
-  const handleConsentDeclined = () => {
-    setShowConsentModal(false);
-    setPendingMessage("");
-    setPendingSymptoms(null);
-  };
-
-  const handleSpeak = (text: string) => {
-    speak(text);
-  };
-
-  const handleFeedback = (messageId: string, feedback: 'positive' | 'negative') => {
-    toast.success(`Thank you for your ${feedback} feedback!`);
-    // Here you could send feedback to backend
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  };
-
-  // Get user context for smart suggestions
-  const userContext = {
-    hasSymptoms: messages.some(m => m.content.toLowerCase().includes('symptom')),
-    hasPreviousVisit: recentInteractions.length > 0,
-    hasLabReports: userReports > 0
-  };
-
-  const lastAIMessage = messages.filter(m => m.role === 'assistant').pop()?.content;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-medical-light/20 via-white to-blue-50/30">
-      {/* Enhanced Header - Mobile Responsive */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 px-2 sm:px-4 py-2 sm:py-3 sticky top-0 z-10">
-        <div className="flex items-center justify-between max-w-6xl mx-auto">
-          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-            <div className="relative">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-medical-primary to-medical-secondary rounded-xl flex items-center justify-center shadow-sm">
-                <Bot className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-              </div>
-              <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full animate-pulse border-2 border-white"></div>
-            </div>
-            <div className="flex-1 min-w-0">
-              <h1 className="font-semibold text-sm sm:text-base text-gray-900 flex items-center gap-1 sm:gap-2 truncate">
-                DocLumen AI Doctor
-                <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500 flex-shrink-0" />
-              </h1>
-              <p className="text-xs sm:text-sm text-gray-600 truncate">Your intelligent health companion</p>
+    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark bg-slate-900' : 'bg-slate-50'}`}>
+      {/* Dashboard Header */}
+      <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 px-2 sm:px-4 py-2 sm:py-3">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-1 sm:p-2"
+            >
+              {isMobileMenuOpen ? <X className="h-4 w-4 sm:h-5 sm:w-5" /> : <Menu className="h-4 w-4 sm:h-5 sm:w-5" />}
+            </Button>
+            
+            <div className="relative flex-1 max-w-xs sm:max-w-sm lg:max-w-md">
+              <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-slate-400" />
+              <Input
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-7 sm:pl-10 w-full h-8 sm:h-9 bg-slate-100 border-slate-200 text-sm"
+              />
             </div>
           </div>
-          <div className="flex items-center gap-1 sm:gap-2">
-            {!isMobile && (
-              <Button variant="ghost" size="sm" className="gap-2 hidden sm:flex">
-                <Settings className="h-4 w-4" />
-                Settings
+
+          <div className="flex items-center gap-1 sm:gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              className="p-1 sm:p-2"
+            >
+              <Moon className="h-3 w-3 sm:h-4 sm:w-4" />
+            </Button>
+            
+            <div className="hidden sm:block">
+              <NotificationCenter />
+            </div>
+            
+            {!hasActiveSubscription && (
+              <Button 
+                onClick={() => navigate('/pricing')}
+                className="bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white font-semibold px-2 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm flex items-center gap-1 sm:gap-2"
+              >
+                <Crown className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">UPGRADE</span>
+                <span className="sm:hidden">UP</span>
               </Button>
             )}
-            <Button variant="outline" size="sm" className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
-              <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
-              {!isMobile && "New Chat"}
-            </Button>
-          </div>
-        </div>
-      </div>
 
-      <div className="max-w-6xl mx-auto p-2 sm:p-4 pb-20">
-        {/* Smart Memory Panel - Hide on mobile when there are messages */}
-        {(!isMobile || messages.length === 0) && (
-          <SmartMemoryPanel
-            userProfile={userProfile}
-            recentInteractions={recentInteractions}
-            healthTrends={healthTrends}
-            onRecallInteraction={recallInteraction}
-            onViewHistory={() => toast.info('Chat history feature coming soon')}
-          />
-        )}
-
-        {/* Main Interface Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
-          <TabsList className="grid w-full grid-cols-2 h-10 sm:h-12 bg-white/80 backdrop-blur-sm">
-            <TabsTrigger value="chat" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm data-[state=active]:bg-medical-primary data-[state=active]:text-white">
-              <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4" />
-              Chat {!isMobile && "Interface"}
-            </TabsTrigger>
-            <TabsTrigger value="symptoms" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm data-[state=active]:bg-medical-primary data-[state=active]:text-white">
-              <Stethoscope className="h-3 w-3 sm:h-4 sm:w-4" />
-              Symptom {!isMobile && "Checker"}
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="symptoms">
-            <SymptomChecker 
-              onAnalyze={handleSymptomAnalysis}
-              isLoading={isLoading}
-            />
-          </TabsContent>
-
-          <TabsContent value="chat">
-            {/* Conversational Flow */}
-            {activeFollowUp.length > 0 && (
-              <ConversationalFlow
-                questions={activeFollowUp}
-                onAnswerSubmit={() => {}}
-                onFlowComplete={handleFollowUpComplete}
-                isActive={true}
-              />
-            )}
-
-            {/* Main Chat Interface */}
-            <Card className="shadow-lg border-0 bg-white/95 backdrop-blur-sm">
-              {/* Welcome State */}
-              {messages.length === 0 && (
-                <CardContent className="p-4 sm:p-8">
-                  <div className="text-center mb-6 sm:mb-8">
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 rounded-full flex items-center justify-center overflow-hidden bg-white shadow-lg">
-                      <img 
-                        src="/lovable-uploads/f53de30c-14ea-4f2b-ad69-1ada86812a6b.png" 
-                        alt="DocLumen AI" 
-                        className="w-full h-full object-contain"
-                      />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="flex items-center gap-1 sm:gap-2 p-1 sm:p-2">
+                  <div className="w-6 h-6 sm:w-7 sm:h-7 bg-slate-200 rounded-full flex items-center justify-center">
+                    <User className="h-3 w-3 sm:h-4 sm:w-4 text-slate-600" />
+                  </div>
+                  <span className="hidden lg:block text-sm font-medium text-slate-700 max-w-20 truncate">
+                    {user?.email?.split('@')[0]}
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56 z-50 bg-white">
+                <div className="sm:hidden">
+                  <DropdownMenuItem asChild>
+                    <div className="flex items-center p-2">
+                      <Bell className="mr-2 h-4 w-4" />
+                      <span>Notifications</span>
                     </div>
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">
-                      Welcome to DocLumen AI Doctor
-                    </h2>
-                    <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto">
-                      I'm here to provide personalized health guidance, answer your medical questions, 
-                      and help you understand your symptoms. Let's start a conversation about your health.
-                    </p>
-                  </div>
-
-                  <ConversationalSuggestions
-                    onSuggestionClick={handleSendMessage}
-                    userContext={userContext}
-                  />
-                </CardContent>
-              )}
-
-              {/* Messages Area */}
-              {messages.length > 0 && (
-                <ScrollArea className="h-[400px] sm:h-[500px] p-3 sm:p-6" ref={scrollAreaRef}>
-                  <div className="space-y-4 sm:space-y-6">
-                    {messages.map((message) => (
-                      <EnhancedMessageBubble
-                        key={message.id}
-                        role={message.role}
-                        content={message.content}
-                        timestamp={message.timestamp}
-                        isStreaming={message.isStreaming}
-                        messageId={message.id}
-                        onSpeak={handleSpeak}
-                        onFeedback={handleFeedback}
-                      />
-                    ))}
-                    
-                    {isLoading && (
-                      <div className="flex gap-2 sm:gap-3">
-                        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-medical-primary to-medical-secondary rounded-full flex items-center justify-center">
-                          <Bot className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
-                        </div>
-                        <div className="bg-white border border-gray-200 p-3 sm:p-4 rounded-2xl rounded-tl-sm shadow-sm">
-                          <div className="flex items-center gap-2">
-                            <div className="flex space-x-1">
-                              <div className="w-2 h-2 bg-medical-primary rounded-full animate-bounce"></div>
-                              <div className="w-2 h-2 bg-medical-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                              <div className="w-2 h-2 bg-medical-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                            </div>
-                            <span className="text-xs sm:text-sm text-gray-600">Analyzing your health query...</span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </ScrollArea>
-              )}
-              
-              {/* Enhanced Chat Footer */}
-              {messages.length > 0 && (
-                <div className="border-t border-gray-100 p-3 sm:p-4">
-                  <EnhancedChatFooter
-                    value={inputMessage}
-                    suggested={[
-                      "Can you explain this in simpler terms?",
-                      "What should I do next?",
-                      "Are there any warning signs to watch for?"
-                    ]}
-                    onChange={setInputMessage}
-                    onSend={handleSendMessage}
-                    disabled={isLoading}
-                    lastAIMessage={lastAIMessage}
-                    allowCorrection={true}
-                    onRequestCorrection={() => handleSendMessage("Could you please clarify or provide more details about your previous response?")}
-                  />
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                 </div>
-              )}
-
-              {/* Simple Input for Welcome State */}
-              {messages.length === 0 && (
-                <div className="border-t border-gray-100 p-4 sm:p-6">
-                  <div className="flex gap-2 sm:gap-3">
-                    <Input
-                      value={inputMessage}
-                      onChange={(e) => setInputMessage(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      placeholder="Type your health question here..."
-                      className="flex-1 h-10 sm:h-12 border-gray-200 focus:border-medical-primary rounded-xl text-sm sm:text-base"
-                      disabled={isLoading}
-                    />
-                    <Button 
-                      onClick={() => handleSendMessage()}
-                      disabled={!inputMessage.trim() || isLoading}
-                      className="h-10 sm:h-12 px-4 sm:px-6 bg-medical-primary hover:bg-medical-dark text-white rounded-xl"
-                    >
-                      <Send className="h-3 w-3 sm:h-4 sm:w-4" />
-                    </Button>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-2 text-center">
-                    Press Enter to send • Your conversations are private and secure
-                  </p>
-                </div>
-              )}
-            </Card>
-          </TabsContent>
-        </Tabs>
-
-        {/* Medical Disclaimer */}
-        <div className="mt-6 sm:mt-8 bg-amber-50 border border-amber-200 rounded-lg p-3 sm:p-4">
-          <div className="flex items-start gap-2 sm:gap-3">
-            <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-            <div className="text-xs sm:text-sm text-amber-800">
-              <p className="font-medium mb-1">Medical Disclaimer</p>
-              <p>
-                DocLumen AI provides health information for educational purposes only and is not a substitute for 
-                professional medical advice, diagnosis, or treatment. Always consult your healthcare provider for 
-                medical concerns. In case of emergency, contact emergency services immediately.
-              </p>
-            </div>
+                <DropdownMenuItem asChild>
+                  <button onClick={() => navigate('/settings')} className="flex items-center w-full">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </button>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Sign out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
 
-      {/* Consent Modal */}
-      <ConsentModal
-        isOpen={showConsentModal}
-        onAccept={handleConsentAccepted}
-        onDecline={handleConsentDeclined}
-        type="chat"
-      />
+      <div className="max-w-7xl mx-auto p-2 sm:p-4 md:p-6">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-3xl md:text-4xl font-montserrat font-bold mb-4 text-accent">
+            AI Health Assistant
+          </h1>
+          <p className="text-xl text-muted-foreground">
+            Get personalized health insights and answers to your medical questions
+          </p>
+        </div>
+
+        <div className="h-[calc(100vh-200px)] max-w-4xl mx-auto">
+          <ConversationalFlow />
+        </div>
+      </div>
     </div>
   );
 };
