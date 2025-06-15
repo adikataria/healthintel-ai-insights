@@ -6,7 +6,7 @@ type SummaryCardProps = {
   title: string;
   iconType: 'check' | 'alert' | 'info';
   color: 'green' | 'yellow' | 'red' | 'blue';
-  description: string;
+  description: React.ReactNode;
   children?: React.ReactNode;
 };
 
@@ -41,3 +41,4 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({
     </div>
   </div>
 );
+
