@@ -1,10 +1,8 @@
 import { Cross } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Shield, CheckCircle, FileText, Users } from "lucide-react";
-
 export const Footer = () => {
-  return (
-    <footer className="bg-gray-900 text-white py-16">
+  return <footer className="bg-gray-900 text-white py-16">
       <div className="container mx-auto px-4">
         {/* Security Certifications Section */}
         <div className="mb-12">
@@ -56,11 +54,7 @@ export const Footer = () => {
           {/* Brand Section */}
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <img 
-                src="/lovable-uploads/9dd0010a-1b64-47ed-908f-6e86510d2209.png" 
-                alt="DocLumen Logo"
-                className="h-8 w-auto"
-              />
+              <img src="/lovable-uploads/9dd0010a-1b64-47ed-908f-6e86510d2209.png" alt="DocLumen Logo" className="h-8 w-auto" />
               <span className="font-montserrat font-bold text-xl text-white">
                 DocLumen
               </span>
@@ -70,7 +64,7 @@ export const Footer = () => {
               Analyze reports, get AI insights, and track your wellness effortlessly.
             </p>
             <p className="text-sm text-gray-400">
-              DocLumen is a <Link to="/" className="text-medical-secondary hover:text-medical-light">health intelligence</Link> product.
+              DocLumen is a <Link to="/" className="text-medical-secondary hover:text-medical-light">Uplenco</Link> product.
             </p>
           </div>
 
@@ -134,6 +128,5 @@ export const Footer = () => {
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
