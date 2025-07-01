@@ -17,7 +17,7 @@ const TabbedFeatures = () => {
       mainFeature: {
         title: 'Smart Health Report Analysis',
         description: 'Upload your medical reports and get instant AI-powered insights with 90% accuracy. Our advanced algorithms analyze lab results, imaging reports, and medical documents to provide clear, actionable health recommendations.',
-        image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=600&fit=crop&crop=center',
+        image: '/lovable-uploads/7f8194d2-ff78-4cf7-8736-aabf3c93f84c.png',
         features: [
           { icon: CheckCircle, title: 'Instant Analysis', description: 'Get results in under 30 seconds' },
           { icon: Target, title: '90% Accuracy', description: 'Clinically validated AI algorithms' },
@@ -47,7 +47,7 @@ const TabbedFeatures = () => {
       mainFeature: {
         title: '24/7 AI Health Companion',
         description: 'Chat with our AI doctor assistant anytime for instant health guidance, symptom analysis, and medical advice. Get professional-grade responses backed by medical knowledge.',
-        image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=800&h=600&fit=crop&crop=center',
+        image: '/lovable-uploads/4280a6d1-4426-421a-9395-911b4e9c4a6d.png',
         features: [
           { icon: Clock, title: 'Always Available', description: '24/7 instant medical guidance' },
           { icon: Brain, title: 'Smart Responses', description: 'Medically validated AI responses' },
@@ -77,7 +77,7 @@ const TabbedFeatures = () => {
       mainFeature: {
         title: 'Comprehensive Health Monitoring',
         description: 'Track vital signs, medications, symptoms, and health goals all in one place. Set personalized targets and monitor your progress with detailed analytics.',
-        image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=600&fit=crop&crop=center',
+        image: '/lovable-uploads/b2c5411d-a8bc-4dc8-9185-d4a593d2660c.png',
         features: [
           { icon: Target, title: 'Goal Setting', description: 'Set and track health objectives' },
           { icon: BarChart3, title: 'Progress Analytics', description: 'Detailed health trend analysis' },
@@ -189,28 +189,8 @@ const TabbedFeatures = () => {
                         <img 
                           src={feature.mainFeature.image} 
                           alt={feature.mainFeature.title}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain p-4 bg-gradient-to-br from-gray-50 to-gray-100"
                         />
-                        {/* Overlay with demo UI */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent">
-                          <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6">
-                            <div className="bg-white/95 backdrop-blur-sm rounded-xl sm:rounded-2xl p-3 sm:p-4">
-                              <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
-                                <div className="flex gap-1">
-                                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-400 rounded-full"></div>
-                                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-yellow-400 rounded-full"></div>
-                                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-400 rounded-full"></div>
-                                </div>
-                                <span className="text-xs text-gray-500">DocLumen AI</span>
-                              </div>
-                              <div className="space-y-1.5 sm:space-y-2">
-                                <div className="h-1.5 sm:h-2 bg-gray-200 rounded w-3/4"></div>
-                                <div className="h-1.5 sm:h-2 bg-gray-200 rounded w-1/2"></div>
-                                <div className="h-1.5 sm:h-2 bg-medical-primary/30 rounded w-2/3"></div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
                       </div>
                     </div>
                   </CardContent>
