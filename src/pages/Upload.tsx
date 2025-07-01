@@ -485,36 +485,25 @@ COMPLETE ANALYSIS MANDATE: Extract ALL medical laboratory data, test results, an
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 pt-20 pb-12">
       <div className="container max-w-7xl mx-auto px-4">
-        {/* Header Section */}
-        <div className="text-center mb-12">
-          <Badge className="mb-6 bg-medical-primary/10 text-medical-primary border-medical-primary/30 px-4 py-2">
-            <Brain className="h-4 w-4 mr-2" />
-            AI-Powered Analysis
-          </Badge>
-          <h1 className="text-4xl md:text-5xl font-montserrat font-bold mb-6 text-gray-900">
-            Upload Your Lab Reports
-          </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-            Get instant, comprehensive AI analysis of your medical reports with complete data extraction
-          </p>
-          
-          {/* Trust Indicators */}
-          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500 mb-12">
-            <div className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-medical-primary" />
-              <span>HIPAA Compliant</span>
+        {/* Dashboard Style Header */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-montserrat font-bold text-accent mb-2">
+                Upload Lab Reports
+              </h1>
+              <p className="text-lg text-muted-foreground">
+                Get instant AI-powered analysis of your medical reports
+              </p>
             </div>
-            <div className="flex items-center gap-2">
-              <Brain className="h-5 w-5 text-medical-primary" />
-              <span>AI-Powered</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Zap className="h-5 w-5 text-medical-primary" />
-              <span>Instant Results</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Target className="h-5 w-5 text-medical-primary" />
-              <span>100% Data Extraction</span>
+            <div className="hidden md:flex items-center gap-4">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Shield className="h-4 w-4 text-medical-primary" />
+                <span>Secure & Private</span>
+              </div>
+              <Badge variant="secondary" className="bg-medical-primary/10 text-medical-primary">
+                AI-Powered
+              </Badge>
             </div>
           </div>
         </div>
