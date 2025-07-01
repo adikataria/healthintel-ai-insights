@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Target, TrendingUp, Calendar, Trophy, Edit, Trash2, Sparkles } from 'lucide-react';
+import { Plus, Target, TrendingUp, Calendar, Trophy, Edit, Trash2 } from 'lucide-react';
 import { CreateGoalDialog } from '@/components/goals/CreateGoalDialog';
 import { MilestoneCard } from '@/components/goals/MilestoneCard';
 import { useHealthGoals } from '@/hooks/useHealthGoals';
@@ -42,13 +42,11 @@ const Goals = () => {
 
   if (goalsLoading || milestonesLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-teal-50/30">
-        <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 px-4 py-6 sticky top-0 z-10">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-medical-primary mx-auto"></div>
-              <p className="mt-4 text-muted-foreground">Loading your health goals...</p>
-            </div>
+      <div className="min-h-screen pt-20 pb-12 bg-gray-50">
+        <div className="container max-w-6xl">
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-medical-primary mx-auto"></div>
+            <p className="mt-4 text-muted-foreground">Loading your health goals...</p>
           </div>
         </div>
       </div>
@@ -56,54 +54,43 @@ const Goals = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-teal-50/30">
-      {/* Dashboard Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 px-4 py-6 sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen pt-20 pb-12 bg-gray-50">
+      <div className="container max-w-6xl">
+        {/* Header */}
+        <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-medical-primary to-medical-secondary rounded-xl flex items-center justify-center shadow-lg">
-                <Target className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
-                  Health Goals & Milestones
-                  <Sparkles className="h-5 w-5 text-yellow-500" />
-                </h1>
-                <p className="text-gray-600 mt-1">Track your progress and celebrate achievements</p>
-              </div>
+            <div>
+              <h1 className="text-3xl md:text-4xl font-montserrat font-bold text-accent">
+                Health Goals & Milestones
+              </h1>
+              <p className="text-xl text-muted-foreground mt-2">
+                Track your progress and celebrate achievements
+              </p>
             </div>
-            <div className="flex items-center gap-3">
-              <Badge variant="outline" className="text-medical-primary border-medical-primary">
-                {goals.length} Active Goals
-              </Badge>
-              <CreateGoalDialog>
-                <Button className="bg-medical-primary hover:bg-medical-dark text-white gap-2">
-                  <Plus className="h-4 w-4" />
-                  Create Goal
-                </Button>
-              </CreateGoalDialog>
-            </div>
+            <CreateGoalDialog>
+              <Button className="bg-medical-primary hover:bg-medical-dark text-white">
+                <Plus className="h-4 w-4 mr-2" />
+                Create Goal
+              </Button>
+            </CreateGoalDialog>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-6xl mx-auto p-6">
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+          <Card className="health-card">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Total Goals</p>
-                  <p className="text-2xl font-bold text-gray-900">{goals.length}</p>
+                  <p className="text-2xl font-bold text-accent">{goals.length}</p>
                 </div>
                 <Target className="h-8 w-8 text-medical-primary" />
               </div>
             </CardContent>
           </Card>
 
-          <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+          <Card className="health-card">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -117,7 +104,7 @@ const Goals = () => {
             </CardContent>
           </Card>
 
-          <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+          <Card className="health-card">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -131,14 +118,14 @@ const Goals = () => {
             </CardContent>
           </Card>
 
-          <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+          <Card className="health-card">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Milestones</p>
-                  <p className="text-2xl font-bold text-gray-900">{milestones.length}</p>
+                  <p className="text-2xl font-bold text-accent">{milestones.length}</p>
                 </div>
-                <Calendar className="h-8 w-8 text-gray-900" />
+                <Calendar className="h-8 w-8 text-accent" />
               </div>
             </CardContent>
           </Card>
@@ -147,9 +134,9 @@ const Goals = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Active Goals */}
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Active Goals</h2>
+            <h2 className="text-2xl font-bold text-accent mb-6">Active Goals</h2>
             {goals.filter(g => g.status === 'active').length === 0 ? (
-              <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+              <Card className="health-card">
                 <CardContent className="p-8 text-center">
                   <Target className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">No active goals</h3>
@@ -165,7 +152,7 @@ const Goals = () => {
             ) : (
               <div className="space-y-4">
                 {goals.filter(g => g.status === 'active').map((goal) => (
-                  <Card key={goal.id} className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+                  <Card key={goal.id} className="health-card">
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between">
                         <div>
@@ -232,9 +219,9 @@ const Goals = () => {
 
           {/* Recent Milestones */}
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Recent Milestones</h2>
+            <h2 className="text-2xl font-bold text-accent mb-6">Recent Milestones</h2>
             {milestones.length === 0 ? (
-              <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+              <Card className="health-card">
                 <CardContent className="p-8 text-center">
                   <Trophy className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">No milestones yet</h3>

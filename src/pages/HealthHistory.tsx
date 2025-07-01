@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Search, 
   Filter, 
@@ -17,8 +18,7 @@ import {
   Tag,
   BarChart3,
   Heart,
-  Activity,
-  Sparkles
+  Activity
 } from "lucide-react";
 import { useMedicalReports } from "@/hooks/useMedicalReports";
 import { useHealthMilestones } from "@/hooks/useHealthMilestones";
@@ -119,14 +119,12 @@ const HealthHistory = () => {
 
   if (reportsLoading || milestonesLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-teal-50/30">
-        <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 px-4 py-6 sticky top-0 z-10">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex items-center justify-center h-64">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-medical-primary mx-auto mb-4"></div>
-                <p className="text-muted-foreground">Loading your health history...</p>
-              </div>
+      <div className="min-h-screen pt-20 pb-12 bg-gray-50">
+        <div className="container max-w-6xl">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-medical-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading your health history...</p>
             </div>
           </div>
         </div>
@@ -135,40 +133,20 @@ const HealthHistory = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-teal-50/30">
-      {/* Dashboard Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 px-4 py-6 sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-medical-primary to-medical-secondary rounded-xl flex items-center justify-center shadow-lg">
-                <Clock className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
-                  Health History Repository
-                  <Sparkles className="h-5 w-5 text-yellow-500" />
-                </h1>
-                <p className="text-gray-600 mt-1">Your comprehensive health timeline - reports, insights, and interactions in one place</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <Badge variant="outline" className="text-medical-primary border-medical-primary">
-                {timelineItems.length} Total Items
-              </Badge>
-              <Button variant="outline" size="sm" className="gap-2">
-                <Download className="h-4 w-4" />
-                Export
-              </Button>
-            </div>
-          </div>
+    <div className="min-h-screen pt-20 pb-12 bg-gray-50">
+      <div className="container max-w-6xl">
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-montserrat font-bold mb-4 text-accent">
+            Health History Repository
+          </h1>
+          <p className="text-xl text-muted-foreground">
+            Your comprehensive health timeline - reports, insights, and interactions in one place
+          </p>
         </div>
-      </div>
 
-      <div className="max-w-6xl mx-auto p-6">
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+          <Card className="health-card">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -180,7 +158,7 @@ const HealthHistory = () => {
             </CardContent>
           </Card>
 
-          <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+          <Card className="health-card">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -192,7 +170,7 @@ const HealthHistory = () => {
             </CardContent>
           </Card>
 
-          <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+          <Card className="health-card">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -204,21 +182,21 @@ const HealthHistory = () => {
             </CardContent>
           </Card>
 
-          <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+          <Card className="health-card">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Total Items</p>
-                  <p className="text-2xl font-bold text-gray-900">{timelineItems.length}</p>
+                  <p className="text-2xl font-bold text-accent">{timelineItems.length}</p>
                 </div>
-                <BarChart3 className="h-8 w-8 text-gray-900" />
+                <BarChart3 className="h-8 w-8 text-accent" />
               </div>
             </CardContent>
           </Card>
         </div>
 
         {/* Search and Filter */}
-        <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm mb-8">
+        <Card className="health-card mb-8">
           <CardContent className="p-6">
             <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-1 relative">
@@ -268,7 +246,7 @@ const HealthHistory = () => {
         </Card>
 
         {/* Timeline */}
-        <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+        <Card className="health-card">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Clock className="h-5 w-5 text-medical-primary" />
@@ -306,7 +284,7 @@ const HealthHistory = () => {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex-1">
-                            <h4 className="font-semibold text-gray-900 truncate">{item.title}</h4>
+                            <h4 className="font-semibold text-accent truncate">{item.title}</h4>
                             <p className="text-sm text-muted-foreground mt-1">{item.description}</p>
                           </div>
                           <div className="flex items-center gap-2 ml-4">

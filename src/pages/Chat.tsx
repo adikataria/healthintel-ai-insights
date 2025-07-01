@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,7 +17,6 @@ import { EnhancedChatFooter } from "@/components/medical/EnhancedChatFooter";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
 
 const Chat = () => {
   const { user } = useAuth();
@@ -28,7 +26,7 @@ const Chat = () => {
   const [pendingSymptoms, setPendingSymptoms] = useState(null);
   const [activeTab, setActiveTab] = useState("chat");
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const { speak, stopSpeaking, isSpeaking } = useTextToSpeech();
+  const { speak } = useTextToSpeech();
   const isMobile = useIsMobile();
 
   const { 
@@ -127,44 +125,41 @@ const Chat = () => {
   const lastAIMessage = messages.filter(m => m.role === 'assistant').pop()?.content;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-teal-50/30">
-      {/* Dashboard Header */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 px-4 py-6 sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-medical-primary to-medical-secondary rounded-xl flex items-center justify-center shadow-lg relative">
-                <Bot className="h-6 w-6 text-white" />
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full animate-pulse border-2 border-white"></div>
+    <div className="min-h-screen bg-gradient-to-br from-medical-light/20 via-white to-blue-50/30">
+      {/* Enhanced Header - Mobile Responsive */}
+      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 px-2 sm:px-4 py-2 sm:py-3 sticky top-0 z-10">
+        <div className="flex items-center justify-between max-w-6xl mx-auto">
+          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+            <div className="relative">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-medical-primary to-medical-secondary rounded-xl flex items-center justify-center shadow-sm">
+                <Bot className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
               </div>
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
-                  DocLumen AI Doctor
-                  <Sparkles className="h-5 w-5 text-yellow-500" />
-                </h1>
-                <p className="text-gray-600 mt-1">Your intelligent health companion</p>
-              </div>
+              <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full animate-pulse border-2 border-white"></div>
             </div>
-            <div className="flex items-center gap-3">
-              <Badge variant="outline" className="text-green-600 border-green-600">
-                ● Online
-              </Badge>
-              {!isMobile && (
-                <Button variant="outline" size="sm" className="gap-2">
-                  <Settings className="h-4 w-4" />
-                  Settings
-                </Button>
-              )}
-              <Button variant="outline" size="sm" className="gap-2">
-                <Plus className="h-4 w-4" />
-                {!isMobile && "New Chat"}
+            <div className="flex-1 min-w-0">
+              <h1 className="font-semibold text-sm sm:text-base text-gray-900 flex items-center gap-1 sm:gap-2 truncate">
+                DocLumen AI Doctor
+                <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500 flex-shrink-0" />
+              </h1>
+              <p className="text-xs sm:text-sm text-gray-600 truncate">Your intelligent health companion</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1 sm:gap-2">
+            {!isMobile && (
+              <Button variant="ghost" size="sm" className="gap-2 hidden sm:flex">
+                <Settings className="h-4 w-4" />
+                Settings
               </Button>
-            </div>
+            )}
+            <Button variant="outline" size="sm" className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
+              <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
+              {!isMobile && "New Chat"}
+            </Button>
           </div>
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto p-4 pb-20">
+      <div className="max-w-6xl mx-auto p-2 sm:p-4 pb-20">
         {/* Smart Memory Panel - Hide on mobile when there are messages */}
         {(!isMobile || messages.length === 0) && (
           <SmartMemoryPanel
@@ -177,14 +172,14 @@ const Chat = () => {
         )}
 
         {/* Main Interface Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 h-12 bg-white/80 backdrop-blur-sm shadow-sm">
-            <TabsTrigger value="chat" className="flex items-center gap-2 data-[state=active]:bg-medical-primary data-[state=active]:text-white">
-              <MessageCircle className="h-4 w-4" />
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
+          <TabsList className="grid w-full grid-cols-2 h-10 sm:h-12 bg-white/80 backdrop-blur-sm">
+            <TabsTrigger value="chat" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm data-[state=active]:bg-medical-primary data-[state=active]:text-white">
+              <MessageCircle className="h-3 w-3 sm:h-4 sm:w-4" />
               Chat {!isMobile && "Interface"}
             </TabsTrigger>
-            <TabsTrigger value="symptoms" className="flex items-center gap-2 data-[state=active]:bg-medical-primary data-[state=active]:text-white">
-              <Stethoscope className="h-4 w-4" />
+            <TabsTrigger value="symptoms" className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm data-[state=active]:bg-medical-primary data-[state=active]:text-white">
+              <Stethoscope className="h-3 w-3 sm:h-4 sm:w-4" />
               Symptom {!isMobile && "Checker"}
             </TabsTrigger>
           </TabsList>
@@ -208,22 +203,22 @@ const Chat = () => {
             )}
 
             {/* Main Chat Interface */}
-            <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
+            <Card className="shadow-lg border-0 bg-white/95 backdrop-blur-sm">
               {/* Welcome State */}
               {messages.length === 0 && (
-                <CardContent className="p-8">
-                  <div className="text-center mb-8">
-                    <div className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center overflow-hidden bg-white shadow-lg">
+                <CardContent className="p-4 sm:p-8">
+                  <div className="text-center mb-6 sm:mb-8">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 rounded-full flex items-center justify-center overflow-hidden bg-white shadow-lg">
                       <img 
                         src="/lovable-uploads/f53de30c-14ea-4f2b-ad69-1ada86812a6b.png" 
                         alt="DocLumen AI" 
                         className="w-full h-full object-contain"
                       />
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-3">
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">
                       Welcome to DocLumen AI Doctor
                     </h2>
-                    <p className="text-base text-gray-600 max-w-2xl mx-auto">
+                    <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto">
                       I'm here to provide personalized health guidance, answer your medical questions, 
                       and help you understand your symptoms. Let's start a conversation about your health.
                     </p>
@@ -238,8 +233,8 @@ const Chat = () => {
 
               {/* Messages Area */}
               {messages.length > 0 && (
-                <ScrollArea className="h-[500px] p-6" ref={scrollAreaRef}>
-                  <div className="space-y-6">
+                <ScrollArea className="h-[400px] sm:h-[500px] p-3 sm:p-6" ref={scrollAreaRef}>
+                  <div className="space-y-4 sm:space-y-6">
                     {messages.map((message) => (
                       <EnhancedMessageBubble
                         key={message.id}
@@ -254,18 +249,18 @@ const Chat = () => {
                     ))}
                     
                     {isLoading && (
-                      <div className="flex gap-3">
-                        <div className="w-8 h-8 bg-gradient-to-br from-medical-primary to-medical-secondary rounded-full flex items-center justify-center">
-                          <Bot className="h-4 w-4 text-white" />
+                      <div className="flex gap-2 sm:gap-3">
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-medical-primary to-medical-secondary rounded-full flex items-center justify-center">
+                          <Bot className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                         </div>
-                        <div className="bg-white border border-gray-200 p-4 rounded-2xl rounded-tl-sm shadow-sm">
+                        <div className="bg-white border border-gray-200 p-3 sm:p-4 rounded-2xl rounded-tl-sm shadow-sm">
                           <div className="flex items-center gap-2">
                             <div className="flex space-x-1">
                               <div className="w-2 h-2 bg-medical-primary rounded-full animate-bounce"></div>
                               <div className="w-2 h-2 bg-medical-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                               <div className="w-2 h-2 bg-medical-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                             </div>
-                            <span className="text-sm text-gray-600">Analyzing your health query...</span>
+                            <span className="text-xs sm:text-sm text-gray-600">Analyzing your health query...</span>
                           </div>
                         </div>
                       </div>
@@ -276,7 +271,7 @@ const Chat = () => {
               
               {/* Enhanced Chat Footer */}
               {messages.length > 0 && (
-                <div className="border-t border-gray-100 p-4">
+                <div className="border-t border-gray-100 p-3 sm:p-4">
                   <EnhancedChatFooter
                     value={inputMessage}
                     suggested={[
@@ -296,22 +291,22 @@ const Chat = () => {
 
               {/* Simple Input for Welcome State */}
               {messages.length === 0 && (
-                <div className="border-t border-gray-100 p-6">
-                  <div className="flex gap-3">
+                <div className="border-t border-gray-100 p-4 sm:p-6">
+                  <div className="flex gap-2 sm:gap-3">
                     <Input
                       value={inputMessage}
                       onChange={(e) => setInputMessage(e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="Type your health question here..."
-                      className="flex-1 h-12 border-gray-200 focus:border-medical-primary rounded-xl"
+                      className="flex-1 h-10 sm:h-12 border-gray-200 focus:border-medical-primary rounded-xl text-sm sm:text-base"
                       disabled={isLoading}
                     />
                     <Button 
                       onClick={() => handleSendMessage()}
                       disabled={!inputMessage.trim() || isLoading}
-                      className="h-12 px-6 bg-medical-primary hover:bg-medical-dark text-white rounded-xl"
+                      className="h-10 sm:h-12 px-4 sm:px-6 bg-medical-primary hover:bg-medical-dark text-white rounded-xl"
                     >
-                      <Send className="h-4 w-4" />
+                      <Send className="h-3 w-3 sm:h-4 sm:w-4" />
                     </Button>
                   </div>
                   <p className="text-xs text-gray-500 mt-2 text-center">
@@ -324,10 +319,10 @@ const Chat = () => {
         </Tabs>
 
         {/* Medical Disclaimer */}
-        <div className="mt-8 bg-amber-50 border border-amber-200 rounded-lg p-4">
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-amber-800">
+        <div className="mt-6 sm:mt-8 bg-amber-50 border border-amber-200 rounded-lg p-3 sm:p-4">
+          <div className="flex items-start gap-2 sm:gap-3">
+            <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            <div className="text-xs sm:text-sm text-amber-800">
               <p className="font-medium mb-1">Medical Disclaimer</p>
               <p>
                 DocLumen AI provides health information for educational purposes only and is not a substitute for 
