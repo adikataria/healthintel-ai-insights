@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { TrendingUp, TrendingDown, Target, Calendar, Heart, Droplets, Zap, FileText } from "lucide-react";
+import { TrendingUp, TrendingDown, Target, Calendar, Heart, Droplets, Zap, FileText, Sparkles } from "lucide-react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, AreaChart, Area } from "recharts";
 import { useMedicalReports } from "@/hooks/useMedicalReports";
@@ -143,12 +143,14 @@ const Trends = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen pt-20 pb-12 bg-gray-50">
-        <div className="container max-w-6xl">
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-medical-primary mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading health trends...</p>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-teal-50/30">
+        <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 px-4 py-6 sticky top-0 z-10">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-medical-primary mx-auto mb-4"></div>
+                <p className="text-muted-foreground">Loading health trends...</p>
+              </div>
             </div>
           </div>
         </div>
@@ -158,21 +160,35 @@ const Trends = () => {
 
   if (!reports.length) {
     return (
-      <div className="min-h-screen pt-20 pb-12 bg-gray-50">
-        <div className="container max-w-6xl">
-          <div className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-montserrat font-bold mb-4 text-accent">
-              Health Trends
-            </h1>
-            <p className="text-xl text-muted-foreground">
-              Track your health progress over time
-            </p>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-teal-50/30">
+        {/* Dashboard Header */}
+        <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 px-4 py-6 sticky top-0 z-10">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-medical-primary to-medical-secondary rounded-xl flex items-center justify-center shadow-lg">
+                  <TrendingUp className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
+                    Health Trends
+                    <Sparkles className="h-5 w-5 text-yellow-500" />
+                  </h1>
+                  <p className="text-gray-600 mt-1">Track your health progress over time</p>
+                </div>
+              </div>
+              <Badge variant="outline" className="text-medical-primary border-medical-primary">
+                No Data Available
+              </Badge>
+            </div>
           </div>
+        </div>
 
-          <Card className="health-card">
+        <div className="max-w-6xl mx-auto p-6">
+          <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
             <CardContent className="p-12 text-center">
               <TrendingUp className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="font-montserrat font-semibold text-xl mb-4 text-accent">
+              <h3 className="font-bold text-xl mb-4 text-gray-900">
                 No Trend Data Available
               </h3>
               <p className="text-muted-foreground mb-6">
@@ -196,28 +212,39 @@ const Trends = () => {
   }
 
   return (
-    <div className="min-h-screen pt-20 pb-12 bg-gray-50">
-      <div className="container max-w-6xl">
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-montserrat font-bold mb-4 text-accent">
-            Health Trends
-          </h1>
-          <p className="text-xl text-muted-foreground">
-            Track your health progress over time and see how you're doing
-          </p>
-          <div className="flex items-center gap-2 mt-4">
-            <Badge variant="outline" className="text-medical-primary border-medical-primary">
-              {reports.length} Reports Analyzed
-            </Badge>
-            <Badge variant="outline" className="text-gray-600">
-              Latest: {new Date(latestReport?.created_at || '').toLocaleDateString()}
-            </Badge>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-teal-50/30">
+      {/* Dashboard Header */}
+      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 px-4 py-6 sticky top-0 z-10">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-medical-primary to-medical-secondary rounded-xl flex items-center justify-center shadow-lg">
+                <TrendingUp className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
+                  Health Trends
+                  <Sparkles className="h-5 w-5 text-yellow-500" />
+                </h1>
+                <p className="text-gray-600 mt-1">Track your health progress over time and see how you're doing</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Badge variant="outline" className="text-medical-primary border-medical-primary">
+                {reports.length} Reports Analyzed
+              </Badge>
+              <Badge variant="outline" className="text-gray-600">
+                Latest: {new Date(latestReport?.created_at || '').toLocaleDateString()}
+              </Badge>
+            </div>
           </div>
         </div>
+      </div>
 
+      <div className="max-w-6xl mx-auto p-6">
         {/* Goal Tracking Overview */}
         {healthTrends.length > 0 && (
-          <Card className="health-card mb-8">
+          <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm mb-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Target className="h-5 w-5 text-medical-primary" />
@@ -234,7 +261,7 @@ const Trends = () => {
                           <metric.icon className="h-4 w-4 text-medical-primary" />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-accent">{metric.metric}</h3>
+                          <h3 className="font-semibold text-gray-900">{metric.metric}</h3>
                           <p className="text-sm text-muted-foreground">
                             Current: {metric.current} | Target: {metric.target}
                           </p>
@@ -265,7 +292,7 @@ const Trends = () => {
         {healthTrends.length > 0 && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             {healthTrends.map((metric, index) => (
-              <Card key={index} className="health-card">
+              <Card key={index} className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-lg">
                     <metric.icon className="h-5 w-5 text-medical-primary" />
@@ -306,7 +333,7 @@ const Trends = () => {
         )}
 
         {/* Health Timeline */}
-        <Card className="health-card">
+        <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-medical-primary" />
@@ -320,7 +347,7 @@ const Trends = () => {
                   <div className="w-3 h-3 bg-medical-primary rounded-full mt-1.5 flex-shrink-0"></div>
                   <div className="flex-1">
                     <div className="flex items-center justify-between mb-1">
-                      <h3 className="font-semibold text-accent">Lab Report Analyzed</h3>
+                      <h3 className="font-semibold text-gray-900">Lab Report Analyzed</h3>
                       <span className="text-sm text-muted-foreground">
                         {new Date(report.created_at).toLocaleDateString()}
                       </span>

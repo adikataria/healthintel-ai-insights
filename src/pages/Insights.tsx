@@ -1,8 +1,7 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { MessageCircle, TrendingUp, AlertTriangle, CheckCircle, Heart, Droplets, Zap, FileText, Calendar } from "lucide-react";
+import { MessageCircle, TrendingUp, AlertTriangle, CheckCircle, Heart, Droplets, Zap, FileText, Calendar, Sparkles, BarChart3 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line } from "recharts";
@@ -121,12 +120,14 @@ const Insights = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen pt-20 pb-12 bg-gray-50">
-        <div className="container max-w-6xl">
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-medical-primary mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading health insights...</p>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-teal-50/30">
+        <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 px-4 py-6 sticky top-0 z-10">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-medical-primary mx-auto mb-4"></div>
+                <p className="text-muted-foreground">Loading health insights...</p>
+              </div>
             </div>
           </div>
         </div>
@@ -136,21 +137,35 @@ const Insights = () => {
 
   if (!latestReport) {
     return (
-      <div className="min-h-screen pt-20 pb-12 bg-gray-50">
-        <div className="container max-w-6xl">
-          <div className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-montserrat font-bold mb-4 text-accent">
-              Health Insights Dashboard
-            </h1>
-            <p className="text-xl text-muted-foreground">
-              Upload a lab report to see AI-powered health insights
-            </p>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-teal-50/30">
+        {/* Dashboard Header */}
+        <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 px-4 py-6 sticky top-0 z-10">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-medical-primary to-medical-secondary rounded-xl flex items-center justify-center shadow-lg">
+                  <BarChart3 className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
+                    Health Insights
+                    <Sparkles className="h-5 w-5 text-yellow-500" />
+                  </h1>
+                  <p className="text-gray-600 mt-1">AI-powered analysis of your health data</p>
+                </div>
+              </div>
+              <Badge variant="outline" className="text-medical-primary border-medical-primary">
+                No Reports Available
+              </Badge>
+            </div>
           </div>
+        </div>
 
-          <Card className="health-card">
+        <div className="max-w-6xl mx-auto p-6">
+          <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
             <CardContent className="p-12 text-center">
               <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="font-montserrat font-semibold text-xl mb-4 text-accent">
+              <h3 className="font-bold text-xl mb-4 text-gray-900">
                 No Lab Reports Found
               </h3>
               <p className="text-muted-foreground mb-6">
@@ -174,29 +189,42 @@ const Insights = () => {
   }
 
   return (
-    <div className="min-h-screen pt-20 pb-12 bg-gray-50">
-      <div className="container max-w-6xl">
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-montserrat font-bold mb-4 text-accent">
-            Health Insights Dashboard
-          </h1>
-          <p className="text-xl text-muted-foreground">
-            AI-powered analysis of your latest lab results
-          </p>
-          {latestReport && (
-            <div className="flex items-center gap-2 mt-4">
-              <Badge variant="outline" className="text-medical-primary border-medical-primary">
-                Latest Report: {latestReport.title}
-              </Badge>
-              <Badge variant="outline" className="text-gray-600">
-                {new Date(latestReport.created_at).toLocaleDateString()}
-              </Badge>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-white to-teal-50/30">
+      {/* Dashboard Header */}
+      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 px-4 py-6 sticky top-0 z-10">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-medical-primary to-medical-secondary rounded-xl flex items-center justify-center shadow-lg">
+                <BarChart3 className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
+                  Health Insights
+                  <Sparkles className="h-5 w-5 text-yellow-500" />
+                </h1>
+                <p className="text-gray-600 mt-1">AI-powered analysis of your latest lab results</p>
+              </div>
             </div>
-          )}
+            <div className="flex items-center gap-3">
+              {latestReport && (
+                <>
+                  <Badge variant="outline" className="text-medical-primary border-medical-primary">
+                    Latest: {latestReport.title}
+                  </Badge>
+                  <Badge variant="outline" className="text-gray-600">
+                    {new Date(latestReport.created_at).toLocaleDateString()}
+                  </Badge>
+                </>
+              )}
+            </div>
+          </div>
         </div>
+      </div>
 
+      <div className="max-w-6xl mx-auto p-6">
         {/* Report History Section */}
-        <Card className="health-card mb-8">
+        <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5 text-medical-primary" />
@@ -214,7 +242,7 @@ const Insights = () => {
                       index === 0 ? 'bg-medical-primary' : 'bg-gray-400'
                     }`}></div>
                     <div>
-                      <h4 className="font-medium text-accent">{report.title}</h4>
+                      <h4 className="font-medium text-gray-900">{report.title}</h4>
                       <p className="text-sm text-muted-foreground">{report.file_name}</p>
                     </div>
                   </div>
@@ -239,7 +267,7 @@ const Insights = () => {
         {healthMetrics.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             {healthMetrics.slice(0, 6).map((metric, index) => (
-              <Card key={index} className={`health-card ${metric.borderColor} border-l-4`}>
+              <Card key={index} className={`shadow-xl border-0 bg-white/95 backdrop-blur-sm ${metric.borderColor} border-l-4`}>
                 <CardHeader className="pb-3">
                   <CardTitle className="flex items-center justify-between text-lg">
                     <span className="flex items-center gap-2">
@@ -268,7 +296,7 @@ const Insights = () => {
 
         {/* Metrics Comparison */}
         {reports.length > 1 && (
-          <Card className="health-card mb-8">
+          <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm mb-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-medical-primary" />
@@ -296,7 +324,7 @@ const Insights = () => {
 
         {/* Personalized Health Recommendations */}
         {preventativeSuggestions.length > 0 && (
-          <Card className="health-card mb-8">
+          <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm mb-8">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CheckCircle className="h-5 w-5 text-medical-primary" />
@@ -320,7 +348,7 @@ const Insights = () => {
                         <suggestion.icon className="h-4 w-4" />
                       </div>
                       <div className="flex-1">
-                        <h3 className="font-semibold text-accent mb-1">{suggestion.title}</h3>
+                        <h3 className="font-semibold text-gray-900 mb-1">{suggestion.title}</h3>
                         <p className="text-sm text-muted-foreground">{suggestion.description}</p>
                       </div>
                       <span className={`text-xs px-2 py-1 rounded-full font-medium ${
@@ -339,9 +367,9 @@ const Insights = () => {
         )}
 
         {/* CTA Section */}
-        <Card className="health-card">
+        <Card className="shadow-xl border-0 bg-white/95 backdrop-blur-sm">
           <CardContent className="p-6 text-center">
-            <h3 className="font-montserrat font-semibold text-xl mb-4 text-accent">
+            <h3 className="font-bold text-xl mb-4 text-gray-900">
               Need More Personalized Advice?
             </h3>
             <p className="text-muted-foreground mb-6">
