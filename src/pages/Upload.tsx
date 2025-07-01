@@ -2,7 +2,8 @@ import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Upload as UploadIcon, FileText, Image, AlertCircle, CheckCircle, X, Shield, Brain, Sparkles, Zap, Target } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Upload as UploadIcon, FileText, Image, AlertCircle, CheckCircle, X, Shield, Brain, Sparkles, Zap, Target, Clock, Activity } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 import { ConsentModal } from "@/components/medical/ConsentModal";
@@ -266,83 +267,6 @@ FILE INFORMATION:
 - Size: ${file.size} bytes
 - Format: Medical laboratory report image (scanned/photographed)
 
-MANDATORY COMPLETE DATA EXTRACTION PROTOCOL:
-You MUST extract EVERY visible medical parameter, value, and detail from this image. NO DATA should be marked as "Missing from provided text" or "unknown".
-
-COMPREHENSIVE EXTRACTION REQUIREMENTS:
-
-1. COMPLETE BLOOD COUNT (CBC) - Extract ALL values:
-   - Hemoglobin (Hb): Value + units (g/dL, g/L)
-   - Red Blood Cell Count (RBC): Value + units
-   - White Blood Cell Count (WBC): Value + units  
-   - Platelet Count: Value + units
-   - Hematocrit (HCT/PCV): Value + percentage
-   - Mean Corpuscular Volume (MCV): Value + units (fL)
-   - Mean Corpuscular Hemoglobin (MCH): Value + units (pg)
-   - Mean Corpuscular Hemoglobin Concentration (MCHC): Value + units (g/dL)
-   - Red Cell Distribution Width (RDW): Value + percentage
-   - Differential Count: Neutrophils, Lymphocytes, Monocytes, Eosinophils, Basophils
-
-2. COMPREHENSIVE METABOLIC PANEL - Extract ALL values:
-   - Blood Glucose: Fasting/Random value + units (mg/dL)
-   - Blood Urea Nitrogen (BUN): Value + units
-   - Creatinine: Value + units (mg/dL)
-   - eGFR: Calculated value
-   - Total Protein: Value + units (g/dL)
-   - Albumin: Value + units (g/dL)
-   - Globulin: Value + units (g/dL)
-   - A/G Ratio: Calculated ratio
-
-3. LIVER FUNCTION TESTS - Extract ALL values:
-   - SGOT/AST: Value + units (U/L)
-   - SGPT/ALT: Value + units (U/L)
-   - Alkaline Phosphatase (ALP): Value + units (U/L)
-   - Total Bilirubin: Value + units (mg/dL)
-   - Direct Bilirubin: Value + units (mg/dL)
-   - Indirect Bilirubin: Value + units (mg/dL)
-   - Gamma GT (GGT): Value + units (U/L)
-
-4. LIPID PROFILE - Extract ALL values:
-   - Total Cholesterol: Value + units (mg/dL)
-   - HDL Cholesterol: Value + units (mg/dL)
-   - LDL Cholesterol: Value + units (mg/dL)
-   - VLDL Cholesterol: Value + units (mg/dL)
-   - Triglycerides: Value + units (mg/dL)
-   - TC/HDL Ratio: Calculated ratio
-   - LDL/HDL Ratio: Calculated ratio
-
-5. ELECTROLYTES - Extract ALL values:
-   - Sodium (Na): Value + units (mEq/L)
-   - Potassium (K): Value + units (mEq/L)
-   - Chloride (Cl): Value + units (mEq/L)
-   - Carbon Dioxide: Value + units
-
-6. ADDITIONAL PARAMETERS - Extract if visible:
-   - Thyroid: TSH, T3, T4, Free T3, Free T4
-   - Diabetes: HbA1c, Insulin
-   - Vitamins: B12, D3, Folate
-   - Minerals: Iron, Ferritin, TIBC, Calcium, Phosphorus, Magnesium, Zinc
-   - Inflammatory: ESR, CRP
-   - Cardiac: Troponin, CK-MB
-   - Uric Acid levels
-   - Any other specialized tests
-
-7. REFERENCE RANGES & STATUS:
-   - Extract normal reference ranges for each parameter
-   - Note any "High", "Low", "Normal" flags
-   - Identify abnormal values marked with asterisks or arrows
-   - Extract normal ranges specific to age/gender when provided
-
-CRITICAL ANALYSIS INSTRUCTIONS:
-- Use advanced OCR to read EVERY number, decimal, unit, and text
-- Extract data from tables, even if partially visible
-- Read handwritten notes or annotations
-- Capture data from multiple columns or sections
-- Don't skip any visible medical parameters
-- Provide exact numerical values, not approximations
-- Include ALL units of measurement
-- Identify normal vs abnormal values
-
 Base64 Image Data: ${base64Data.substring(0, 2000)}...
 
 ESSENTIAL MANDATE: Your advanced vision capabilities MUST extract ALL visible medical laboratory data. Provide comprehensive analysis with specific values from the image, ensuring NO parameter is missed or marked as unknown.`);
@@ -370,67 +294,6 @@ FILE DETAILS:
 
 EXTRACTED PDF CONTENT:
 ${extractedText}
-
-MANDATORY COMPLETE EXTRACTION PROTOCOL:
-Extract EVERY medical laboratory parameter from this PDF content. This is a comprehensive medical report that must yield complete data for ALL visible tests.
-
-COMPREHENSIVE ANALYSIS REQUIREMENTS:
-
-1. HEMATOLOGY COMPLETE PANEL - Extract ALL values with exact numbers:
-   - Hemoglobin (Hb): Extract exact value with units (g/dL, g/L)
-   - Red Blood Cell Count (RBC): Extract value and all indices
-   - White Blood Cell Count (WBC): Extract total count and complete differential
-   - Platelet Count: Extract value and morphology assessment
-   - Hematocrit (HCT), MCV, MCH, MCHC: Extract all values with units
-   - RDW, MPV: Extract if present
-   - Complete differential: Neutrophils, Lymphocytes, Monocytes, Eosinophils, Basophils
-
-2. CLINICAL CHEMISTRY COMPLETE PANEL - Extract ALL values:
-   - Blood Glucose: Extract fasting/random values with exact numbers
-   - Kidney Function: Creatinine, BUN/Urea, eGFR with exact values
-   - Liver Function: SGOT/AST, SGPT/ALT, Bilirubin (total/direct/indirect), ALP, GGT
-   - Protein Studies: Total Protein, Albumin, Globulin, A/G ratio
-   - Electrolytes: Sodium, Potassium, Chloride, CO2 with exact values
-   - Lipid Profile: Total Cholesterol, HDL, LDL, VLDL, Triglycerides with exact numbers
-
-3. SPECIALIZED BIOMARKERS - Extract ALL if present:
-   - Thyroid Panel: TSH, T3, T4, Free T3, Free T4 with exact values
-   - Diabetes Markers: HbA1c, Insulin, C-peptide with exact values
-   - Cardiac Markers: Troponin, CK-MB, LDH if present
-   - Inflammatory Markers: ESR, CRP with exact values
-   - Vitamin Levels: B12, D3, Folate with exact values and units
-   - Mineral Analysis: Iron, Ferritin, TIBC, Calcium, Phosphorus, Magnesium, Zinc
-   - Other Parameters: Uric Acid, LDH, CPK, any other visible tests
-
-4. REFERENCE RANGES & ABNORMAL FLAGS:
-   - Extract exact reference ranges for every parameter
-   - Identify all abnormal values marked with flags, asterisks, or arrows
-   - Note "High", "Low", "Critical" status indicators
-   - Extract normal ranges specific to age/gender when provided
-
-5. COMPREHENSIVE INTERPRETATION MANDATE:
-   - NO parameter should be marked as "Missing from provided text"
-   - NO value should be labeled as "unknown" 
-   - Extract exact numerical values from the document
-   - Use medical knowledge to provide complete interpretation
-   - Fill gaps with standard reference ranges only if specific values aren't visible
-   - Provide detailed clinical significance for ALL parameters
-
-CRITICAL SUCCESS CRITERIA:
-- This PDF contains extensive laboratory data across multiple pages/sections
-- Extract EVERY test result, reference range, and abnormal flag
-- Identify ALL numerical values and their corresponding test names
-- Provide comprehensive medical interpretation for ALL findings
-- Use exact values from the document wherever visible
-- Create complete health assessment based on ALL extracted data
-- Ensure consistent analysis with no missing or unknown values
-
-PROCESSING INSTRUCTIONS:
-- Even if text extraction is challenging, use medical expertise to provide complete analysis
-- Apply advanced medical knowledge to interpret all visible parameters
-- Cross-reference extracted values with standard medical ranges
-- Provide detailed explanations for each health indicator
-- Generate actionable health recommendations based on comprehensive findings
 
 ESSENTIAL MANDATE: Analyze this as a complete medical laboratory workup with extensive test results requiring professional medical interpretation. Focus on extracting ALL visible numerical values and medical parameters to ensure comprehensive, gap-free analysis.`;
 
@@ -593,13 +456,13 @@ COMPLETE ANALYSIS MANDATE: Extract ALL medical laboratory data, test results, an
 
   if (analysisStatus === 'complete' && analysisResult) {
     return (
-      <div className="min-h-screen pt-20 pb-12 bg-gradient-to-br from-medical-light/20 via-white to-medical-secondary/10">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 pt-20 pb-12">
         <div className="container max-w-6xl">
           <ReportAnalysis 
             analysis={analysisResult}
             reportTitle={uploadedFiles[0]?.name || 'Medical Report'}
           />
-          <div className="mt-6 text-center">
+          <div className="mt-8 text-center">
             <Button 
               onClick={() => {
                 setAnalysisStatus('idle');
@@ -620,261 +483,266 @@ COMPLETE ANALYSIS MANDATE: Extract ALL medical laboratory data, test results, an
   }
 
   return (
-    <div className="min-h-screen pt-20 pb-12 bg-gradient-to-br from-medical-light/20 via-white to-medical-secondary/10">
-      <div className="container max-w-6xl">
-        {/* Hero Section */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 pt-20 pb-12">
+      <div className="container max-w-7xl mx-auto px-4">
+        {/* Header Section */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-medical-light/30 text-medical-primary px-4 py-2 rounded-full text-sm font-medium mb-6">
-            <Sparkles className="h-4 w-4" />
-            Powered by DocLumen AI
-          </div>
-          <h1 className="text-4xl md:text-6xl font-montserrat font-bold mb-6 text-accent">
-            Transform Your 
-            <span className="bg-gradient-to-r from-medical-primary to-medical-secondary bg-clip-text text-transparent">
-              {" "}Lab Reports
-            </span>
+          <Badge className="mb-6 bg-medical-primary/10 text-medical-primary border-medical-primary/30 px-4 py-2">
+            <Brain className="h-4 w-4 mr-2" />
+            AI-Powered Analysis
+          </Badge>
+          <h1 className="text-4xl md:text-5xl font-montserrat font-bold mb-6 text-gray-900">
+            Upload Your Lab Reports
           </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-            Upload your medical reports and get instant AI-powered insights with comprehensive analysis
+          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            Get instant, comprehensive AI analysis of your medical reports with complete data extraction
           </p>
-          <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
+          
+          {/* Trust Indicators */}
+          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500 mb-12">
             <div className="flex items-center gap-2">
               <Shield className="h-5 w-5 text-medical-primary" />
               <span>HIPAA Compliant</span>
             </div>
             <div className="flex items-center gap-2">
-              <Brain className="h-5 w-5 text-medical-secondary" />
-              <span>Complete PDF Reading</span>
+              <Brain className="h-5 w-5 text-medical-primary" />
+              <span>AI-Powered</span>
             </div>
             <div className="flex items-center gap-2">
               <Zap className="h-5 w-5 text-medical-primary" />
-              <span>Zero Missing Data</span>
+              <span>Instant Results</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Target className="h-5 w-5 text-medical-primary" />
+              <span>100% Data Extraction</span>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 mb-12">
-          {/* Upload Area */}
-          <Card className="relative overflow-hidden border-2 border-medical-light/30 shadow-xl hover:shadow-2xl transition-all duration-300">
-            <div className="absolute inset-0 bg-gradient-to-br from-medical-light/10 to-medical-secondary/5"></div>
-            <CardHeader className="relative">
-              <CardTitle className="flex items-center gap-3 text-xl">
-                <div className="w-10 h-10 medical-gradient rounded-lg flex items-center justify-center">
-                  <UploadIcon className="h-5 w-5 text-white" />
-                </div>
-                Upload Medical Reports
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="relative">
-              <div
-                {...getRootProps()}
-                className={`border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all duration-300 relative overflow-hidden ${
-                  isDragActive 
-                    ? 'border-medical-primary bg-medical-light/20 scale-105' 
-                    : 'border-medical-light/50 hover:border-medical-primary hover:bg-medical-light/10'
-                }`}
-              >
-                <input {...getInputProps()} />
-                <div className="relative z-10">
-                  <div className="w-16 h-16 medical-gradient rounded-full flex items-center justify-center mx-auto mb-6">
-                    <UploadIcon className="h-8 w-8 text-white" />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Upload Section */}
+          <div className="lg:col-span-2">
+            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+              <CardHeader className="pb-6">
+                <CardTitle className="flex items-center gap-3 text-2xl">
+                  <div className="w-12 h-12 medical-gradient rounded-xl flex items-center justify-center">
+                    <UploadIcon className="h-6 w-6 text-white" />
                   </div>
-                  {isDragActive ? (
-                    <div>
-                      <p className="text-medical-primary font-semibold text-lg mb-2">Drop your files here!</p>
-                      <p className="text-medical-primary/70">We'll analyze them completely</p>
+                  Upload Medical Reports
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Drop Zone */}
+                <div
+                  {...getRootProps()}
+                  className={`relative border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all duration-300 ${
+                    isDragActive 
+                      ? 'border-medical-primary bg-medical-primary/5 scale-[1.02]' 
+                      : 'border-gray-200 hover:border-medical-primary hover:bg-gray-50'
+                  }`}
+                >
+                  <input {...getInputProps()} />
+                  <div className="space-y-4">
+                    <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center transition-all duration-300 ${
+                      isDragActive ? 'medical-gradient scale-110' : 'bg-gray-100'
+                    }`}>
+                      <UploadIcon className={`h-10 w-10 transition-colors duration-300 ${
+                        isDragActive ? 'text-white' : 'text-gray-400'
+                      }`} />
                     </div>
-                  ) : (
-                    <div>
-                      <p className="text-accent font-semibold text-lg mb-2">
-                        Drag & drop your lab reports here
-                      </p>
-                      <p className="text-muted-foreground mb-4">
-                        or click to browse files
-                      </p>
-                      <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <FileText className="h-3 w-3" />
-                          PDF
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Image className="h-3 w-3" />
-                          JPG, PNG
-                        </span>
-                        <span>Up to 10MB</span>
+                    
+                    {isDragActive ? (
+                      <div>
+                        <p className="text-medical-primary font-semibold text-xl mb-2">Drop your files here!</p>
+                        <p className="text-medical-primary/70">We'll analyze them completely</p>
                       </div>
-                    </div>
-                  )}
-                </div>
-                {isDragActive && (
-                  <div className="absolute inset-0 bg-gradient-to-br from-medical-primary/10 to-medical-secondary/10 animate-pulse"></div>
-                )}
-              </div>
-
-              {uploadedFiles.length > 0 && (
-                <div className="mt-8">
-                  <h3 className="font-semibold mb-4 flex items-center gap-2">
-                    <CheckCircle className="h-5 w-5 text-medical-primary" />
-                    Ready for Analysis ({uploadedFiles.length})
-                  </h3>
-                  <div className="space-y-3 max-h-48 overflow-y-auto">
-                    {uploadedFiles.map((file, index) => (
-                      <div key={index} className="flex items-center justify-between p-4 bg-gradient-to-r from-medical-light/20 to-medical-secondary/10 rounded-lg border border-medical-light/30">
-                        <div className="flex items-center gap-3">
-                          {getFileIcon(file)}
-                          <div>
-                            <p className="font-medium text-sm text-accent">{file.name}</p>
-                            <p className="text-xs text-muted-foreground">{formatFileSize(file.size)}</p>
+                    ) : (
+                      <div>
+                        <p className="text-gray-900 font-semibold text-xl mb-2">
+                          Drag & drop your reports here
+                        </p>
+                        <p className="text-gray-600 mb-4">
+                          or click to browse files
+                        </p>
+                        <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-500">
+                          <div className="flex items-center gap-1 bg-gray-50 px-3 py-2 rounded-lg">
+                            <FileText className="h-3 w-3" />
+                            <span>PDF</span>
+                          </div>
+                          <div className="flex items-center gap-1 bg-gray-50 px-3 py-2 rounded-lg">
+                            <Image className="h-3 w-3" />
+                            <span>JPG, PNG</span>
+                          </div>
+                          <div className="flex items-center gap-1 bg-gray-50 px-3 py-2 rounded-lg">
+                            <span>Up to 10MB</span>
                           </div>
                         </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeFile(index)}
-                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
-              )}
 
-              {uploadedFiles.length > 0 && (
-                <Button 
-                  onClick={simulateUpload}
-                  disabled={isUploading || isAnalyzing}
-                  className="w-full mt-6 h-12 medical-gradient hover:opacity-90 text-white font-medium text-lg"
-                >
-                  {isUploading ? (
-                    <span className="flex items-center gap-2">
-                      <Brain className="h-5 w-5 animate-pulse" />
-                      Processing File...
-                    </span>
-                  ) : isAnalyzing ? (
-                    <span className="flex items-center gap-2">
-                      <Sparkles className="h-5 w-5 animate-pulse" />
-                      Complete Analysis in Progress...
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-2">
-                      <Zap className="h-5 w-5" />
-                      Start Complete Analysis
-                    </span>
+                {/* Uploaded Files */}
+                {uploadedFiles.length > 0 && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 text-lg font-semibold text-gray-900">
+                      <CheckCircle className="h-5 w-5 text-medical-primary" />
+                      Ready for Analysis ({uploadedFiles.length})
+                    </div>
+                    <div className="space-y-3 max-h-64 overflow-y-auto">
+                      {uploadedFiles.map((file, index) => (
+                        <div key={index} className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-50/50 rounded-xl border border-gray-100">
+                          <div className="flex items-center gap-3">
+                            {getFileIcon(file)}
+                            <div>
+                              <p className="font-medium text-gray-900 text-sm">{file.name}</p>
+                              <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
+                            </div>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeFile(index)}
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <Button 
+                      onClick={simulateUpload}
+                      disabled={isUploading || isAnalyzing}
+                      className="w-full h-14 medical-gradient hover:opacity-90 text-white font-semibold text-lg rounded-xl"
+                    >
+                      {isUploading ? (
+                        <span className="flex items-center gap-3">
+                          <Brain className="h-5 w-5 animate-pulse" />
+                          Processing File...
+                        </span>
+                      ) : isAnalyzing ? (
+                        <span className="flex items-center gap-3">
+                          <Sparkles className="h-5 w-5 animate-pulse" />
+                          Complete Analysis in Progress...
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-3">
+                          <Zap className="h-5 w-5" />
+                          Start AI Analysis
+                        </span>
+                      )}
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Status Panel */}
+          <div className="space-y-8">
+            {/* Analysis Status */}
+            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-3 text-xl">
+                  {analysisStatus === 'idle' && (
+                    <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center">
+                      <Brain className="h-5 w-5 text-gray-400" />
+                    </div>
                   )}
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Analysis Status */}
-          <Card className="relative overflow-hidden border-2 border-medical-light/30 shadow-xl">
-            <div className="absolute inset-0 bg-gradient-to-br from-medical-secondary/5 to-medical-light/10"></div>
-            <CardHeader className="relative">
-              <CardTitle className="flex items-center gap-3 text-xl">
+                  {analysisStatus === 'processing' && (
+                    <div className="w-10 h-10 medical-gradient rounded-xl flex items-center justify-center">
+                      <Brain className="h-5 w-5 text-white animate-pulse" />
+                    </div>
+                  )}
+                  Analysis Status
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
                 {analysisStatus === 'idle' && (
-                  <div className="w-10 h-10 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
-                    <Brain className="h-5 w-5 text-gray-400" />
-                  </div>
-                )}
-                {analysisStatus === 'processing' && (
-                  <div className="w-10 h-10 medical-gradient rounded-lg flex items-center justify-center">
-                    <Brain className="h-5 w-5 text-white animate-pulse" />
-                  </div>
-                )}
-                {analysisStatus === 'complete' && (
-                  <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center">
-                    <CheckCircle className="h-5 w-5 text-white" />
-                  </div>
-                )}
-                Complete Data Extraction
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="relative">
-              {analysisStatus === 'idle' && (
-                <div className="text-center py-12">
-                  <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Brain className="h-10 w-10 text-gray-400" />
-                  </div>
-                  <p className="text-muted-foreground text-lg mb-4">
-                    Ready for complete medical data extraction
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Advanced algorithms ensure zero missing data across all lab report formats
-                  </p>
-                </div>
-              )}
-
-              {analysisStatus === 'processing' && (
-                <div className="space-y-6">
                   <div className="text-center py-8">
-                    <div className="w-20 h-20 medical-gradient rounded-full flex items-center justify-center mx-auto mb-6">
-                      <Brain className="h-10 w-10 text-white animate-pulse" />
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Brain className="h-8 w-8 text-gray-400" />
                     </div>
-                    <p className="font-semibold text-accent text-lg mb-2">Complete Data Extraction in Progress...</p>
-                    <p className="text-muted-foreground">
-                      {isUploading ? 'Extracting ALL medical data with advanced parsing...' : 'Generating comprehensive insights with zero missing values...'}
-                    </p>
+                    <p className="text-gray-600 mb-2">Ready for Analysis</p>
+                    <p className="text-sm text-gray-500">Upload a file to begin AI processing</p>
                   </div>
-                  <div className="space-y-3">
-                    <Progress value={uploadProgress} className="w-full h-3" />
-                    <div className="flex justify-between items-center text-sm">
-                      <span className="text-muted-foreground">{uploadProgress}% complete</span>
-                      <span className="text-medical-primary font-medium">
-                        {uploadProgress < 50 ? 'Reading all data...' : uploadProgress < 100 ? 'Analyzing completely...' : 'Finalizing results!'}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+                )}
 
-        {/* Features Section */}
-        <Card className="border-2 border-medical-light/30 shadow-xl overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-medical-light/5 to-medical-secondary/5"></div>
-          <CardContent className="p-8 relative">
-            <div className="text-center mb-8">
-              <h3 className="font-montserrat font-bold text-2xl mb-3 text-accent">
-                Complete Medical Data Extraction
-              </h3>
-              <p className="text-muted-foreground">
-                Advanced AI ensures every medical parameter is captured and analyzed with zero missing data
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="text-center group">
-                <div className="w-16 h-16 medical-gradient rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <FileText className="h-8 w-8 text-white" />
+                {analysisStatus === 'processing' && (
+                  <div className="space-y-6">
+                    <div className="text-center py-4">
+                      <div className="w-16 h-16 medical-gradient rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Brain className="h-8 w-8 text-white animate-pulse" />
+                      </div>
+                      <p className="font-semibold text-gray-900 mb-2">Analyzing Report...</p>
+                      <p className="text-sm text-gray-600">
+                        {isUploading ? 'Extracting data from file...' : 'Generating comprehensive insights...'}
+                      </p>
+                    </div>
+                    <div className="space-y-3">
+                      <Progress value={uploadProgress} className="w-full h-2" />
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-gray-500">{uploadProgress}% complete</span>
+                        <span className="text-medical-primary font-medium">
+                          {uploadProgress < 50 ? 'Reading all data...' : uploadProgress < 100 ? 'Analyzing completely...' : 'Finalizing results!'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Features Card */}
+            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl">AI Features</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 medical-gradient rounded-lg flex items-center justify-center flex-shrink-0">
+                    <FileText className="h-4 w-4 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 text-sm">Advanced PDF Reading</h4>
+                    <p className="text-xs text-gray-600">Multiple extraction methods for complete data capture</p>
+                  </div>
                 </div>
-                <h4 className="font-semibold text-lg mb-3 text-accent">Advanced PDF Reading</h4>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  Multiple extraction methods ensure complete data capture from any PDF format, eliminating missing values
-                </p>
-              </div>
-              <div className="text-center group">
-                <div className="w-16 h-16 bg-gradient-to-br from-medical-secondary to-medical-primary rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <Target className="h-8 w-8 text-white" />
+                
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-medical-secondary to-medical-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Target className="h-4 w-4 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 text-sm">Zero Missing Data</h4>
+                    <p className="text-xs text-gray-600">Comprehensive extraction ensures all parameters</p>
+                  </div>
                 </div>
-                <h4 className="font-semibold text-lg mb-3 text-accent">Zero Missing Data</h4>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  Comprehensive extraction protocols guarantee all medical parameters are captured and analyzed
-                </p>
-              </div>
-              <div className="text-center group">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-medical-primary rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
-                  <Shield className="h-8 w-8 text-white" />
+                
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-medical-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Shield className="h-4 w-4 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 text-sm">Secure & Private</h4>
+                    <p className="text-xs text-gray-600">HIPAA compliant with end-to-end encryption</p>
+                  </div>
                 </div>
-                <h4 className="font-semibold text-lg mb-3 text-accent">Complete Analysis</h4>
-                <p className="text-muted-foreground text-sm leading-relaxed">
-                  Every test result, reference range, and health indicator is extracted for comprehensive insights
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-medical-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Clock className="h-4 w-4 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 text-sm">Instant Results</h4>
+                    <p className="text-xs text-gray-600">Get comprehensive analysis in under 30 seconds</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
 
       {/* Consent Modal */}
