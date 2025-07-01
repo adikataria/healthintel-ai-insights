@@ -1,9 +1,11 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Calendar,
   Search,
@@ -32,7 +34,9 @@ const HealthHistory = () => {
     if (selectedFilter === 'all') {
       return matchesSearch;
     } else {
-      return matchesSearch && report.file_type.includes(selectedFilter);
+      // Since file_type doesn't exist on MedicalReport, we'll check file_name extension
+      const fileExtension = report.file_name.split('.').pop()?.toLowerCase() || '';
+      return matchesSearch && fileExtension.includes(selectedFilter);
     }
   });
 
@@ -45,9 +49,10 @@ const HealthHistory = () => {
     });
   };
 
-  const getFileIcon = (fileType: string) => {
-    if (fileType.includes('pdf')) return <FileText className="h-4 w-4 mr-2 text-red-500" />;
-    if (fileType.includes('image')) return <FileText className="h-4 w-4 mr-2 text-blue-500" />;
+  const getFileIcon = (fileName: string) => {
+    const extension = fileName.split('.').pop()?.toLowerCase() || '';
+    if (extension === 'pdf') return <FileText className="h-4 w-4 mr-2 text-red-500" />;
+    if (['jpg', 'jpeg', 'png', 'gif'].includes(extension)) return <FileText className="h-4 w-4 mr-2 text-blue-500" />;
     return <FileText className="h-4 w-4 mr-2 text-gray-500" />;
   };
 
@@ -113,7 +118,7 @@ const HealthHistory = () => {
               <SelectContent>
                 <SelectItem value="all">All Types</SelectItem>
                 <SelectItem value="pdf">PDF Reports</SelectItem>
-                <SelectItem value="image">Images</SelectItem>
+                <SelectItem value="jpg">Images</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -132,8 +137,8 @@ const HealthHistory = () => {
                     </CardDescription>
                   </div>
                   <Badge variant="secondary" className="opacity-75">
-                    {getFileIcon(report.file_type)}
-                    {report.file_type.split('/')[1]?.toUpperCase()}
+                    {getFileIcon(report.file_name)}
+                    {report.file_name.split('.').pop()?.toUpperCase()}
                   </Badge>
                 </CardHeader>
                 <CardContent>
@@ -145,11 +150,11 @@ const HealthHistory = () => {
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                         <User className="h-4 w-4" />
-                        Uploaded By: User ID {report.user_id}
+                        Report ID: {report.id.slice(0, 8)}...
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                         <MapPin className="h-4 w-4" />
-                        File Size: {(report.file_size / 1024).toFixed(2)} KB
+                        Status: {report.analysis_status}
                       </div>
                     </div>
                     <div>

@@ -16,7 +16,8 @@ import {
   User,
   Bot,
   Download,
-  RefreshCw
+  RefreshCw,
+  Activity
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAIDoctorChat } from '@/hooks/useAIDoctorChat';
@@ -27,7 +28,7 @@ const Chat = () => {
   const [message, setMessage] = useState('');
   const { messages, sendMessage, isLoading } = useAIDoctorChat();
   const { isRecording, startRecording, stopRecording } = useVoiceRecording();
-  const { speak, isSpeaking, stop } = useTextToSpeech();
+  const { speak, isSpeaking, stopSpeaking } = useTextToSpeech();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -63,7 +64,7 @@ const Chat = () => {
 
   const handleSpeakMessage = (text: string) => {
     if (isSpeaking) {
-      stop();
+      stopSpeaking();
     } else {
       speak(text);
     }
