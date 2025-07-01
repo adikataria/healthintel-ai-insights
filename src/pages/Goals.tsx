@@ -54,17 +54,17 @@ const Goals = () => {
   }
 
   return (
-    <div className="min-h-screen pt-20 pb-12 bg-gradient-to-br from-gray-50 via-white to-gray-50">
-      <div className="container max-w-7xl mx-auto px-4">
-        {/* Dashboard Style Header */}
+    <div className="min-h-screen pt-20 pb-12 bg-gray-50">
+      <div className="container max-w-6xl">
+        {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl md:text-4xl font-montserrat font-bold text-accent mb-2">
-                Health Goals
+              <h1 className="text-3xl md:text-4xl font-montserrat font-bold text-accent">
+                Health Goals & Milestones
               </h1>
-              <p className="text-lg text-muted-foreground">
-                Track your progress and achieve your health objectives
+              <p className="text-xl text-muted-foreground mt-2">
+                Track your progress and celebrate achievements
               </p>
             </div>
             <CreateGoalDialog>

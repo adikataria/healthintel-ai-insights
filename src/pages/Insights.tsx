@@ -1,394 +1,364 @@
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Progress } from '@/components/ui/progress';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  AlertTriangle, 
-  CheckCircle, 
-  Activity,
-  Heart,
-  Brain,
-  Droplets,
-  Zap,
-  Filter,
-  Download,
-  Calendar,
-  BarChart3
-} from 'lucide-react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { useMedicalReports } from '@/hooks/useMedicalReports';
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { MessageCircle, TrendingUp, AlertTriangle, CheckCircle, Heart, Droplets, Zap, FileText, Calendar } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line } from "recharts";
+import { useMedicalReports } from "@/hooks/useMedicalReports";
+import { Badge } from "@/components/ui/badge";
 
 const Insights = () => {
-  const { reports, isLoading } = useMedicalReports();
-  const [selectedTimeframe, setSelectedTimeframe] = useState('6months');
+  const { latestReport, reports, isLoading } = useMedicalReports();
 
-  // Mock data for demonstration - replace with actual data processing
-  const mockTrendData = [
-    { month: 'Jan', hemoglobin: 12.5, glucose: 95, cholesterol: 180 },
-    { month: 'Feb', hemoglobin: 13.0, glucose: 88, cholesterol: 175 },
-    { month: 'Mar', hemoglobin: 12.8, glucose: 92, cholesterol: 170 },
-    { month: 'Apr', hemoglobin: 13.2, glucose: 85, cholesterol: 165 },
-    { month: 'May', hemoglobin: 13.5, glucose: 90, cholesterol: 160 },
-    { month: 'Jun', hemoglobin: 13.3, glucose: 87, cholesterol: 158 },
-  ];
-
-  const mockInsights = [
-    {
-      id: 1,
-      type: 'improvement',
-      title: 'Cholesterol Levels Improving',
-      description: 'Your cholesterol has decreased by 12% over the last 6 months',
-      icon: TrendingDown,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
-      borderColor: 'border-green-200'
-    },
-    {
-      id: 2,
-      type: 'stable',
-      title: 'Hemoglobin Stable',
-      description: 'Your hemoglobin levels remain within normal range',
-      icon: CheckCircle,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
-      borderColor: 'border-blue-200'
-    },
-    {
-      id: 3,
-      type: 'attention',
-      title: 'Monitor Glucose',
-      description: 'Slight fluctuations in glucose levels detected',
-      icon: AlertTriangle,
-      color: 'text-yellow-600',
-      bgColor: 'bg-yellow-50',
-      borderColor: 'border-yellow-200'
+  // Extract health metrics from the latest report
+  const getHealthMetrics = () => {
+    if (!latestReport?.ai_insights?.healthIndicators) {
+      return [];
     }
-  ];
 
-  const getHealthScore = () => {
-    // Mock calculation - replace with actual logic
-    return 78;
+    return latestReport.ai_insights.healthIndicators.map((indicator: any) => {
+      let icon = Heart;
+      let color = "text-green-600";
+      let bgColor = "bg-green-50";
+      let borderColor = "border-green-200";
+
+      if (indicator.parameter.toLowerCase().includes('glucose') || indicator.parameter.toLowerCase().includes('sugar')) {
+        icon = Droplets;
+      } else if (indicator.parameter.toLowerCase().includes('hemoglobin') || indicator.parameter.toLowerCase().includes('hb')) {
+        icon = Zap;
+      }
+
+      switch (indicator.status) {
+        case 'borderline':
+          color = "text-yellow-600";
+          bgColor = "bg-yellow-50";
+          borderColor = "border-yellow-200";
+          break;
+        case 'abnormal':
+          color = "text-red-600";
+          bgColor = "bg-red-50";
+          borderColor = "border-red-200";
+          break;
+        default:
+          color = "text-green-600";
+          bgColor = "bg-green-50";
+          borderColor = "border-green-200";
+      }
+
+      return {
+        metric: indicator.parameter,
+        value: indicator.value,
+        status: indicator.status,
+        icon,
+        color,
+        bgColor,
+        borderColor,
+        description: indicator.explanation,
+        recommendation: `Monitor ${indicator.parameter} levels regularly`
+      };
+    });
   };
+
+  const healthMetrics = getHealthMetrics();
+
+  // Generate comparison data from multiple reports if available
+  const getComparisonData = () => {
+    if (reports.length < 2) {
+      return [
+        { month: "Previous", current: 0, previous: 0 },
+        { month: "Current", current: 0, previous: 0 }
+      ];
+    }
+
+    // Find cholesterol values from reports
+    const currentCholesterol = latestReport?.ai_insights?.healthIndicators?.find((h: any) => 
+      h.parameter.toLowerCase().includes('cholesterol')
+    );
+    
+    const previousReport = reports[1];
+    const previousCholesterol = previousReport?.ai_insights?.healthIndicators?.find((h: any) => 
+      h.parameter.toLowerCase().includes('cholesterol')
+    );
+
+    const currentValue = currentCholesterol ? parseFloat(currentCholesterol.value.match(/\d+\.?\d*/)?.[0] || '0') : 0;
+    const previousValue = previousCholesterol ? parseFloat(previousCholesterol.value.match(/\d+\.?\d*/)?.[0] || '0') : 0;
+
+    return [
+      { month: "Previous", current: previousValue, previous: 0 },
+      { month: "Current", current: currentValue, previous: previousValue }
+    ];
+  };
+
+  const comparisonData = getComparisonData();
+
+  const chartConfig = {
+    current: {
+      label: "Current",
+      color: "#00796B"
+    },
+    previous: {
+      label: "Previous",
+      color: "#B0BEC5"
+    }
+  };
+
+  const preventativeSuggestions = latestReport?.ai_insights?.recommendations ? [
+    ...((latestReport.ai_insights.recommendations.consultation || []).map((item: string) => ({
+      title: "Medical Consultation",
+      description: item,
+      priority: "high" as const,
+      icon: AlertTriangle
+    }))),
+    ...((latestReport.ai_insights.recommendations.lifestyle || []).slice(0, 2).map((item: string) => ({
+      title: "Lifestyle Recommendation",
+      description: item,
+      priority: "medium" as const,
+      icon: Droplets
+    })))
+  ] : [];
 
   if (isLoading) {
     return (
       <div className="min-h-screen pt-20 pb-12 bg-gray-50">
         <div className="container max-w-6xl">
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-medical-primary mx-auto"></div>
-            <p className="mt-4 text-muted-foreground">Loading your health insights...</p>
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-medical-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading health insights...</p>
+            </div>
           </div>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="min-h-screen pt-20 pb-12 bg-gradient-to-br from-gray-50 via-white to-gray-50">
-      <div className="container max-w-7xl mx-auto px-4">
-        {/* Dashboard Style Header */}
-        <div className="mb-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-montserrat font-bold text-accent mb-2">
-                Health Insights
-              </h1>
-              <p className="text-lg text-muted-foreground">
-                AI-powered analysis and trends from your lab reports
+  if (!latestReport) {
+    return (
+      <div className="min-h-screen pt-20 pb-12 bg-gray-50">
+        <div className="container max-w-6xl">
+          <div className="mb-8">
+            <h1 className="text-3xl md:text-4xl font-montserrat font-bold mb-4 text-accent">
+              Health Insights Dashboard
+            </h1>
+            <p className="text-xl text-muted-foreground">
+              Upload a lab report to see AI-powered health insights
+            </p>
+          </div>
+
+          <Card className="health-card">
+            <CardContent className="p-12 text-center">
+              <FileText className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="font-montserrat font-semibold text-xl mb-4 text-accent">
+                No Lab Reports Found
+              </h3>
+              <p className="text-muted-foreground mb-6">
+                Upload your first lab report to get personalized health insights and recommendations.
               </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button variant="outline" size="sm">
-                <Filter className="h-4 w-4 mr-2" />
-                Filter
+              <Button 
+                size="lg" 
+                className="bg-medical-primary hover:bg-medical-dark text-white px-8"
+                asChild
+              >
+                <Link to="/upload">
+                  <FileText className="mr-2 h-5 w-5" />
+                  Upload Lab Report
+                </Link>
               </Button>
-              <Button variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
-                Export
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {/* Health Score Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="health-card">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Health Score</p>
-                  <p className="text-3xl font-bold text-medical-primary">{getHealthScore()}</p>
-                </div>
-                <div className="w-12 h-12 bg-medical-primary/10 rounded-full flex items-center justify-center">
-                  <Activity className="h-6 w-6 text-medical-primary" />
-                </div>
-              </div>
-              <Progress value={getHealthScore()} className="mt-3" />
-            </CardContent>
-          </Card>
-
-          <Card className="health-card">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Reports Analyzed</p>
-                  <p className="text-3xl font-bold text-accent">{reports.length}</p>
-                </div>
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                  <BarChart3 className="h-6 w-6 text-blue-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="health-card">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Improvements</p>
-                  <p className="text-3xl font-bold text-green-600">3</p>
-                </div>
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                  <TrendingUp className="h-6 w-6 text-green-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="health-card">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Alerts</p>
-                  <p className="text-3xl font-bold text-yellow-600">1</p>
-                </div>
-                <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
-                  <AlertTriangle className="h-6 w-6 text-yellow-600" />
-                </div>
-              </div>
             </CardContent>
           </Card>
         </div>
+      </div>
+    );
+  }
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Insights */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Trends Chart */}
-            <Card className="health-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5 text-medical-primary" />
-                  Health Trends
-                </CardTitle>
-                <CardDescription>
-                  Track your key health metrics over time
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Tabs defaultValue="hemoglobin" className="w-full">
-                  <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="hemoglobin">Hemoglobin</TabsTrigger>
-                    <TabsTrigger value="glucose">Glucose</TabsTrigger>
-                    <TabsTrigger value="cholesterol">Cholesterol</TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsContent value="hemoglobin" className="mt-6">
-                    <ResponsiveContainer width="100%" height={300}>
-                      <LineChart data={mockTrendData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="month" />
-                        <YAxis />
-                        <Tooltip />
-                        <Line 
-                          type="monotone" 
-                          dataKey="hemoglobin" 
-                          stroke="#2563eb" 
-                          strokeWidth={2}
-                          dot={{ fill: '#2563eb' }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </TabsContent>
-                  
-                  <TabsContent value="glucose" className="mt-6">
-                    <ResponsiveContainer width="100%" height={300}>
-                      <LineChart data={mockTrendData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="month" />
-                        <YAxis />
-                        <Tooltip />
-                        <Line 
-                          type="monotone" 
-                          dataKey="glucose" 
-                          stroke="#dc2626" 
-                          strokeWidth={2}
-                          dot={{ fill: '#dc2626' }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </TabsContent>
-                  
-                  <TabsContent value="cholesterol" className="mt-6">
-                    <ResponsiveContainer width="100%" height={300}>
-                      <LineChart data={mockTrendData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="month" />
-                        <YAxis />
-                        <Tooltip />
-                        <Line 
-                          type="monotone" 
-                          dataKey="cholesterol" 
-                          stroke="#16a34a" 
-                          strokeWidth={2}
-                          dot={{ fill: '#16a34a' }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </TabsContent>
-                </Tabs>
-              </CardContent>
-            </Card>
+  return (
+    <div className="min-h-screen pt-20 pb-12 bg-gray-50">
+      <div className="container max-w-6xl">
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-montserrat font-bold mb-4 text-accent">
+            Health Insights Dashboard
+          </h1>
+          <p className="text-xl text-muted-foreground">
+            AI-powered analysis of your latest lab results
+          </p>
+          {latestReport && (
+            <div className="flex items-center gap-2 mt-4">
+              <Badge variant="outline" className="text-medical-primary border-medical-primary">
+                Latest Report: {latestReport.title}
+              </Badge>
+              <Badge variant="outline" className="text-gray-600">
+                {new Date(latestReport.created_at).toLocaleDateString()}
+              </Badge>
+            </div>
+          )}
+        </div>
 
-            {/* AI Insights */}
-            <Card className="health-card">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Brain className="h-5 w-5 text-medical-primary" />
-                  AI-Generated Insights
-                </CardTitle>
-                <CardDescription>
-                  Personalized health recommendations based on your data
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {mockInsights.map((insight) => {
-                    const IconComponent = insight.icon;
-                    return (
-                      <div
-                        key={insight.id}
-                        className={`p-4 rounded-lg border ${insight.bgColor} ${insight.borderColor}`}
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className={`p-2 rounded-full bg-white`}>
-                            <IconComponent className={`h-4 w-4 ${insight.color}`} />
-                          </div>
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-gray-900 mb-1">
-                              {insight.title}
-                            </h4>
-                            <p className="text-sm text-gray-600">
-                              {insight.description}
-                            </p>
-                          </div>
-                        </div>
+        {/* Report History Section */}
+        <Card className="health-card mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-medical-primary" />
+              Report History ({reports.length} reports)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {reports.slice(0, 5).map((report, index) => (
+                <div key={report.id} className={`flex items-center justify-between p-3 rounded-lg border ${
+                  index === 0 ? 'bg-medical-light/10 border-medical-primary/20' : 'bg-gray-50 border-gray-200'
+                }`}>
+                  <div className="flex items-center gap-3">
+                    <div className={`w-2 h-2 rounded-full ${
+                      index === 0 ? 'bg-medical-primary' : 'bg-gray-400'
+                    }`}></div>
+                    <div>
+                      <h4 className="font-medium text-accent">{report.title}</h4>
+                      <p className="text-sm text-muted-foreground">{report.file_name}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium">{new Date(report.created_at).toLocaleDateString()}</p>
+                    {index === 0 && (
+                      <Badge className="bg-medical-primary text-white text-xs">Current</Badge>
+                    )}
+                  </div>
+                </div>
+              ))}
+              {reports.length > 5 && (
+                <p className="text-sm text-muted-foreground text-center">
+                  And {reports.length - 5} more reports...
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Overview Section */}
+        {healthMetrics.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {healthMetrics.slice(0, 6).map((metric, index) => (
+              <Card key={index} className={`health-card ${metric.borderColor} border-l-4`}>
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center justify-between text-lg">
+                    <span className="flex items-center gap-2">
+                      <div className={`w-8 h-8 ${metric.bgColor} rounded-lg flex items-center justify-center`}>
+                        <metric.icon className={`h-4 w-4 ${metric.color}`} />
                       </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
+                      {metric.metric}
+                    </span>
+                    <span className={`text-sm px-2 py-1 rounded-full ${metric.bgColor} ${metric.color} font-medium`}>
+                      {metric.status}
+                    </span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold mb-2">{metric.value}</div>
+                  <p className="text-sm text-muted-foreground mb-3">{metric.description?.substring(0, 100)}...</p>
+                  <div className={`p-3 ${metric.bgColor} rounded-lg`}>
+                    <p className="text-xs font-medium">💡 Recommendation:</p>
+                    <p className="text-xs">{metric.recommendation}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
+        )}
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Quick Stats */}
-            <Card className="health-card">
-              <CardHeader>
-                <CardTitle className="text-lg">Quick Stats</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Heart className="h-4 w-4 text-red-500" />
-                    <span className="text-sm">Heart Health</span>
-                  </div>
-                  <Badge variant="secondary" className="bg-green-100 text-green-800">
-                    Good
-                  </Badge>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Droplets className="h-4 w-4 text-blue-500" />
-                    <span className="text-sm">Blood Sugar</span>
-                  </div>
-                  <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-                    Monitor
-                  </Badge>
-                </div>
-                
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-purple-500" />
-                    <span className="text-sm">Energy Levels</span>
-                  </div>
-                  <Badge variant="secondary" className="bg-green-100 text-green-800">
-                    High
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
+        {/* Metrics Comparison */}
+        {reports.length > 1 && (
+          <Card className="health-card mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-medical-primary" />
+                Health Trends Comparison
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer config={chartConfig} className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={comparisonData}>
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Bar dataKey="previous" fill="var(--color-previous)" name="Previous Report" />
+                    <Bar dataKey="current" fill="var(--color-current)" name="Current Report" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+              <p className="text-sm text-muted-foreground mt-4">
+                Comparison between your current and previous lab reports.
+              </p>
+            </CardContent>
+          </Card>
+        )}
 
-            {/* Recent Activity */}
-            <Card className="health-card">
-              <CardHeader>
-                <CardTitle className="text-lg">Recent Activity</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 text-sm">
-                    <div className="w-2 h-2 bg-medical-primary rounded-full"></div>
-                    <span className="text-gray-600">Lab report analyzed</span>
-                    <span className="text-xs text-gray-400 ml-auto">2h ago</span>
+        {/* Personalized Health Recommendations */}
+        {preventativeSuggestions.length > 0 && (
+          <Card className="health-card mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-medical-primary" />
+                Personalized Health Recommendations
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {preventativeSuggestions.map((suggestion, index) => (
+                  <div key={index} className={`p-4 rounded-lg border ${
+                    suggestion.priority === 'high' 
+                      ? 'bg-red-50 border-red-200' 
+                      : 'bg-blue-50 border-blue-200'
+                  }`}>
+                    <div className="flex items-start gap-3">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                        suggestion.priority === 'high' 
+                          ? 'bg-red-100 text-red-600' 
+                          : 'bg-blue-100 text-blue-600'
+                      }`}>
+                        <suggestion.icon className="h-4 w-4" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-accent mb-1">{suggestion.title}</h3>
+                        <p className="text-sm text-muted-foreground">{suggestion.description}</p>
+                      </div>
+                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                        suggestion.priority === 'high' 
+                          ? 'bg-red-100 text-red-700' 
+                          : 'bg-blue-100 text-blue-700'
+                      }`}>
+                        {suggestion.priority}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-gray-600">Health goal updated</span>
-                    <span className="text-xs text-gray-400 ml-auto">1d ago</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <span className="text-gray-600">New insight generated</span>
-                    <span className="text-xs text-gray-400 ml-auto">3d ago</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-            {/* Recommendations */}
-            <Card className="health-card">
-              <CardHeader>
-                <CardTitle className="text-lg">Recommendations</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                    <p className="text-sm font-medium text-blue-900 mb-1">
-                      Schedule Check-up
-                    </p>
-                    <p className="text-xs text-blue-700">
-                      It's been 6 months since your last comprehensive check-up
-                    </p>
-                  </div>
-                  
-                  <div className="p-3 bg-green-50 rounded-lg border border-green-200">
-                    <p className="text-sm font-medium text-green-900 mb-1">
-                      Continue Exercise
-                    </p>
-                    <p className="text-xs text-green-700">
-                      Your fitness routine is showing positive results
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+        {/* CTA Section */}
+        <Card className="health-card">
+          <CardContent className="p-6 text-center">
+            <h3 className="font-montserrat font-semibold text-xl mb-4 text-accent">
+              Need More Personalized Advice?
+            </h3>
+            <p className="text-muted-foreground mb-6">
+              Chat with our AI health assistant for detailed explanations and personalized recommendations.
+            </p>
+            <Button 
+              size="lg" 
+              className="bg-medical-primary hover:bg-medical-dark text-white px-8"
+              asChild
+            >
+              <Link to="/chat">
+                <MessageCircle className="mr-2 h-5 w-5" />
+                Ask AI Doctor
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
