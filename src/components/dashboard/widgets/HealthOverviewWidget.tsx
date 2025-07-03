@@ -3,13 +3,76 @@ import React from 'react';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Heart, Droplets, Zap, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { useMedicalReports } from '@/hooks/useMedicalReports';
 
 export const HealthOverviewWidget: React.FC = () => {
-  const metrics = [
-    { name: 'Cholesterol', value: 75, status: 'warning', icon: Heart, trend: 'down', color: 'text-yellow-600' },
-    { name: 'Blood Sugar', value: 90, status: 'good', icon: Droplets, trend: 'stable', color: 'text-green-600' },
-    { name: 'Hemoglobin', value: 65, status: 'attention', icon: Zap, trend: 'up', color: 'text-red-600' },
-  ];
+  const { latestReport } = useMedicalReports();
+  
+  // Extract metrics from latest report if available
+  const getMetricsFromReport = () => {
+    if (!latestReport?.ai_insights?.healthIndicators) {
+      return [
+        { name: 'Cholesterol', value: 75, status: 'warning', icon: Heart, trend: 'down', color: 'text-yellow-600' },
+        { name: 'Blood Sugar', value: 90, status: 'good', icon: Droplets, trend: 'stable', color: 'text-green-600' },
+        { name: 'Hemoglobin', value: 65, status: 'attention', icon: Zap, trend: 'up', color: 'text-red-600' },
+      ];
+    }
+
+    const indicators = latestReport.ai_insights.healthIndicators;
+    const metrics = [];
+
+    indicators.forEach((indicator: any) => {
+      const param = indicator.parameter.toLowerCase();
+      const value = parseFloat(indicator.value.match(/\d+\.?\d*/)?.[0] || '0');
+      
+      if (param.includes('cholesterol')) {
+        const status = value > 200 ? 'attention' : value > 180 ? 'warning' : 'good';
+        const progress = Math.min(100, (value / 250) * 100);
+        metrics.push({ 
+          name: 'Cholesterol', 
+          value: Math.round(progress), 
+          status, 
+          icon: Heart, 
+          trend: value > 200 ? 'up' : 'stable',
+          color: status === 'good' ? 'text-green-600' : status === 'warning' ? 'text-yellow-600' : 'text-red-600'
+        });
+      }
+      
+      if (param.includes('glucose') || param.includes('sugar')) {
+        const status = value > 126 ? 'attention' : value > 100 ? 'warning' : 'good';
+        const progress = Math.min(100, (value / 150) * 100);
+        metrics.push({ 
+          name: 'Blood Sugar', 
+          value: Math.round(progress), 
+          status, 
+          icon: Droplets, 
+          trend: value > 100 ? 'up' : 'stable',
+          color: status === 'good' ? 'text-green-600' : status === 'warning' ? 'text-yellow-600' : 'text-red-600'
+        });
+      }
+      
+      if (param.includes('hemoglobin') || param.includes('hgb')) {
+        const status = value < 12 ? 'attention' : value < 14 ? 'warning' : 'good';
+        const progress = Math.min(100, (value / 18) * 100);
+        metrics.push({ 
+          name: 'Hemoglobin', 
+          value: Math.round(progress), 
+          status, 
+          icon: Zap, 
+          trend: value < 12 ? 'down' : 'stable',
+          color: status === 'good' ? 'text-green-600' : status === 'warning' ? 'text-yellow-600' : 'text-red-600'
+        });
+      }
+    });
+
+    return metrics.length > 0 ? metrics : [
+      { name: 'Cholesterol', value: 75, status: 'warning', icon: Heart, trend: 'down', color: 'text-yellow-600' },
+      { name: 'Blood Sugar', value: 90, status: 'good', icon: Droplets, trend: 'stable', color: 'text-green-600' },
+      { name: 'Hemoglobin', value: 65, status: 'attention', icon: Zap, trend: 'up', color: 'text-red-600' },
+    ];
+  };
+
+  const metrics = getMetricsFromReport();
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {

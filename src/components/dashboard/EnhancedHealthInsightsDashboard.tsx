@@ -92,7 +92,7 @@ export const EnhancedHealthInsightsDashboard = () => {
   };
 
   const handleQuickHealthCheck = () => {
-    navigate('/chat');
+    navigate('/ai-doctor');
   };
 
   const handleAddWidget = (widgetType: string) => {
@@ -122,14 +122,12 @@ export const EnhancedHealthInsightsDashboard = () => {
     { href: '/health-history', label: 'History', icon: History },
     { href: '/chat', label: 'AI Assistant', icon: MessageSquare },
     { href: '/trends', label: 'Trends', icon: BarChart3 },
-    { href: '/diet-planner', label: 'Diet Planner', icon: ChefHat },
   ];
 
   const quickActions = [
     { icon: Upload, label: 'Upload Report', action: () => navigate('/upload'), color: 'bg-slate-500 hover:bg-slate-600' },
     { icon: Activity, label: 'View Progress', action: handleViewProgress, color: 'bg-blue-500 hover:bg-blue-600' },
-    { icon: Stethoscope, label: 'Quick Health Check', action: handleQuickHealthCheck, color: 'bg-teal-500 hover:bg-teal-600' },
-    { icon: ChefHat, label: 'Diet Planner', action: () => navigate('/diet-planner'), color: 'bg-emerald-500 hover:bg-emerald-600' },
+    { icon: Stethoscope, label: 'AI Doctor', action: handleQuickHealthCheck, color: 'bg-teal-500 hover:bg-teal-600' },
   ];
 
   const renderWidget = (widget: Widget) => {
