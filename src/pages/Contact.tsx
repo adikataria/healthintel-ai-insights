@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
-
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -17,13 +15,12 @@ const Contact = () => {
     category: '',
     message: ''
   });
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // In a real app, this would send the message to your backend
     toast({
       title: "Message Sent",
-      description: "Thank you for contacting us. We'll get back to you soon!",
+      description: "Thank you for contacting us. We'll get back to you soon!"
     });
     setFormData({
       name: '',
@@ -33,9 +30,7 @@ const Contact = () => {
       message: ''
     });
   };
-
-  return (
-    <div className="container mx-auto p-6 max-w-6xl">
+  return <div className="container mx-auto p-6 max-w-6xl">
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">Contact Us</h1>
         <p className="text-gray-600 text-lg">
@@ -57,31 +52,26 @@ const Contact = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Name</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
-                  />
+                  <Input id="name" value={formData.name} onChange={e => setFormData({
+                  ...formData,
+                  name: e.target.value
+                })} required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    required
-                  />
+                  <Input id="email" type="email" value={formData.email} onChange={e => setFormData({
+                  ...formData,
+                  email: e.target.value
+                })} required />
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="category">Category</Label>
-                <Select
-                  value={formData.category}
-                  onValueChange={(value) => setFormData({ ...formData, category: value })}
-                >
+                <Select value={formData.category} onValueChange={value => setFormData({
+                ...formData,
+                category: value
+              })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
@@ -98,24 +88,18 @@ const Contact = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="subject">Subject</Label>
-                <Input
-                  id="subject"
-                  value={formData.subject}
-                  onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                  required
-                />
+                <Input id="subject" value={formData.subject} onChange={e => setFormData({
+                ...formData,
+                subject: e.target.value
+              })} required />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="message">Message</Label>
-                <Textarea
-                  id="message"
-                  rows={6}
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  placeholder="Please describe your inquiry in detail..."
-                  required
-                />
+                <Textarea id="message" rows={6} value={formData.message} onChange={e => setFormData({
+                ...formData,
+                message: e.target.value
+              })} placeholder="Please describe your inquiry in detail..." required />
               </div>
 
               <Button type="submit" className="w-full bg-medical-primary hover:bg-medical-dark text-white">
@@ -200,15 +184,11 @@ const Contact = () => {
               <CardTitle>Emergency Notice</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-red-600 font-medium">
-                For medical emergencies, do not use this contact form. Call 911 or go to your nearest emergency room immediately.
-              </p>
+              <p className="text-red-600 font-medium">For medical emergencies, do not use this contact form. Call 112 or go to your nearest emergency room immediately.</p>
             </CardContent>
           </Card>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Contact;
