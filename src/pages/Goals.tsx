@@ -9,9 +9,11 @@ import { CreateGoalDialog } from '@/components/goals/CreateGoalDialog';
 import { MilestoneCard } from '@/components/goals/MilestoneCard';
 import { useHealthGoals } from '@/hooks/useHealthGoals';
 import { useHealthMilestones } from '@/hooks/useHealthMilestones';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 const Goals = () => {
   const [editingGoal, setEditingGoal] = useState<any>(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const { goals, isLoading: goalsLoading, deleteGoal } = useHealthGoals();
   const { milestones, isLoading: milestonesLoading } = useHealthMilestones();
 
@@ -42,8 +44,9 @@ const Goals = () => {
 
   if (goalsLoading || milestonesLoading) {
     return (
-      <div className="min-h-screen pt-20 pb-12 bg-gray-50">
-        <div className="container max-w-6xl">
+      <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark bg-slate-900' : 'bg-slate-50'}`}>
+        <PageHeader isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+        <div className="max-w-7xl mx-auto p-2 sm:p-4 md:p-6">
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-medical-primary mx-auto"></div>
             <p className="mt-4 text-muted-foreground">Loading your health goals...</p>
@@ -54,8 +57,9 @@ const Goals = () => {
   }
 
   return (
-    <div className="min-h-screen pt-20 pb-12 bg-gray-50">
-      <div className="container max-w-6xl">
+    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark bg-slate-900' : 'bg-slate-50'}`}>
+      <PageHeader isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+      <div className="max-w-7xl mx-auto p-2 sm:p-4 md:p-6">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

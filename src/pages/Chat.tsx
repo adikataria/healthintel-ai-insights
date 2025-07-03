@@ -17,6 +17,7 @@ import { EnhancedChatFooter } from "@/components/medical/EnhancedChatFooter";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/shared/PageHeader";
 
 const Chat = () => {
   const { user } = useAuth();
@@ -25,6 +26,7 @@ const Chat = () => {
   const [pendingMessage, setPendingMessage] = useState("");
   const [pendingSymptoms, setPendingSymptoms] = useState(null);
   const [activeTab, setActiveTab] = useState("chat");
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { speak } = useTextToSpeech();
   const isMobile = useIsMobile();
@@ -125,40 +127,9 @@ const Chat = () => {
   const lastAIMessage = messages.filter(m => m.role === 'assistant').pop()?.content;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-medical-light/20 via-white to-blue-50/30">
-      {/* Enhanced Header - Mobile Responsive */}
-      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 px-2 sm:px-4 py-2 sm:py-3 sticky top-0 z-10">
-        <div className="flex items-center justify-between max-w-6xl mx-auto">
-          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-            <div className="relative">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-medical-primary to-medical-secondary rounded-xl flex items-center justify-center shadow-sm">
-                <Bot className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-              </div>
-              <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-green-500 rounded-full animate-pulse border-2 border-white"></div>
-            </div>
-            <div className="flex-1 min-w-0">
-              <h1 className="font-semibold text-sm sm:text-base text-gray-900 flex items-center gap-1 sm:gap-2 truncate">
-                DocLumen AI Doctor
-                <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500 flex-shrink-0" />
-              </h1>
-              <p className="text-xs sm:text-sm text-gray-600 truncate">Your intelligent health companion</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-1 sm:gap-2">
-            {!isMobile && (
-              <Button variant="ghost" size="sm" className="gap-2 hidden sm:flex">
-                <Settings className="h-4 w-4" />
-                Settings
-              </Button>
-            )}
-            <Button variant="outline" size="sm" className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3">
-              <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
-              {!isMobile && "New Chat"}
-            </Button>
-          </div>
-        </div>
-      </div>
-
+    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark bg-slate-900' : 'bg-slate-50'}`}>
+      <PageHeader isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+      
       <div className="max-w-6xl mx-auto p-2 sm:p-4 pb-20">
         {/* Smart Memory Panel - Hide on mobile when there are messages */}
         {(!isMobile || messages.length === 0) && (

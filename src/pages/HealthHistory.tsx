@@ -23,10 +23,12 @@ import {
 import { useMedicalReports } from "@/hooks/useMedicalReports";
 import { useHealthMilestones } from "@/hooks/useHealthMilestones";
 import { format } from "date-fns";
+import { PageHeader } from "@/components/shared/PageHeader";
 
 const HealthHistory = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedFilter, setSelectedFilter] = useState("all");
+  const [isDarkMode, setIsDarkMode] = useState(false);
   
   const { reports, isLoading: reportsLoading } = useMedicalReports();
   const { milestones, isLoading: milestonesLoading } = useHealthMilestones();
@@ -119,8 +121,9 @@ const HealthHistory = () => {
 
   if (reportsLoading || milestonesLoading) {
     return (
-      <div className="min-h-screen pt-20 pb-12 bg-gray-50">
-        <div className="container max-w-6xl">
+      <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark bg-slate-900' : 'bg-slate-50'}`}>
+        <PageHeader isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+        <div className="max-w-7xl mx-auto p-2 sm:p-4 md:p-6">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-medical-primary mx-auto mb-4"></div>
@@ -133,8 +136,9 @@ const HealthHistory = () => {
   }
 
   return (
-    <div className="min-h-screen pt-20 pb-12 bg-gray-50">
-      <div className="container max-w-6xl">
+    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark bg-slate-900' : 'bg-slate-50'}`}>
+      <PageHeader isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+      <div className="max-w-7xl mx-auto p-2 sm:p-4 md:p-6">
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-montserrat font-bold mb-4 text-accent">
             Health History Repository

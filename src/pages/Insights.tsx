@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -8,8 +9,10 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line } from "recharts";
 import { useMedicalReports } from "@/hooks/useMedicalReports";
 import { Badge } from "@/components/ui/badge";
+import { PageHeader } from "@/components/shared/PageHeader";
 
 const Insights = () => {
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const { latestReport, reports, isLoading } = useMedicalReports();
 
   // Extract health metrics from the latest report
@@ -121,8 +124,9 @@ const Insights = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen pt-20 pb-12 bg-gray-50">
-        <div className="container max-w-6xl">
+      <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark bg-slate-900' : 'bg-slate-50'}`}>
+        <PageHeader isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+        <div className="max-w-7xl mx-auto p-2 sm:p-4 md:p-6">
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-medical-primary mx-auto mb-4"></div>
@@ -136,8 +140,9 @@ const Insights = () => {
 
   if (!latestReport) {
     return (
-      <div className="min-h-screen pt-20 pb-12 bg-gray-50">
-        <div className="container max-w-6xl">
+      <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark bg-slate-900' : 'bg-slate-50'}`}>
+        <PageHeader isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+        <div className="max-w-7xl mx-auto p-2 sm:p-4 md:p-6">
           <div className="mb-8">
             <h1 className="text-3xl md:text-4xl font-montserrat font-bold mb-4 text-accent">
               Health Insights Dashboard
@@ -174,8 +179,9 @@ const Insights = () => {
   }
 
   return (
-    <div className="min-h-screen pt-20 pb-12 bg-gray-50">
-      <div className="container max-w-6xl">
+    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark bg-slate-900' : 'bg-slate-50'}`}>
+      <PageHeader isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+      <div className="max-w-7xl mx-auto p-2 sm:p-4 md:p-6">
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-montserrat font-bold mb-4 text-accent">
             Health Insights Dashboard
