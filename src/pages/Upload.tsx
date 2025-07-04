@@ -11,6 +11,7 @@ import { ReportAnalysis } from "@/components/medical/ReportAnalysis";
 import { useMedicalAnalysis } from "@/hooks/useMedicalAnalysis";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { PageHeader } from "@/components/shared/PageHeader";
 
 const Upload = () => {
   const { user } = useAuth();
@@ -292,6 +293,46 @@ const Upload = () => {
               });
             }
 
+            // Method 7: Advanced hexadecimal text extraction for encoded PDFs
+            const hexTextMatches = pdfString.match(/[0-9A-Fa-f]{4,}/g);
+            if (hexTextMatches) {
+              hexTextMatches.forEach(hex => {
+                try {
+                  // Convert hex to ASCII for text extraction
+                  const ascii = hex.match(/.{1,2}/g)
+                    ?.map(byte => String.fromCharCode(parseInt(byte, 16)))
+                    .join('');
+                  if (ascii && /[a-zA-Z0-9]/.test(ascii) && ascii.length > 2) {
+                    extractedText += ascii + ' ';
+                  }
+                } catch (e) {
+                  // Ignore invalid hex conversions
+                }
+              });
+            }
+
+            // Method 8: Extract text from annotation objects
+            const annotationMatches = pdfString.match(/\/Annot[\s\S]*?\/Contents\s*\(([^)]*)\)/g);
+            if (annotationMatches) {
+              annotationMatches.forEach(annot => {
+                const content = annot.match(/\/Contents\s*\(([^)]*)\)/);
+                if (content && content[1] && content[1].length > 1) {
+                  extractedText += content[1] + ' ';
+                }
+              });
+            }
+
+            // Method 9: Extract from metadata fields
+            const metadataMatches = pdfString.match(/\/Title\s*\(([^)]*)\)|\/Subject\s*\(([^)]*)\)|\/Keywords\s*\(([^)]*)\)/g);
+            if (metadataMatches) {
+              metadataMatches.forEach(meta => {
+                const content = meta.match(/\(([^)]*)\)/);
+                if (content && content[1] && content[1].length > 1) {
+                  extractedText += content[1] + ' ';
+                }
+              });
+            }
+
             // Clean and enhance extracted text
             extractedText = extractedText
               .replace(/\s+/g, ' ')
@@ -299,20 +340,32 @@ const Upload = () => {
               .replace(/\b(obj|endobj|stream|endstream|xref|trailer|startxref)\b/gi, '')
               .trim();
 
-            console.log('Comprehensive PDF text extraction completed:', {
+            console.log('Ultra-comprehensive PDF text extraction completed:', {
               fileName: file.name,
               extractedLength: extractedText.length,
               hasContent: extractedText.length > 0,
               preview: extractedText.substring(0, 500),
-              medicalTermsFound: (extractedText.match(/(?:hemoglobin|glucose|cholesterol|creatinine|protein|albumin|bilirubin|enzyme|vitamin|hormone|test|result|value|normal|range)/gi) || []).length
+              medicalTermsFound: (extractedText.match(/(?:hemoglobin|glucose|cholesterol|creatinine|protein|albumin|bilirubin|enzyme|vitamin|hormone|test|result|value|normal|range)/gi) || []).length,
+              methodsUsed: ['streams', 'textObjects', 'medicalPatterns', 'readableText', 'fonts', 'forms', 'hex', 'annotations', 'metadata']
             });
             
             if (extractedText.length < 50) {
-              console.warn('Very little text extracted, attempting fallback methods...');
-              // Try alternative extraction for challenging PDFs
-              const alternativeText = pdfString.match(/[A-Za-z]{3,}/g);
-              if (alternativeText) {
-                extractedText += ' ' + alternativeText.join(' ');
+              console.warn('Limited text extracted, applying advanced fallback methods...');
+              
+              // Advanced fallback: Extract any readable sequences
+              const fallbackText = pdfString.match(/[A-Za-z0-9][A-Za-z0-9\s\.\,\:\;\-\(\)\/\%\+\=\<\>\[\]]{2,}/g);
+              if (fallbackText) {
+                const filteredFallback = fallbackText
+                  .filter(text => text.length > 2 && /[a-zA-Z]/.test(text))
+                  .slice(0, 200)
+                  .join(' ');
+                extractedText += ' ' + filteredFallback;
+              }
+
+              // Ultimate fallback: Extract individual words
+              const wordMatches = pdfString.match(/[A-Za-z]{3,}/g);
+              if (wordMatches) {
+                extractedText += ' ' + wordMatches.slice(0, 100).join(' ');
               }
             }
             
@@ -568,8 +621,9 @@ COMPLETE ANALYSIS MANDATE: Extract ALL medical laboratory data, test results, an
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 pt-20 pb-12">
-      <div className="container max-w-7xl mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-br from-medical-light/20 via-white to-medical-secondary/10">
+      <PageHeader />
+      <div className="container max-w-7xl mx-auto px-4 pt-8">
         {/* Header Section */}
         <div className="text-center mb-12">
           <Badge className="mb-6 bg-medical-primary/10 text-medical-primary border-medical-primary/30 px-4 py-2">
