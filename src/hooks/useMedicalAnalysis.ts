@@ -35,9 +35,12 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UseMedicalAnalysisPro
           reportType: pendingAnalysis.type,
           fileName: pendingAnalysis.fileName,
           userConsent: true,
-          extractionLevel: 'complete_comprehensive',
+          extractionLevel: 'ultra_comprehensive_complete',
           requireCompleteData: true,
-          zeroMissingDataMode: true
+          zeroMissingDataMode: true,
+          enhancedAccuracy: true,
+          clinicalStandardCompliance: true,
+          comprehensiveExtraction: true
         }
       });
 

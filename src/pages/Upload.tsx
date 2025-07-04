@@ -116,39 +116,124 @@ const Upload = () => {
               });
             }
 
-            // Method 3: Enhanced medical terminology extraction with comprehensive patterns
+            // Method 3: Ultra-enhanced medical terminology extraction with comprehensive patterns
             const medicalPatterns = [
-              // Blood tests
-              /(?:hemoglobin|hb|haemoglobin)\s*:?\s*([0-9]+\.?[0-9]*)\s*(g\/dl|g\/l|mg\/dl)?/gi,
-              /(?:cholesterol|chol)\s*:?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|mmol\/l)?/gi,
-              /(?:glucose|sugar|fbs|ppbs)\s*:?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|mmol\/l)?/gi,
-              /(?:creatinine|creat)\s*:?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|μmol\/l)?/gi,
-              /(?:urea|bun)\s*:?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|mmol\/l)?/gi,
-              /(?:protein|albumin|globulin)\s*:?\s*([0-9]+\.?[0-9]*)\s*(g\/dl|g\/l)?/gi,
-              /(?:bilirubin|bil)\s*:?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|μmol\/l)?/gi,
-              /(?:sgot|ast|sgpt|alt|alp)\s*:?\s*([0-9]+\.?[0-9]*)\s*(u\/l|iu\/l)?/gi,
-              /(?:hdl|ldl|vldl)\s*:?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|mmol\/l)?/gi,
-              /(?:triglyceride|tg)\s*:?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|mmol\/l)?/gi,
-              /(?:wbc|tlc)\s*:?\s*([0-9]+\.?[0-9]*)\s*(\/μl|×10³\/μl|cells\/μl)?/gi,
-              /(?:rbc)\s*:?\s*([0-9]+\.?[0-9]*)\s*(million\/μl|×10⁶\/μl)?/gi,
-              /(?:platelet|plt)\s*:?\s*([0-9]+\.?[0-9]*)\s*(\/μl|×10³\/μl)?/gi,
-              /(?:hematocrit|hct|pcv)\s*:?\s*([0-9]+\.?[0-9]*)\s*%?/gi,
-              /(?:mcv|mch|mchc)\s*:?\s*([0-9]+\.?[0-9]*)\s*(fl|pg|g\/dl)?/gi,
-              /(?:esr)\s*:?\s*([0-9]+\.?[0-9]*)\s*(mm\/hr)?/gi,
-              /(?:hba1c)\s*:?\s*([0-9]+\.?[0-9]*)\s*%?/gi,
-              /(?:tsh|t3|t4)\s*:?\s*([0-9]+\.?[0-9]*)\s*(μiu\/ml|ng\/dl|pmol\/l)?/gi,
-              /(?:vitamin|vit)\s*[bd]?12?\s*:?\s*([0-9]+\.?[0-9]*)\s*(pg\/ml|pmol\/l|ng\/ml)?/gi,
-              /(?:iron|ferritin)\s*:?\s*([0-9]+\.?[0-9]*)\s*(μg\/dl|ng\/ml|pmol\/l)?/gi,
-              /(?:sodium|na)\s*:?\s*([0-9]+\.?[0-9]*)\s*(meq\/l|mmol\/l)?/gi,
-              /(?:potassium|k)\s*:?\s*([0-9]+\.?[0-9]*)\s*(meq\/l|mmol\/l)?/gi,
-              /(?:chloride|cl)\s*:?\s*([0-9]+\.?[0-9]*)\s*(meq\/l|mmol\/l)?/gi,
-              /(?:calcium|ca)\s*:?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|mmol\/l)?/gi,
-              /(?:phosphorus|phosphate)\s*:?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|mmol\/l)?/gi,
-              /(?:magnesium|mg)\s*:?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|mmol\/l)?/gi,
-              /(?:uric\s*acid|uric)\s*:?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|μmol\/l)?/gi,
-              /(?:crp|c[\-\s]?reactive\s*protein)\s*:?\s*([0-9]+\.?[0-9]*)\s*(mg\/l|mg\/dl)?/gi,
-              // Enhanced pattern for any medical parameter with units
-              /([a-zA-Z][a-zA-Z\s\-]{2,15})\s*:?\s*([0-9]+\.?[0-9]*)\s*([a-zA-Z\/μ%³⁶]+)/gi
+              // Core Blood Chemistry & Hematology - Enhanced with more variations
+              /(?:hemoglobin|hb|haemoglobin|hgb)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(g\/dl|g\/l|mg\/dl|%)?/gi,
+              /(?:total\s*cholesterol|cholesterol|chol|tc)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|mmol\/l)?/gi,
+              /(?:glucose|sugar|fbs|ppbs|blood\s*glucose|fasting\s*glucose|random\s*glucose|bg)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|mmol\/l)?/gi,
+              /(?:creatinine|creat|serum\s*creatinine|s\.\s*creatinine)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|μmol\/l|umol\/l)?/gi,
+              /(?:urea|bun|blood\s*urea\s*nitrogen|s\.\s*urea)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|mmol\/l)?/gi,
+              
+              // Protein Studies - More comprehensive
+              /(?:total\s*protein|protein|s\.\s*protein)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(g\/dl|g\/l)?/gi,
+              /(?:albumin|serum\s*albumin|s\.\s*albumin)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(g\/dl|g\/l)?/gi,
+              /(?:globulin|serum\s*globulin|s\.\s*globulin)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(g\/dl|g\/l)?/gi,
+              /(?:a\/g\s*ratio|albumin\s*globulin\s*ratio)\s*[:=]?\s*([0-9]+\.?[0-9]*)/gi,
+              
+              // Liver Function Tests - Complete panel
+              /(?:bilirubin|total\s*bilirubin|bil|t\.\s*bil|tbil)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|μmol\/l|umol\/l)?/gi,
+              /(?:direct\s*bilirubin|conjugated\s*bilirubin|d\.\s*bil|dbil)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|μmol\/l|umol\/l)?/gi,
+              /(?:indirect\s*bilirubin|unconjugated\s*bilirubin|i\.\s*bil|ibil)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|μmol\/l|umol\/l)?/gi,
+              /(?:sgot|ast|aspartate\s*aminotransferase|aspartate\s*transaminase)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(u\/l|iu\/l)?/gi,
+              /(?:sgpt|alt|alanine\s*aminotransferase|alanine\s*transaminase)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(u\/l|iu\/l)?/gi,
+              /(?:alp|alkaline\s*phosphatase|alk\.\s*phos)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(u\/l|iu\/l)?/gi,
+              /(?:ggt|gamma\s*gt|gamma\s*glutamyl\s*transferase|γ[\-\s]?gt)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(u\/l|iu\/l)?/gi,
+              
+              // Lipid Profile - Enhanced patterns
+              /(?:hdl|hdl\s*cholesterol|high\s*density\s*lipoprotein|hdl[\-\s]?c)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|mmol\/l)?/gi,
+              /(?:ldl|ldl\s*cholesterol|low\s*density\s*lipoprotein|ldl[\-\s]?c)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|mmol\/l)?/gi,
+              /(?:vldl|vldl\s*cholesterol|very\s*low\s*density\s*lipoprotein|vldl[\-\s]?c)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|mmol\/l)?/gi,
+              /(?:triglyceride|triglycerides|tg|trig)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|mmol\/l)?/gi,
+              /(?:cholesterol\s*ratio|chol\s*ratio|tc\/hdl)\s*[:=]?\s*([0-9]+\.?[0-9]*)/gi,
+              
+              // Complete Blood Count - Comprehensive
+              /(?:wbc|white\s*blood\s*cell|tlc|total\s*leucocyte|leucocyte\s*count)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(\/μl|\/ul|×10³\/μl|cells\/μl|thousand\/μl|k\/μl|10³\/μl)?/gi,
+              /(?:rbc|red\s*blood\s*cell|erythrocyte\s*count)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(million\/μl|×10⁶\/μl|million\/ul|mil\/μl|m\/μl|10⁶\/μl)?/gi,
+              /(?:platelet|platelets|plt|platelet\s*count|thrombocyte)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(\/μl|\/ul|×10³\/μl|thousand\/μl|lakh\/μl|k\/μl|10³\/μl)?/gi,
+              /(?:hematocrit|hct|pcv|packed\s*cell\s*volume)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*%?/gi,
+              
+              // Red Blood Cell Indices - Complete
+              /(?:mcv|mean\s*corpuscular\s*volume|mean\s*cell\s*volume)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(fl|femtoliters)?/gi,
+              /(?:mch|mean\s*corpuscular\s*hemoglobin|mean\s*cell\s*hemoglobin)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(pg|picograms)?/gi,
+              /(?:mchc|mean\s*corpuscular\s*hemoglobin\s*concentration)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(g\/dl|%)?/gi,
+              /(?:rdw|red\s*cell\s*distribution\s*width|rdw[\-\s]?cv|rdw[\-\s]?sd)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*%?/gi,
+              
+              // White Blood Cell Differential
+              /(?:neutrophil|neutrophils|pmn|poly)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*%?/gi,
+              /(?:lymphocyte|lymphocytes|lympho)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*%?/gi,
+              /(?:monocyte|monocytes|mono)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*%?/gi,
+              /(?:eosinophil|eosinophils|eos)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*%?/gi,
+              /(?:basophil|basophils|baso)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*%?/gi,
+              
+              // Inflammatory Markers
+              /(?:esr|erythrocyte\s*sedimentation\s*rate|sed\s*rate)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(mm\/hr|mm\/hour|mm\/1hr)?/gi,
+              /(?:crp|c[\-\s]?reactive\s*protein|c\s*reactive\s*protein)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(mg\/l|mg\/dl)?/gi,
+              
+              // Diabetes Markers
+              /(?:hba1c|hemoglobin\s*a1c|glycated\s*hemoglobin|glycosylated\s*hemoglobin|hb\s*a1c)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*%?/gi,
+              /(?:fructosamine)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(μmol\/l|umol\/l)?/gi,
+              
+              // Thyroid Function - Complete panel
+              /(?:tsh|thyroid\s*stimulating\s*hormone|thyrotropin)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(μiu\/ml|miu\/ml|uiu\/ml|mIU\/L)?/gi,
+              /(?:t3|triiodothyronine|free\s*t3|ft3)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(ng\/dl|pmol\/l|pg\/ml)?/gi,
+              /(?:t4|thyroxine|free\s*t4|ft4)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(ng\/dl|pmol\/l|μg\/dl|ug\/dl)?/gi,
+              /(?:total\s*t3|tt3)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(ng\/dl|nmol\/l)?/gi,
+              /(?:total\s*t4|tt4)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(μg\/dl|ug\/dl|nmol\/l)?/gi,
+              
+              // Vitamins & Minerals - Comprehensive
+              /(?:vitamin\s*d|vit\s*d|25\s*oh\s*vitamin\s*d|25\s*oh\s*d|calcidiol)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(ng\/ml|nmol\/l)?/gi,
+              /(?:vitamin\s*b12|vit\s*b12|cobalamin|b12)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(pg\/ml|pmol\/l|ng\/ml)?/gi,
+              /(?:folate|folic\s*acid|vitamin\s*b9|vit\s*b9)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(ng\/ml|nmol\/l)?/gi,
+              /(?:iron|serum\s*iron|s\.\s*iron)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(μg\/dl|ug\/dl|μmol\/l|umol\/l)?/gi,
+              /(?:ferritin|serum\s*ferritin|s\.\s*ferritin)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(ng\/ml|μg\/l|ug\/l|pmol\/l)?/gi,
+              /(?:tibc|total\s*iron\s*binding\s*capacity)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(μg\/dl|ug\/dl|μmol\/l|umol\/l)?/gi,
+              /(?:transferrin\s*saturation|tsat)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*%?/gi,
+              
+              // Electrolytes - Enhanced
+              /(?:sodium|na|s\.\s*sodium)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(meq\/l|mmol\/l|mEq\/L)?/gi,
+              /(?:potassium|k|s\.\s*potassium)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(meq\/l|mmol\/l|mEq\/L)?/gi,
+              /(?:chloride|cl|s\.\s*chloride)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(meq\/l|mmol\/l|mEq\/L)?/gi,
+              /(?:calcium|ca|serum\s*calcium|s\.\s*calcium)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|mmol\/l)?/gi,
+              /(?:phosphorus|phosphate|serum\s*phosphorus|s\.\s*phosphorus)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|mmol\/l)?/gi,
+              /(?:magnesium|mg|serum\s*magnesium|s\.\s*magnesium)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|mmol\/l)?/gi,
+              
+              // Other Important Tests
+              /(?:uric\s*acid|uric|urate|s\.\s*uric\s*acid)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|μmol\/l|umol\/l)?/gi,
+              /(?:ldh|lactate\s*dehydrogenase|lactic\s*dehydrogenase)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(u\/l|iu\/l)?/gi,
+              /(?:cpk|creatine\s*phosphokinase|ck|creatine\s*kinase)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(u\/l|iu\/l)?/gi,
+              /(?:amylase|serum\s*amylase|s\.\s*amylase)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(u\/l|iu\/l)?/gi,
+              /(?:lipase|serum\s*lipase|s\.\s*lipase)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(u\/l|iu\/l)?/gi,
+              
+              // Cardiac Markers
+              /(?:troponin|trop\s*i|troponin\s*i|ctni)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(ng\/ml|μg\/l|ug\/l)?/gi,
+              /(?:ck\s*mb|cpk\s*mb|creatine\s*kinase\s*mb)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(ng\/ml|u\/l)?/gi,
+              /(?:myoglobin)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(ng\/ml|μg\/l)?/gi,
+              
+              // Hormone Tests
+              /(?:cortisol|serum\s*cortisol|s\.\s*cortisol)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(μg\/dl|ug\/dl|nmol\/l)?/gi,
+              /(?:testosterone|total\s*testosterone)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(ng\/dl|nmol\/l)?/gi,
+              /(?:insulin|serum\s*insulin|s\.\s*insulin)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(μiu\/ml|uiu\/ml|pmol\/l)?/gi,
+              
+              // Tumor Markers
+              /(?:psa|prostate\s*specific\s*antigen)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(ng\/ml|μg\/l)?/gi,
+              /(?:cea|carcinoembryonic\s*antigen)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(ng\/ml|μg\/l)?/gi,
+              /(?:afp|alpha\s*fetoprotein)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(ng\/ml|iu\/ml)?/gi,
+              
+              // Urine Analysis
+              /(?:specific\s*gravity|sp\s*gr|s\.g\.)\s*[:=]?\s*([0-9]+\.?[0-9]*)/gi,
+              /(?:protein\s*urine|urine\s*protein|u\.\s*protein)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl|g\/l)?/gi,
+              /(?:glucose\s*urine|urine\s*glucose|u\.\s*glucose)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl)?/gi,
+              /(?:ketone|ketones|urine\s*ketone)\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*(mg\/dl)?/gi,
+              
+              // Range patterns (normal ranges)
+              /([a-zA-Z][a-zA-Z\s\-]{2,25})\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*[\-–]\s*([0-9]+\.?[0-9]*)\s*([a-zA-Z\/μ%³⁶]+)/gi,
+              
+              // High/Low indicators with enhanced detection
+              /([a-zA-Z][a-zA-Z\s\-]{2,25})\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*([a-zA-Z\/μ%³⁶]+)?\s*(high|low|h|l|\*|abnormal|↑|↓|elevated|decreased)/gi,
+              
+              // Enhanced comprehensive pattern for any medical parameter with units
+              /([a-zA-Z][a-zA-Z\s\-\.]{2,25})\s*[:=]?\s*([0-9]+\.?[0-9]*)\s*([a-zA-Z\/μ%³⁶²]+)/gi
             ];
 
             medicalPatterns.forEach(pattern => {

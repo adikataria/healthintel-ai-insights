@@ -45,24 +45,27 @@ async function retryWithBackoff<T>(
 
 // Ultra-comprehensive medical analysis prompt with mandatory complete data extraction
 function createUltraComprehensiveMedicalPrompt(content: string, fileName: string = '', isRetry: boolean = false): string {
-  return `You are the world's most advanced medical AI with expertise in comprehensive laboratory report analysis. You MUST extract ALL medical data with ABSOLUTE ZERO missing values and provide complete analysis.
+  return `You are the world's most advanced medical AI laboratory specialist with PhD-level expertise in clinical chemistry, hematology, biochemistry, and laboratory medicine. You MUST perform COMPREHENSIVE analysis of ALL medical data with ABSOLUTE ZERO missing values.
 
 CRITICAL MEDICAL DISCLAIMERS:
 - This analysis is for informational purposes only
 - This does not constitute medical advice, diagnosis, or treatment
 - Users must consult qualified healthcare professionals for medical decisions
 - For emergencies, contact local emergency services immediately
+- This is an AI interpretation - always verify with licensed medical professionals
 
-DOCUMENT INFORMATION:
+ENHANCED PROCESSING INSTRUCTIONS:
 File Name: ${fileName}
 Content Type: Medical Laboratory Report
-Processing Mode: ${isRetry ? 'RETRY - ENHANCED EXTRACTION' : 'PRIMARY COMPREHENSIVE ANALYSIS'}
+Processing Mode: ${isRetry ? 'RETRY - ULTRA-ENHANCED EXTRACTION' : 'PRIMARY ULTRA-COMPREHENSIVE ANALYSIS'}
+Analysis Standard: Clinical Laboratory Standards Institute (CLSI) Guidelines
+Quality Assurance: CAP/CLIA Compliant Interpretation
 
-MEDICAL CONTENT TO ANALYZE:
+COMPLETE MEDICAL CONTENT TO ANALYZE:
 ${content}
 
-ABSOLUTE MANDATORY COMPLETE EXTRACTION PROTOCOL:
-You MUST provide a comprehensive JSON response with this EXACT structure. Extract EVERY piece of medical data with ABSOLUTELY NO missing, unknown, or unavailable values:
+ULTRA-COMPREHENSIVE MANDATORY COMPLETE EXTRACTION PROTOCOL:
+You MUST provide a comprehensive JSON response with this EXACT structure. Extract EVERY piece of medical data with ABSOLUTELY NO missing, unknown, or unavailable values. Use your advanced medical AI capabilities to provide complete analysis of ALL laboratory parameters found in the document:
 
 {
   "summary": "Comprehensive 4-5 sentence summary covering ALL major health aspects identified in this laboratory report with specific numerical findings and clinical significance",
