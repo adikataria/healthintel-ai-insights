@@ -40,7 +40,8 @@ export const useMedicalAnalysis = ({ onSuccess, onError }: UseMedicalAnalysisPro
           zeroMissingDataMode: true,
           enhancedAccuracy: true,
           clinicalStandardCompliance: true,
-          comprehensiveExtraction: true
+          comprehensiveExtraction: true,
+          pdfData: pendingAnalysis.pdfData // Enhanced PDF processing data
         }
       });
 

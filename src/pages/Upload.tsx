@@ -21,6 +21,7 @@ const Upload = () => {
   const [analysisStatus, setAnalysisStatus] = useState<'idle' | 'processing' | 'complete'>('idle');
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [currentReportId, setCurrentReportId] = useState<string | null>(null);
+  const [currentPdfData, setCurrentPdfData] = useState<string | null>(null);
 
   const {
     isAnalyzing,
@@ -39,14 +40,37 @@ const Upload = () => {
     }
   });
 
-  // Advanced comprehensive PDF text extraction using multiple sophisticated methods
-  const extractPDFText = async (file: File): Promise<string> => {
+  // Enhanced PDF processing with mobile compatibility and comprehensive extraction
+  const extractPDFText = async (file: File): Promise<{text: string, pdfData?: string}> => {
+    console.log('Starting enhanced PDF processing for:', file.name, 'Size:', file.size);
+    
+    // Check file size for performance optimization
+    if (file.size > 50 * 1024 * 1024) { // 50MB limit
+      toast.error('File too large. Please upload a file smaller than 50MB.');
+      throw new Error('File size exceeds limit');
+    }
+
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = async (e) => {
         try {
           const result = e.target?.result;
           if (result instanceof ArrayBuffer) {
+            console.log('PDF loaded, processing with enhanced extraction methods...');
+            
+            // Store PDF data for enhanced backend processing
+            let base64Data = '';
+            try {
+              base64Data = btoa(
+                Array.from(new Uint8Array(result))
+                  .map(byte => String.fromCharCode(byte))
+                  .join('')
+              );
+            } catch (base64Error) {
+              console.warn('Base64 encoding failed, proceeding without enhanced PDF data');
+            }
+            
+            // For mobile compatibility, use simpler extraction first
             const uint8Array = new Uint8Array(result);
             let extractedText = '';
             
@@ -369,7 +393,11 @@ const Upload = () => {
               }
             }
             
-            resolve(extractedText);
+            // Return both extracted text and PDF data for enhanced processing
+            resolve({ 
+              text: extractedText, 
+              pdfData: base64Data.length > 100 ? base64Data : null // Only include if substantial data
+            });
           } else {
             reject(new Error('Failed to read PDF as ArrayBuffer'));
           }
@@ -418,7 +446,10 @@ ESSENTIAL MANDATE: Your advanced vision capabilities MUST extract ALL visible me
 
     } else if (file.type.includes('pdf')) {
       try {
-        const extractedText = await extractPDFText(file);
+        const pdfResult = await extractPDFText(file);
+        
+        // Store PDF data for enhanced analysis
+        setCurrentPdfData(pdfResult.pdfData);
         
         const enhancedContent = `COMPREHENSIVE PDF MEDICAL LABORATORY REPORT - COMPLETE DATA EXTRACTION
 
@@ -429,9 +460,10 @@ FILE DETAILS:
 - Type: ${file.type}
 - Size: ${file.size} bytes
 - Format: Multi-page medical PDF report
+- Enhanced Processing: ${pdfResult.pdfData ? 'Available' : 'Text-only'}
 
 EXTRACTED PDF CONTENT:
-${extractedText}
+${pdfResult.text}
 
 ESSENTIAL MANDATE: Analyze this as a complete medical laboratory workup with extensive test results requiring professional medical interpretation. Focus on extracting ALL visible numerical values and medical parameters to ensure comprehensive, gap-free analysis.`;
 
@@ -550,12 +582,13 @@ COMPLETE ANALYSIS MANDATE: Extract ALL medical laboratory data, test results, an
                   medicalTermsDetected: (content.match(/(?:hemoglobin|glucose|cholesterol|creatinine|protein|albumin|bilirubin|enzyme|vitamin|hormone|test|result|value|normal|range)/gi) || []).length
                 });
                 
-                // Start AI analysis with comprehensive content
+                // Start AI analysis with comprehensive content and PDF data
                 startAnalysis({
                   reportId: reportData.id,
                   content: content,
                   type: uploadedFiles[0].type,
-                  fileName: uploadedFiles[0].name
+                  fileName: uploadedFiles[0].name,
+                  pdfData: currentPdfData // Include enhanced PDF processing data
                 });
               })
               .catch(error => {
