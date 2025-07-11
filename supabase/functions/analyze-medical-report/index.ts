@@ -2,10 +2,6 @@ import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.50.0';
 
-// PDF processing libraries for enhanced parsing
-import { PDFDocument } from 'https://cdn.skypack.dev/pdf-lib@^1.17.1';
-import { getDocument } from 'https://cdn.skypack.dev/pdfjs-dist@^3.11.174/legacy/build/pdf.js';
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -21,21 +17,8 @@ async function processLabReportPDF(pdfData: ArrayBuffer): Promise<string> {
   let extractedText = '';
   
   try {
-    // Method 1: PDF.js for standard text extraction
-    console.log('Method 1: Using PDF.js for text extraction...');
-    const loadingTask = getDocument({ data: pdfData });
-    const pdf = await loadingTask.promise;
-    
-    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-      const page = await pdf.getPage(pageNum);
-      const textContent = await page.getTextContent();
-      const pageText = textContent.items.map((item: any) => item.str).join(' ');
-      extractedText += pageText + ' ';
-      console.log(`Page ${pageNum} extracted, length: ${pageText.length}`);
-    }
-    
-    // Method 2: Raw binary extraction for encoded PDFs
-    console.log('Method 2: Binary pattern extraction...');
+    // Method 1: Raw binary extraction for encoded PDFs
+    console.log('Method 1: Binary pattern extraction...');
     const pdfString = Array.from(new Uint8Array(pdfData))
       .map(byte => String.fromCharCode(byte))
       .join('');
