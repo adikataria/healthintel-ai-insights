@@ -1,4 +1,7 @@
 project_id = "vffsjrwgxamiimvkkykw"
 
+[functions.'analyze-medical-report']
+verify_jwt = false
+
 [functions.'create-razorpay-order']
 verify_jwt = false
