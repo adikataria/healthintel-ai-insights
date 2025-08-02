@@ -291,8 +291,6 @@ ESR: 8 mm/hr (Normal: <20 mm/hr)
 CRP: 1.2 mg/L (Low Risk: <3.0 mg/L)
 
 INTERPRETATION: All laboratory values are within optimal ranges, indicating excellent overall health status with no immediate concerns requiring intervention.`;
-    }
-    
 }
 
 // Fallback data generator for testing scenarios
