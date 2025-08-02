@@ -458,12 +458,42 @@ Respond with ONLY valid JSON (no markdown formatting, no code blocks):`;
 }
 
 serve(async (req) => {
+  console.log('DocLumen V2 Edge Function Started:', {
+    method: req.method,
+    url: req.url,
+    timestamp: new Date().toISOString(),
+    headers: {
+      authorization: req.headers.get('Authorization') ? 'Present' : 'Missing',
+      contentType: req.headers.get('Content-Type'),
+      apikey: req.headers.get('apikey') ? 'Present' : 'Missing'
+    }
+  });
+
   if (req.method === 'OPTIONS') {
+    console.log('Handling CORS preflight request');
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    console.log('Processing DocLumen V2 analysis request...');
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    
+    console.log('Parsing request body...');
+    let requestBody;
+    try {
+      requestBody = await req.json();
+      console.log('Request body parsed successfully:', {
+        hasReportId: !!requestBody?.reportId,
+        hasContent: !!requestBody?.reportContent,
+        contentLength: requestBody?.reportContent?.length || 0,
+        hasFileData: !!requestBody?.fileData,
+        fileName: requestBody?.fileName
+      });
+    } catch (parseError) {
+      console.error('Failed to parse request body:', parseError);
+      throw new Error('Invalid JSON in request body');
+    }
+
     const { 
       reportId, 
       reportContent, 
@@ -474,7 +504,7 @@ serve(async (req) => {
       analysisType,
       fileData,
       conversationalMode
-    } = await req.json();
+    } = requestBody;
 
     let processedContent = reportContent;
     let processingMetadata = {};
@@ -521,11 +551,22 @@ serve(async (req) => {
     });
 
     // Validate required parameters
+    console.log('Validating required parameters...');
     if (!reportId || !processedContent || !userConsent) {
+      console.error('Missing required parameters:', {
+        hasReportId: !!reportId,
+        hasContent: !!processedContent,
+        hasConsent: !!userConsent
+      });
       return new Response(
         JSON.stringify({ 
           error: 'Missing required parameters',
-          details: 'reportId, content, and userConsent are required for DocLumen V2 analysis' 
+          details: 'reportId, content, and userConsent are required for DocLumen V2 analysis',
+          received: {
+            hasReportId: !!reportId,
+            hasContent: !!processedContent,
+            hasConsent: !!userConsent
+          }
         }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
@@ -539,6 +580,7 @@ serve(async (req) => {
     });
 
     // Create DocLumen V2 analysis prompt
+    console.log('Creating Gemini analysis prompt...');
     const analysisPrompt = createGeminiMedicalPrompt(
       processedContent, 
       fileName || 'lab-report',
@@ -546,10 +588,15 @@ serve(async (req) => {
       analysisType || 'comprehensive'
     );
     
-    console.log('DocLumen V2: Sending advanced analysis to Gemini AI...');
+    console.log('DocLumen V2: Sending analysis to Gemini AI...', {
+      promptLength: analysisPrompt.length,
+      geminiApiKeyExists: !!geminiApiKey
+    });
 
-    // Call Gemini AI with enhanced parameters for complete extraction
+    // Call Gemini AI with enhanced error handling
+    console.log('Making Gemini API request...');
     const geminiResponse = await retryWithBackoff(async () => {
+      console.log('Attempting Gemini API call...');
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`,
         {
@@ -594,18 +641,36 @@ serve(async (req) => {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Gemini API error:', response.status, errorText);
+        console.error('Gemini API error details:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorText,
+          url: response.url
+        });
         throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
       }
 
+      console.log('Gemini API response received successfully:', {
+        status: response.status,
+        contentType: response.headers.get('content-type')
+      });
       return response;
     }, 3, 2000);
 
+    console.log('Parsing Gemini response...');
     const geminiData = await geminiResponse.json();
-    console.log('DocLumen V2 Gemini analysis completed successfully');
+    console.log('DocLumen V2 Gemini analysis completed successfully:', {
+      hasCandidates: !!geminiData.candidates,
+      candidatesLength: geminiData.candidates?.length || 0
+    });
 
     if (!geminiData.candidates || !geminiData.candidates[0] || !geminiData.candidates[0].content) {
-      console.error('Invalid Gemini response structure:', geminiData);
+      console.error('Invalid Gemini response structure:', {
+        hasCandidates: !!geminiData.candidates,
+        candidatesLength: geminiData.candidates?.length || 0,
+        firstCandidate: geminiData.candidates?.[0] ? 'exists' : 'missing',
+        content: geminiData.candidates?.[0]?.content ? 'exists' : 'missing'
+      });
       throw new Error('Invalid response structure from Gemini AI');
     }
 
@@ -815,22 +880,22 @@ serve(async (req) => {
       .from('medical_reports')
       .update({
         analysis_status: 'completed',
-        ai_insights: {
-          ...analysisResult,
-          analyzedAt: new Date().toISOString(),
-          processingInfo: {
-            fileType: reportType,
-            fileName: fileName,
-            contentLength: reportContent.length,
-            geminiModel: 'gemini-1.5-flash',
-            processingVersion: 'ultra-comprehensive-sample-data-9.0',
-            zeroMissingData: true,
-            completeExtraction: true,
-            comprehensiveAnalysis: true,
-            ultraComprehensive: true,
-            extractionLevel: extractionLevel || 'ultra_comprehensive_complete',
-            retryProcessed: retryAttempt || false
-          },
+         ai_insights: {
+           ...analysisResult,
+           analyzedAt: new Date().toISOString(),
+           processingInfo: {
+             fileType: reportType,
+             fileName: fileName,
+             contentLength: processedContent.length,
+             geminiModel: 'gemini-1.5-flash',
+             processingVersion: 'DocLumen-V2.0',
+             zeroMissingData: true,
+             completeExtraction: true,
+             comprehensiveAnalysis: true,
+             ultraComprehensive: true,
+             extractionLevel: analysisType || 'comprehensive',
+             retryProcessed: false
+           },
           qualityAssurance: {
             allParametersExtracted: true,
             noMissingValues: true,
@@ -860,9 +925,9 @@ serve(async (req) => {
           completeExtraction: true,
           comprehensiveAnalysis: true,
           ultraComprehensive: true,
-          parametersAnalyzed: analysisResult.healthIndicators?.length || 0,
-          extractionLevel: extractionLevel || 'ultra_comprehensive_complete',
-          actualSampleData: true
+           parametersAnalyzed: analysisResult.healthIndicators?.length || 0,
+           extractionLevel: analysisType || 'comprehensive',
+           actualSampleData: true
         }
       }),
       {
@@ -872,16 +937,20 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('DocLumen V2 Analysis Error:', {
-      error: error.message,
+    console.error('DocLumen V2 Analysis Error - Full Details:', {
+      name: error.name,
+      message: error.message,
       stack: error.stack,
       timestamp: new Date().toISOString(),
-      requestInfo: {
-        hasReportId: !!reportId,
-        hasContent: !!processedContent,
-        contentLength: processedContent?.length || 0,
-        hasConsent: !!userConsent
-      }
+       requestInfo: {
+         method: req.method,
+         url: req.url,
+         hasReportId: !!requestBody?.reportId,
+         hasContent: !!processedContent,
+         contentLength: processedContent?.length || 0,
+         hasConsent: !!requestBody?.userConsent
+       },
+      geminiApiKeyExists: !!geminiApiKey
     });
     
     return new Response(
@@ -890,7 +959,8 @@ serve(async (req) => {
         error: error.message || 'DocLumen V2 analysis failed',
         details: 'Please check your report format and try again',
         timestamp: new Date().toISOString(),
-        version: 'DocLumen V2.0'
+        version: 'DocLumen V2.0',
+        errorType: error.name || 'UnknownError'
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
