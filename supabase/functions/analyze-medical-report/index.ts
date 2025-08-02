@@ -474,12 +474,14 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Declare requestBody at function scope to avoid ReferenceError
+  let requestBody: any = null;
+
   try {
     console.log('Processing DocLumen V2 analysis request...');
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
     
     console.log('Parsing request body...');
-    let requestBody;
     try {
       requestBody = await req.json();
       console.log('Request body parsed successfully:', {
@@ -726,149 +728,53 @@ serve(async (req) => {
             value: "94 mg/dL",
             normalRange: "70-100 mg/dL",
             status: "normal",
-            explanation: "Your fasting blood glucose of 94 mg/dL is excellent and within the optimal range. This indicates healthy insulin function, effective glucose metabolism, and very low risk for diabetes. This level supports stable energy throughout the day and suggests good dietary habits."
-          },
-          {
-            parameter: "Hemoglobin (Hb)",
-            value: "14.1 g/dL",
-            normalRange: "12.0-15.5 g/dL (women), 13.5-17.5 g/dL (men)",
-            status: "normal",
-            explanation: "Your hemoglobin level of 14.1 g/dL is excellent and ensures optimal oxygen transport throughout your body. This level prevents anemia-related fatigue and supports healthy energy levels, physical performance, and overall vitality."
-          },
-          {
-            parameter: "Total Cholesterol",
-            value: "178 mg/dL",
-            normalRange: "Less than 200 mg/dL",
-            status: "normal",
-            explanation: "Total cholesterol at 178 mg/dL is excellent and well within the desirable range. This level indicates effective lipid metabolism and significantly reduces your risk of cardiovascular disease and heart-related complications."
-          },
-          {
-            parameter: "HDL Cholesterol (Good Cholesterol)",
-            value: "62 mg/dL",
-            normalRange: "40+ mg/dL (men), 50+ mg/dL (women)",
-            status: "normal",
-            explanation: "HDL cholesterol at 62 mg/dL is excellent and provides superior cardiovascular protection. High HDL levels help remove harmful cholesterol from arteries, significantly reducing heart disease risk and supporting optimal vascular health."
-          },
-          {
-            parameter: "LDL Cholesterol (Bad Cholesterol)",
-            value: "96 mg/dL",
-            normalRange: "Less than 100 mg/dL (optimal)",
-            status: "normal",
-            explanation: "LDL cholesterol at 96 mg/dL is optimal and indicates excellent cardiovascular health. This level minimizes arterial plaque formation and significantly reduces risk of heart disease and stroke."
-          },
-          {
-            parameter: "Triglycerides",
-            value: "102 mg/dL",
-            normalRange: "Less than 150 mg/dL",
-            status: "normal",
-            explanation: "Triglycerides at 102 mg/dL are excellent and indicate healthy fat metabolism. This level supports optimal cardiovascular function and reduces risk of heart disease and metabolic complications."
-          },
-          {
-            parameter: "Creatinine",
-            value: "0.8 mg/dL",
-            normalRange: "0.6-1.2 mg/dL",
-            status: "normal",
-            explanation: "Creatinine at 0.8 mg/dL indicates excellent kidney function with optimal waste filtration capacity. This level demonstrates healthy kidney performance and effective toxin elimination from your body."
-          },
-          {
-            parameter: "Blood Urea Nitrogen (BUN)",
-            value: "12 mg/dL",
-            normalRange: "7-20 mg/dL",
-            status: "normal",
-            explanation: "BUN at 12 mg/dL shows excellent kidney function and healthy protein metabolism. This level indicates optimal nitrogen waste removal and confirms good kidney efficiency and overall metabolic health."
-          },
-          {
-            parameter: "SGPT/ALT (Liver Enzyme)",
-            value: "24 U/L",
-            normalRange: "7-35 U/L",
-            status: "normal",
-            explanation: "ALT at 24 U/L indicates excellent liver health and optimal cellular integrity. This level shows your liver is functioning perfectly for metabolism, detoxification, and protein synthesis."
-          },
-          {
-            parameter: "SGOT/AST (Liver Enzyme)",
-            value: "21 U/L",
-            normalRange: "10-40 U/L",
-            status: "normal",
-            explanation: "AST at 21 U/L demonstrates excellent liver and muscle health with optimal cellular function. This level indicates minimal tissue damage and healthy organ function throughout your body."
-          },
-          {
-            parameter: "White Blood Cell Count (WBC)",
-            value: "7,200 cells/μL",
-            normalRange: "4,500-11,000 cells/μL",
-            status: "normal",
-            explanation: "WBC count at 7,200 cells/μL indicates a healthy and robust immune system with excellent infection-fighting capacity. This level supports optimal immune response and overall health maintenance."
-          },
-          {
-            parameter: "Red Blood Cell Count (RBC)",
-            value: "4.8 million/μL",
-            normalRange: "4.2-5.4 million/μL (women), 4.7-6.1 million/μL (men)",
-            status: "normal",
-            explanation: "RBC count at 4.8 million/μL is excellent for oxygen transport and circulation. This count ensures adequate oxygen delivery to all tissues and supports optimal physical performance and energy levels."
-          },
-          {
-            parameter: "Platelet Count",
-            value: "298,000 cells/μL",
-            normalRange: "150,000-450,000 cells/μL",
-            status: "normal",
-            explanation: "Platelet count at 298,000 cells/μL is excellent for blood clotting function. This count ensures proper wound healing, prevents excessive bleeding, and maintains optimal hemostatic balance."
-          },
-          {
-            parameter: "Hematocrit (HCT)",
-            value: "42.5%",
-            normalRange: "36-44% (women), 41-50% (men)",
-            status: "normal",
-            explanation: "Hematocrit at 42.5% indicates optimal blood volume and oxygen-carrying capacity. This percentage supports excellent circulation and ensures adequate oxygen delivery to all body tissues."
-          },
-          {
-            parameter: "Total Protein",
-            value: "7.1 g/dL",
-            normalRange: "6.0-8.3 g/dL",
-            status: "normal",
-            explanation: "Total protein at 7.1 g/dL indicates excellent nutritional status and optimal protein synthesis. This level supports healthy immune function, tissue repair, and overall metabolic balance."
-          },
-          {
-            parameter: "Albumin",
-            value: "4.4 g/dL",
-            normalRange: "3.5-5.0 g/dL",
-            status: "normal",
-            explanation: "Albumin at 4.4 g/dL shows excellent liver synthesis function and nutritional status. This protein level maintains proper fluid balance, nutrient transport, and overall metabolic health."
+            explanation: "Your fasting blood glucose of 94 mg/dL is excellent and within the optimal range. This indicates healthy insulin function, effective glucose metabolism, and very low risk for diabetes. This level supports stable energy throughout the day and suggests good dietary habits.",
+            category: "Metabolic Health"
           }
         ],
+        healthSystemGroups: {
+          bloodHealth: {
+            title: "Blood & Circulation Health",
+            status: "excellent",
+            tests: ["Hemoglobin", "White Blood Cells", "Red Blood Cells", "Platelets"],
+            summary: "All blood parameters are within optimal ranges indicating excellent circulation and immune function."
+          }
+        },
         riskAssessment: {
           overallRisk: "low",
+          riskScore: 2,
           specificConcerns: [
-            "All major health parameters are within optimal ranges indicating excellent overall health status",
-            "Continue current healthy lifestyle habits to maintain these excellent laboratory results",
-            "Regular preventive care and annual screenings recommended to preserve current optimal health"
+            "All major health parameters are within optimal ranges indicating excellent overall health status"
           ],
           urgentFlags: []
         },
         recommendations: {
           lifestyle: [
-            "Maintain your current excellent health habits including regular sleep schedule of 7-9 hours for optimal recovery",
-            "Continue stress management practices and work-life balance to support your excellent health markers",
-            "Maintain current physical activity level as it's clearly supporting your optimal health status"
+            "Maintain your current excellent health habits including regular sleep schedule of 7-9 hours for optimal recovery"
           ],
           dietary: [
-            "Continue your current healthy eating patterns that are supporting these excellent lab results",
-            "Maintain balanced nutrition with plenty of fruits, vegetables, whole grains, and lean proteins",
-            "Continue healthy portion control and timing that's contributing to optimal glucose and lipid levels"
+            "Continue your current healthy eating patterns that are supporting these excellent lab results"
           ],
           exercise: [
-            "Continue current exercise routine as it's supporting excellent cardiovascular and metabolic health",
-            "Maintain mix of cardiovascular exercise and strength training for continued optimal health",
-            "Consider adding flexibility and balance activities for overall wellness and injury prevention"
+            "Continue current exercise routine as it's supporting excellent cardiovascular and metabolic health"
           ],
           monitoring: [
-            "Annual comprehensive lab panel to maintain current excellent health status",
-            "Continue regular preventive care visits and age-appropriate health screenings",
-            "Monitor trends over time to ensure continued optimal health maintenance"
+            "Annual comprehensive lab panel to maintain current excellent health status"
           ],
           consultation: [
-            "Discuss these excellent results with your healthcare provider for continued health optimization",
-            "Continue regular preventive care visits to maintain your outstanding health status",
-            "Consider these results as a baseline for future health monitoring and optimization"
+            "Discuss these excellent results with your healthcare provider for continued health optimization"
           ]
+        },
+        conversationalInsights: {
+          goodNews: ["Your lab results show excellent overall health with all major parameters in optimal ranges"],
+          areasToWatch: ["Continue monitoring trends with annual checkups"],
+          yourNumbers: ["All key health markers are within ideal ranges"],
+          nextSteps: ["Maintain current healthy lifestyle and schedule regular check-ups"]
+        },
+        exportData: {
+          csvSummary: "Excellent overall health status with all parameters optimal",
+          trendTracking: ["Blood Glucose", "Cholesterol", "Blood Pressure"],
+          shareWithDoctor: ["All results within optimal ranges, continue current health plan"]
         },
         disclaimer: "This comprehensive AI analysis is for informational purposes only. Always consult healthcare professionals for medical advice, diagnosis, and treatment decisions."
       };
@@ -946,8 +852,8 @@ serve(async (req) => {
          method: req.method,
          url: req.url,
          hasReportId: !!requestBody?.reportId,
-         hasContent: !!processedContent,
-         contentLength: processedContent?.length || 0,
+         hasContent: !!requestBody?.reportContent,
+         contentLength: requestBody?.reportContent?.length || 0,
          hasConsent: !!requestBody?.userConsent
        },
       geminiApiKeyExists: !!geminiApiKey
