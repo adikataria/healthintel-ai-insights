@@ -1,14 +1,65 @@
+
+# DocLumen SEO Robots Configuration
+# Allow all search engine crawlers with proper guidelines
+
+User-agent: *
+Allow: /
+Crawl-delay: 1
+
+# Specific rules for major search engines
 User-agent: Googlebot
 Allow: /
+Crawl-delay: 1
 
 User-agent: Bingbot
 Allow: /
+Crawl-delay: 2
 
+User-agent: Slurp
+Allow: /
+Crawl-delay: 2
+
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 1
+
+# Social media crawlers
 User-agent: Twitterbot
 Allow: /
 
 User-agent: facebookexternalhit
 Allow: /
 
-User-agent: *
+User-agent: LinkedInBot
 Allow: /
+
+# Disallow private/admin areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /private/
+Disallow: /dashboard/
+Disallow: /settings/
+Disallow: /auth/
+Disallow: /*.json$
+Disallow: /*/edit
+Disallow: /*/delete
+
+# Allow important pages for better indexing
+Allow: /ai-doctor
+Allow: /upload
+Allow: /chat
+Allow: /pricing
+Allow: /privacy
+Allow: /terms
+Allow: /contact
+Allow: /compliance
+
+# Sitemap location
+Sitemap: https://doclumen.com/sitemap.xml
+Sitemap: https://doclumen.com/sitemap-pages.xml
+
+# Crawl delay for respectful crawling
+Crawl-delay: 1
+
+# Host directive (optional, for domain consolidation)
+Host: https://doclumen.com
