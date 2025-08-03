@@ -9,6 +9,7 @@ import HowItWorks from '@/components/landing/HowItWorks';
 import TestimonialsCarousel from '@/components/landing/TestimonialsCarousel';
 import TabbedFeatures from '@/components/landing/TabbedFeatures';
 import SEO from '@/components/SEO';
+
 const Landing = () => {
   return <>
       <SEO title="AI-Powered Health Analytics & Medical Report Analysis Platform" description="Transform your health management with DocLumen's AI technology. Get instant lab report analysis, personalized health insights, 24/7 AI doctor assistance. Join 25,000+ users. Free trial available." keywords="AI health analytics, lab report analysis, medical report analyzer, health insights, AI doctor assistant, personalized healthcare, health management platform, medical AI, health data analysis, lab results interpretation" url="https://doclumen.com" />
@@ -16,7 +17,7 @@ const Landing = () => {
       <div className="min-h-screen">
         {/* Modern Hero Section */}
         <section className="relative overflow-hidden bg-gradient-to-br from-background to-muted/20 pt-20 pb-32">
-          <div className="container mx-0 px-0 my-0">
+          <div className="container mx-auto px-4">
             <div className="max-w-7xl mx-auto">
               {/* Hero Content */}
               <div className="text-center mb-16">
@@ -46,7 +47,7 @@ const Landing = () => {
               </div>
 
               {/* Features Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-16">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-16 max-w-5xl mx-auto">
                 <Card className="text-center p-6 hover:shadow-lg transition-all duration-300 border-0 bg-card/50">
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
                     <Activity className="h-6 w-6 text-blue-600" />
@@ -97,7 +98,7 @@ const Landing = () => {
               </div>
 
               {/* Dashboard Preview */}
-              <div className="relative">
+              <div className="relative max-w-5xl mx-auto">
                 <div className="bg-card rounded-2xl shadow-2xl border p-6 max-w-5xl mx-auto">
                   {/* Dashboard Header */}
                   <div className="flex items-center justify-between mb-6">
@@ -412,4 +413,5 @@ const Landing = () => {
       </div>
     </>;
 };
+
 export default Landing;
