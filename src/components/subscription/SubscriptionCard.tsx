@@ -83,13 +83,15 @@ export const SubscriptionCard = ({ plan, isAnnual, isCurrentPlan }: Subscription
       return;
     }
 
-    // For paid plans, initiate Razorpay payment
+    // For paid plans, initiate Razorpay payment with billing cycle
     initiatePayment({
       amount: price,
       planName: plan.name,
       userEmail: user.email || '',
+      billingCycle: isAnnual ? 'annual' : 'monthly',
       onSuccess: async (paymentId: string) => {
         try {
+          console.log('Payment completed with ID:', paymentId);
           // Create subscription and payment record
           createSubscription.mutate({
             planId: plan.id,
@@ -98,10 +100,12 @@ export const SubscriptionCard = ({ plan, isAnnual, isCurrentPlan }: Subscription
           
           toast.success('Payment successful! Your subscription is now active.');
         } catch (error) {
+          console.error('Subscription creation error:', error);
           toast.error('Failed to activate subscription');
         }
       },
       onFailure: (error: any) => {
+        console.error('Payment failed:', error);
         toast.error('Payment failed: ' + error.message);
       }
     });
