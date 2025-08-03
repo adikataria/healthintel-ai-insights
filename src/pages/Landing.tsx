@@ -16,7 +16,7 @@ const Landing = () => {
       <div className="min-h-screen">
         {/* Modern Hero Section */}
         <section className="relative overflow-hidden bg-gradient-to-br from-background to-muted/20 pt-20 pb-32">
-          <div className="container mx-0 my-[11px] px-0">
+          <div className="container mx-0 px-0 my-0">
             <div className="max-w-7xl mx-auto">
               {/* Hero Content */}
               <div className="text-center mb-16">
