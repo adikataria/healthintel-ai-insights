@@ -9,29 +9,18 @@ import HowItWorks from '@/components/landing/HowItWorks';
 import TestimonialsCarousel from '@/components/landing/TestimonialsCarousel';
 import TabbedFeatures from '@/components/landing/TabbedFeatures';
 import SEO from '@/components/SEO';
-
 const Landing = () => {
-  return (
-    <>
-      <SEO
-        title="AI-Powered Health Analytics & Medical Report Analysis Platform"
-        description="Transform your health management with DocLumen's AI technology. Get instant lab report analysis, personalized health insights, 24/7 AI doctor assistance. Join 25,000+ users. Free trial available."
-        keywords="AI health analytics, lab report analysis, medical report analyzer, health insights, AI doctor assistant, personalized healthcare, health management platform, medical AI, health data analysis, lab results interpretation"
-        url="https://doclumen.com"
-      />
+  return <>
+      <SEO title="AI-Powered Health Analytics & Medical Report Analysis Platform" description="Transform your health management with DocLumen's AI technology. Get instant lab report analysis, personalized health insights, 24/7 AI doctor assistance. Join 25,000+ users. Free trial available." keywords="AI health analytics, lab report analysis, medical report analyzer, health insights, AI doctor assistant, personalized healthcare, health management platform, medical AI, health data analysis, lab results interpretation" url="https://doclumen.com" />
       
       <div className="min-h-screen">
         {/* Modern Hero Section */}
         <section className="relative overflow-hidden bg-gradient-to-br from-background to-muted/20 pt-20 pb-32">
-          <div className="container mx-auto px-4">
+          <div className="container px-4 mx-0 my-[11px]">
             <div className="max-w-7xl mx-auto">
               {/* Hero Content */}
               <div className="text-center mb-16">
-                <div className="flex justify-center mb-8">
-                  <div className="w-32 h-32 bg-gradient-to-br from-medical-primary to-medical-secondary rounded-3xl flex items-center justify-center transform rotate-12 hover:rotate-0 transition-transform duration-500">
-                    <Brain className="h-16 w-16 text-white" />
-                  </div>
-                </div>
+                
                 
                 <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 max-w-4xl mx-auto leading-tight">
                   Analyze health reports smarter,
@@ -47,11 +36,7 @@ const Landing = () => {
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 max-w-md mx-auto">
-                  <Input 
-                    type="email" 
-                    placeholder="Your Work Email" 
-                    className="flex-1 h-12 text-base"
-                  />
+                  <Input type="email" placeholder="Your Work Email" className="flex-1 h-12 text-base" />
                   <Link to="/auth" aria-label="Try DocLumen for free">
                     <Button size="lg" className="bg-foreground text-background hover:bg-foreground/90 px-8 py-3 h-12 rounded-lg font-semibold">
                       Try for Free
@@ -425,8 +410,6 @@ const Landing = () => {
           </div>
         </section>
       </div>
-    </>
-  );
+    </>;
 };
-
 export default Landing;
