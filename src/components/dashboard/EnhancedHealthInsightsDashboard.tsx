@@ -15,6 +15,7 @@ import { GoalProgressWidget } from './widgets/GoalProgressWidget';
 import { RecentReportsWidget } from './widgets/RecentReportsWidget';
 import { EducationalWidget } from './widgets/EducationalWidget';
 import { InteractiveChart } from './InteractiveChart';
+import MobileBottomNav from '@/components/navigation/MobileBottomNav';
 import { 
   Search, 
   Crown,
@@ -184,7 +185,7 @@ export const EnhancedHealthInsightsDashboard = () => {
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark bg-slate-900' : 'bg-slate-50'}`}>
+    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'dark bg-slate-900' : 'bg-slate-50'} pb-20 md:pb-0`}>
       {/* Sticky Navigation - Responsive */}
       <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 px-2 sm:px-4 py-2 sm:py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -411,6 +412,9 @@ export const EnhancedHealthInsightsDashboard = () => {
           </Dialog>
         </div>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav />
     </div>
   );
 };

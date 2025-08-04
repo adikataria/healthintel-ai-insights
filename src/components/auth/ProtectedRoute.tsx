@@ -3,6 +3,7 @@ import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { AuthForm } from './AuthForm';
 import { Loader2 } from 'lucide-react';
+import ProtectedPageLayout from '@/components/layout/ProtectedPageLayout';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -23,5 +24,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     return <AuthForm />;
   }
 
-  return <>{children}</>;
+  return (
+    <ProtectedPageLayout>
+      {children}
+    </ProtectedPageLayout>
+  );
 };
