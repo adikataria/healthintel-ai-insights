@@ -8,7 +8,7 @@ interface ProtectedPageLayoutProps {
 
 const ProtectedPageLayout: React.FC<ProtectedPageLayoutProps> = ({ children }) => {
   return (
-    <div className="pb-20 md:pb-0 min-h-screen">
+    <div className="pb-20 md:pb-0 min-h-screen bg-gray-50">
       {children}
       <MobileBottomNav />
     </div>
