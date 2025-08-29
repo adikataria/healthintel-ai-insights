@@ -3,255 +3,285 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Heart, Download, CheckCircle, ArrowRight, Star, Activity, Users, Shield, Smartphone, MessageCircle, Clock, Target, TrendingUp, PlayCircle, Phone, Mail } from 'lucide-react';
+import { Brain, Shield, Smartphone, TrendingUp, Users, FileText, Heart, Target, Bell, Download, CheckCircle, ArrowRight, Star, BarChart3, Activity, Zap, Calendar, MessageCircle, ClipboardList, Lightbulb, Megaphone, Settings } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import HowItWorks from '@/components/landing/HowItWorks';
+import TestimonialsCarousel from '@/components/landing/TestimonialsCarousel';
+import TabbedFeatures from '@/components/landing/TabbedFeatures';
 import SEO from '@/components/SEO';
-import phoneMockup1 from '@/assets/phone-mockup-1.jpg';
-import phoneMockup2 from '@/assets/phone-mockup-2.jpg';
-import phoneMockup3 from '@/assets/phone-mockup-3.jpg';
-import doctorHero from '@/assets/doctor-hero.jpg';
 
 const Landing = () => {
-  const appFeatures = [
-    { icon: Activity, text: "Real-time health monitoring" },
-    { icon: MessageCircle, text: "AI-powered consultations" },
-    { icon: Target, text: "Personalized health goals" },
-    { icon: Shield, text: "Secure data protection" }
-  ];
-
-  const testimonials = [
-    {
-      name: "Dr. Sarah Johnson",
-      role: "Cardiologist",
-      rating: 5,
-      text: "DocLumen has revolutionized how I monitor my patients' heart health. The AI insights are incredibly accurate."
-    },
-    {
-      name: "Michael Chen",
-      role: "Patient",
-      rating: 5,
-      text: "Finally found an app that actually helps me understand my health data. The heart monitoring is fantastic!"
-    },
-    {
-      name: "Dr. Emily Rodriguez",
-      role: "Family Physician",
-      rating: 5,
-      text: "I recommend DocLumen to all my patients. It's like having a personal health assistant available 24/7."
-    }
-  ];
-
-  const pricingPlans = [
-    {
-      name: "Basic",
-      price: "Free",
-      features: ["Basic health tracking", "Weekly reports", "Community support"],
-      popular: false
-    },
-    {
-      name: "Premium",
-      price: "$9.99/month",
-      features: ["Advanced AI analysis", "Daily insights", "Priority support", "Export reports"],
-      popular: true
-    },
-    {
-      name: "Professional",
-      price: "$19.99/month",
-      features: ["All Premium features", "Family profiles", "Doctor integration", "Custom alerts"],
-      popular: false
-    }
-  ];
-
-  return (
-    <>
-      <SEO 
-        title="Heart Health - AI-Powered Heart Monitoring & Health Analytics" 
-        description="Monitor your heart health with AI-powered insights. Get personalized recommendations, track vital signs, and improve your cardiovascular wellness with DocLumen." 
-        keywords="heart health, heart monitoring, AI health, cardiovascular health, heart rate tracking, health analytics" 
-        url="https://doclumen.com" 
-      />
+  return <>
+      <SEO title="AI-Powered Health Analytics & Medical Report Analysis Platform" description="Transform your health management with DocLumen's AI technology. Get instant lab report analysis, personalized health insights, 24/7 AI doctor assistance. Join 25,000+ users. Free trial available." keywords="AI health analytics, lab report analysis, medical report analyzer, health insights, AI doctor assistant, personalized healthcare, health management platform, medical AI, health data analysis, lab results interpretation" url="https://doclumen.com" />
       
-      <div className="min-h-screen bg-white">
-        {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-red-50 to-pink-50 pt-20 pb-16 overflow-hidden">
+      <div className="min-h-screen">
+        {/* Modern Hero Section */}
+        <section className="relative overflow-hidden bg-gradient-to-br from-background to-muted/20 pt-20 pb-32">
           <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
-              {/* Left Content */}
-              <div className="text-left">
-                <h1 className="text-5xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-                  Heart Health
+            <div className="max-w-7xl mx-auto">
+              {/* Hero Content */}
+              <div className="text-center mb-16">
+                
+                
+                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 max-w-4xl mx-auto leading-tight">
+                  Analyze health reports smarter,
+                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-medical-primary to-medical-secondary">
+                    Scale faster.
+                  </span>
                 </h1>
-                <p className="text-xl text-gray-600 mb-4">
-                  Helps when you need it most
-                </p>
-                <p className="text-lg text-gray-500 mb-8 max-w-lg">
-                  Monitor your cardiovascular health with AI-powered insights and personalized recommendations for a healthier heart.
-                </p>
-
-                {/* App Store Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                  <Button className="bg-black text-white hover:bg-gray-800 px-6 py-3 rounded-lg flex items-center gap-2">
-                    <Download className="h-5 w-5" />
-                    App Store
-                  </Button>
-                  <Button className="bg-black text-white hover:bg-gray-800 px-6 py-3 rounded-lg flex items-center gap-2">
-                    <PlayCircle className="h-5 w-5" />
-                    Google Play
-                  </Button>
-                </div>
-
-                {/* Stats */}
-                <div className="flex items-center gap-8">
-                  <div>
-                    <div className="text-2xl font-bold text-gray-900">25K+</div>
-                    <div className="text-sm text-gray-500">Active Users</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-gray-900">4.8★</div>
-                    <div className="text-sm text-gray-500">App Rating</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-gray-900">1M+</div>
-                    <div className="text-sm text-gray-500">Health Reports</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right Content - Doctor Image */}
-              <div className="flex justify-center lg:justify-end">
-                <div className="relative">
-                  <img 
-                    src={doctorHero} 
-                    alt="Professional doctor with stethoscope" 
-                    className="w-96 h-96 object-cover rounded-2xl shadow-2xl"
-                  />
-                  <div className="absolute -bottom-4 -left-4 bg-white rounded-xl p-4 shadow-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                        <Heart className="h-6 w-6 text-red-500" />
-                      </div>
-                      <div>
-                        <div className="text-sm font-semibold">Heart Rate</div>
-                        <div className="text-xs text-gray-500">72 BPM - Normal</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Digital Health Insights Section */}
-        <section className="py-20 bg-gray-50">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                Digital health insights
-              </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Get comprehensive health analytics powered by AI to make informed decisions about your wellbeing
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
-              <div>
-                <img 
-                  src={phoneMockup1} 
-                  alt="Health app interface showing heart monitoring" 
-                  className="w-full max-w-sm mx-auto rounded-3xl shadow-2xl"
-                />
-              </div>
-              
-              <div>
-                <h3 className="text-3xl font-bold text-gray-900 mb-6">
-                  Smart Health Monitoring
-                </h3>
-                <p className="text-lg text-gray-600 mb-8">
-                  Track your vital signs, monitor trends, and receive personalized insights to maintain optimal health.
+                
+                <p className="text-lg sm:text-xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
+                  DocLumen is the only AI-powered health platform offering personalized 
+                  medical analysis and assistance to boost health outcomes, increase wellness retention, 
+                  and reduce medical confusion.
                 </p>
                 
-                <div className="space-y-4">
-                  {appFeatures.map((feature, index) => (
-                    <div key={index} className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                        <feature.icon className="h-5 w-5 text-red-500" />
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 max-w-md mx-auto">
+                  <Input type="email" placeholder="Your Work Email" className="flex-1 h-12 text-base" />
+                  <Link to="/auth" aria-label="Try DocLumen for free">
+                    <Button size="lg" className="bg-foreground text-background hover:bg-foreground/90 px-8 py-3 h-12 rounded-lg font-semibold">
+                      Try for Free
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+
+              {/* Features Grid */}
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-16 max-w-5xl mx-auto">
+                <Card className="text-center p-6 hover:shadow-lg transition-all duration-300 border-0 bg-card/50">
+                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <Activity className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <h3 className="font-semibold text-sm mb-1">Health Reports</h3>
+                  <p className="text-xs text-muted-foreground">AI-powered analysis</p>
+                </Card>
+
+                <Card className="text-center p-6 hover:shadow-lg transition-all duration-300 border-0 bg-card/50">
+                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <ClipboardList className="h-6 w-6 text-purple-600" />
+                  </div>
+                  <h3 className="font-semibold text-sm mb-1">Health Tracking</h3>
+                  <p className="text-xs text-muted-foreground">Monitor vital metrics</p>
+                </Card>
+
+                <Card className="text-center p-6 hover:shadow-lg transition-all duration-300 border-0 bg-card/50">
+                  <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <MessageCircle className="h-6 w-6 text-orange-600" />
+                  </div>
+                  <h3 className="font-semibold text-sm mb-1">AI Consultations</h3>
+                  <p className="text-xs text-muted-foreground">24/7 health insights</p>
+                </Card>
+
+                <Card className="text-center p-6 hover:shadow-lg transition-all duration-300 border-0 bg-card/50">
+                  <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <Bell className="h-6 w-6 text-red-600" />
+                  </div>
+                  <h3 className="font-semibold text-sm mb-1">Smart Alerts</h3>
+                  <p className="text-xs text-muted-foreground">Proactive notifications</p>
+                </Card>
+
+                <Card className="text-center p-6 hover:shadow-lg transition-all duration-300 border-0 bg-card/50">
+                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <Lightbulb className="h-6 w-6 text-green-600" />
+                  </div>
+                  <h3 className="font-semibold text-sm mb-1">Health Tips</h3>
+                  <p className="text-xs text-muted-foreground">Personalized guidance</p>
+                </Card>
+
+                <Card className="text-center p-6 hover:shadow-lg transition-all duration-300 border-0 bg-card/50">
+                  <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <Settings className="h-6 w-6 text-yellow-600" />
+                  </div>
+                  <h3 className="font-semibold text-sm mb-1">Health Management</h3>
+                  <p className="text-xs text-muted-foreground">Comprehensive control</p>
+                </Card>
+              </div>
+
+              {/* Dashboard Preview */}
+              <div className="relative max-w-5xl mx-auto">
+                <div className="bg-card rounded-2xl shadow-2xl border p-6 max-w-5xl mx-auto">
+                  {/* Dashboard Header */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-medical-primary rounded-lg flex items-center justify-center">
+                        <Brain className="h-5 w-5 text-white" />
                       </div>
-                      <span className="text-gray-700">{feature.text}</span>
+                      <div>
+                        <h3 className="font-semibold text-foreground">DocLumen</h3>
+                        <p className="text-sm text-muted-foreground">Health Dashboard</p>
+                      </div>
                     </div>
-                  ))}
+                    <Button size="sm" className="bg-medical-primary hover:bg-medical-dark text-white rounded-lg">
+                      <ArrowRight className="h-4 w-4 mr-1" />
+                      View Full
+                    </Button>
+                  </div>
+
+                  {/* Dashboard Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    {/* Health Overview Card */}
+                    <Card className="p-4 border-0 bg-muted/30">
+                      <div className="space-y-3">
+                        <div className="w-full h-3 bg-muted rounded-full"></div>
+                        <div className="w-3/4 h-3 bg-muted rounded-full"></div>
+                        <div className="w-1/2 h-3 bg-muted rounded-full"></div>
+                        <div className="flex items-center gap-2 mt-4">
+                          <div className="w-6 h-6 bg-medical-primary rounded-full"></div>
+                          <div className="w-16 h-2 bg-muted rounded-full"></div>
+                        </div>
+                      </div>
+                    </Card>
+
+                    {/* Recent Reports Card */}
+                    <Card className="p-4 border-0 bg-muted/30">
+                      <div className="space-y-3">
+                        <div className="w-full h-3 bg-muted rounded-full"></div>
+                        <div className="w-2/3 h-3 bg-muted rounded-full"></div>
+                        <div className="w-4/5 h-3 bg-muted rounded-full"></div>
+                        <div className="flex items-center gap-2 mt-4">
+                          <div className="w-6 h-6 bg-medical-secondary rounded-full"></div>
+                          <div className="w-20 h-2 bg-muted rounded-full"></div>
+                        </div>
+                      </div>
+                    </Card>
+
+                    {/* Chart Placeholder */}
+                    <Card className="p-4 border-0 bg-muted/30 md:col-span-2">
+                      <div className="space-y-3">
+                        <div className="w-1/3 h-3 bg-muted rounded-full"></div>
+                        <div className="h-20 bg-muted/50 rounded-lg flex items-end justify-around p-2">
+                          <div className="w-4 h-8 bg-medical-primary rounded-t"></div>
+                          <div className="w-4 h-12 bg-medical-secondary rounded-t"></div>
+                          <div className="w-4 h-6 bg-medical-primary rounded-t"></div>
+                          <div className="w-4 h-10 bg-medical-secondary rounded-t"></div>
+                          <div className="w-4 h-14 bg-medical-primary rounded-t"></div>
+                        </div>
+                      </div>
+                    </Card>
+                  </div>
+
+                  {/* AI Assistant Chat Bubble */}
+                  <div className="absolute -bottom-4 right-8 bg-medical-primary text-white p-4 rounded-2xl rounded-br-sm shadow-lg max-w-xs">
+                    <div className="flex items-start gap-2">
+                      <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Brain className="h-3 w-3" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-medium mb-1">AI Health Assistant</p>
+                        <p className="text-xs opacity-90">
+                          Your latest blood work shows improvement! Click to view detailed analysis.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="absolute -bottom-1 right-4 w-4 h-4 bg-medical-primary transform rotate-45"></div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Feature Showcase Sections */}
-        <section className="py-20">
-          <div className="container mx-auto px-4">
-            <div className="space-y-20">
-              {/* Feature 1 */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div>
-                  <h3 className="text-3xl font-bold text-gray-900 mb-6">
-                    AI-Powered Health Analysis
-                  </h3>
-                  <p className="text-lg text-gray-600 mb-6">
-                    Our advanced AI analyzes your health data to provide personalized insights and recommendations.
-                  </p>
-                  <ul className="space-y-3">
-                    <li className="flex items-center gap-3">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                      <span>Instant health report analysis</span>
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                      <span>Personalized health recommendations</span>
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                      <span>Trend analysis and predictions</span>
-                    </li>
-                  </ul>
-                </div>
-                <div className="order-first lg:order-last">
-                  <img 
-                    src={phoneMockup2} 
-                    alt="AI health analysis interface" 
-                    className="w-full max-w-sm mx-auto rounded-3xl shadow-2xl"
-                  />
-                </div>
-              </div>
+        {/* How It Works Section */}
+        <HowItWorks />
 
-              {/* Feature 2 */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div>
-                  <img 
-                    src={phoneMockup3} 
-                    alt="Health consultation interface" 
-                    className="w-full max-w-sm mx-auto rounded-3xl shadow-2xl"
-                  />
+        {/* Modern Tabbed Features Section */}
+        <TabbedFeatures />
+
+        {/* AI Doctor Assistant Section */}
+        <section className="py-20 bg-muted/50">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <Badge className="mb-4 bg-medical-primary/10 text-medical-primary">
+                  AI-Powered Medical Assistant
+                </Badge>
+                <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-6">
+                  Meet Your 24/7 AI Health Companion
+                </h2>
+                <p className="text-lg text-muted-foreground mb-6">
+                  Get instant, personalized health guidance with our advanced AI doctor assistant. 
+                  Ask medical questions, get symptom analysis, and receive clinically validated recommendations 
+                  available round the clock for comprehensive health support.
+                </p>
+                
+                <div className="space-y-4 mb-8">
+                  <div className="flex items-start gap-3">
+                    <div className="h-6 w-6 bg-medical-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <CheckCircle className="h-4 w-4 text-medical-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-foreground">Intelligent Symptom Analysis</h4>
+                      <p className="text-muted-foreground">Describe your symptoms and get AI-powered medical insights with recommended next steps</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3">
+                    <div className="h-6 w-6 bg-medical-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <CheckCircle className="h-4 w-4 text-medical-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-foreground">Personalized Health Recommendations</h4>
+                      <p className="text-muted-foreground">Get tailored medical advice based on your health profile and medical history</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3">
+                    <div className="h-6 w-6 bg-medical-primary/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <CheckCircle className="h-4 w-4 text-medical-primary" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-foreground">Round-the-Clock Availability</h4>
+                      <p className="text-muted-foreground">Access professional health guidance anytime, anywhere with instant responses</p>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-3xl font-bold text-gray-900 mb-6">
-                    24/7 Health Consultation
-                  </h3>
-                  <p className="text-lg text-gray-600 mb-6">
-                    Get instant medical advice and consultation from our AI-powered health assistant whenever you need it.
-                  </p>
-                  <ul className="space-y-3">
-                    <li className="flex items-center gap-3">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                      <span>Instant symptom assessment</span>
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                      <span>Medical question answering</span>
-                    </li>
-                    <li className="flex items-center gap-3">
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                      <span>Emergency guidance</span>
-                    </li>
-                  </ul>
+
+                <Link to="/auth" aria-label="Try DocLumen AI Doctor Assistant">
+                  <Button className="bg-medical-primary hover:bg-medical-dark text-white">
+                    Try AI Assistant
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+              
+              <div className="bg-card rounded-2xl shadow-xl p-6">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="h-8 w-8 bg-medical-primary rounded-full flex items-center justify-center">
+                      <Brain className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="bg-medical-primary/10 rounded-lg p-3">
+                        <p className="text-sm text-foreground">
+                          Hello! I'm your AI health assistant. How can I help you with your health concerns today?
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3 justify-end">
+                    <div className="flex-1">
+                      <div className="bg-muted rounded-lg p-3 ml-8">
+                        <p className="text-sm text-foreground">
+                          I've been experiencing persistent headaches for 3 days and my recent blood test shows low vitamin D. What should I do?
+                        </p>
+                      </div>
+                    </div>
+                    <div className="h-8 w-8 bg-muted rounded-full"></div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3">
+                    <div className="h-8 w-8 bg-medical-primary rounded-full flex items-center justify-center">
+                      <Brain className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="bg-medical-primary/10 rounded-lg p-3">
+                        <p className="text-sm text-foreground">
+                          Based on your symptoms and test results, I recommend increasing vitamin D intake through supplements (2000-4000 IU daily) and getting 15-20 minutes of sunlight exposure. For headaches, ensure proper hydration and consider stress management. Would you like me to create a personalized health plan?
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -259,119 +289,129 @@ const Landing = () => {
         </section>
 
         {/* Testimonials Section */}
-        <section className="py-20 bg-gray-50">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                What our users say
-              </h2>
-              <p className="text-xl text-gray-600">
-                Join thousands of satisfied users who trust DocLumen for their health
-              </p>
-            </div>
+        <TestimonialsCarousel />
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              {testimonials.map((testimonial, index) => (
-                <Card key={index} className="p-6 border-0 shadow-lg">
-                  <div className="flex items-center gap-1 mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                    ))}
-                  </div>
-                  <p className="text-gray-600 mb-4 italic">"{testimonial.text}"</p>
-                  <div>
-                    <div className="font-semibold">{testimonial.name}</div>
-                    <div className="text-sm text-gray-500">{testimonial.role}</div>
-                  </div>
-                </Card>
-              ))}
+        {/* Security & Compliance */}
+        <section className="py-20 bg-background">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-6">
+              Your Health Data is Secure & Protected
+            </h2>
+            <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto">
+              We follow the highest international standards for medical data protection and healthcare privacy compliance
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="text-center">
+                <div className="h-16 w-16 bg-medical-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Shield className="h-8 w-8 text-medical-secondary" />
+                </div>
+                <h3 className="text-xl font-bold text-foreground mb-2">HIPAA Compliant</h3>
+                <p className="text-muted-foreground">
+                  Full compliance with healthcare privacy regulations and Indian health data protection norms
+                </p>
+              </div>
+              
+              <div className="text-center">
+                <div className="h-16 w-16 bg-medical-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <FileText className="h-8 w-8 text-medical-primary" />
+                </div>
+                <h3 className="text-xl font-bold text-foreground mb-2">End-to-End Encryption</h3>
+                <p className="text-muted-foreground">
+                  Your medical data is encrypted both in transit and at rest with military-grade security
+                </p>
+              </div>
+              
+              <div className="text-center">
+                <div className="h-16 w-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Users className="h-8 w-8 text-accent" />
+                </div>
+                <h3 className="text-xl font-bold text-foreground mb-2">You Own Your Data</h3>
+                <p className="text-muted-foreground">
+                  Complete control over your health information with easy data export and deletion options
+                </p>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Pricing Section */}
-        <section className="py-20">
+        {/* CTA Section - Redesigned */}
+        <section className="py-20 bg-gray-900">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                Choose your plan
+              <h2 className="text-3xl sm:text-5xl font-bold text-white mb-4">
+                Ready to Transform Your Health Management?
               </h2>
-              <p className="text-xl text-gray-600">
-                Select the perfect plan for your health monitoring needs
+              <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+                Join thousands of users who trust DocLumen for smarter health decisions
               </p>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              {pricingPlans.map((plan, index) => (
-                <Card key={index} className={`p-8 relative ${plan.popular ? 'border-2 border-red-500 shadow-2xl' : 'border shadow-lg'}`}>
-                  {plan.popular && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <Badge className="bg-red-500 text-white px-4 py-1">Most Popular</Badge>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto mb-16">
+              {/* Start a free trial card */}
+              <Card className="bg-gray-100 border-0 p-8 rounded-3xl">
+                <CardContent className="p-0">
+                  <div className="mb-6">
+                    <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mb-6">
+                      <Star className="h-6 w-6 text-white" />
                     </div>
-                  )}
-                  <div className="text-center">
-                    <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                    <div className="text-3xl font-bold text-red-500 mb-6">{plan.price}</div>
-                    <ul className="space-y-3 mb-8">
-                      {plan.features.map((feature, featureIndex) => (
-                        <li key={featureIndex} className="flex items-center gap-2">
-                          <CheckCircle className="h-5 w-5 text-green-500" />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <Link to="/auth">
-                      <Button className={`w-full ${plan.popular ? 'bg-red-500 hover:bg-red-600' : ''}`}>
-                        Get Started
-                      </Button>
-                    </Link>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                      Start Your Free Trial Today
+                    </h3>
+                    <p className="text-gray-600 text-lg mb-8">
+                      Get a 14-day free trial with full access to all features. No credit card required.
+                    </p>
                   </div>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
+                  <Link to="/auth" aria-label="Start DocLumen free trial">
+                    <Button className="bg-medical-primary hover:bg-medical-dark text-white px-8 py-3 rounded-xl">
+                      Start free trial
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </CardContent>
+              </Card>
 
-        {/* Contact Section */}
-        <section className="py-20 bg-red-500 text-white">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold mb-4">
-                Ready to start your health journey?
-              </h2>
-              <p className="text-xl opacity-90 mb-8">
-                Join thousands of users who have transformed their health with DocLumen
+              {/* Request a demo card */}
+              <Card className="bg-medical-primary border-0 p-8 rounded-3xl">
+                <CardContent className="p-0">
+                  <div className="mb-6">
+                    <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mb-6">
+                      <Calendar className="h-6 w-6 text-white" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-4">
+                      Request a Personal Demo
+                    </h3>
+                    <p className="text-medical-light text-lg mb-8">
+                      Connect with a health technology specialist to see how DocLumen can transform your health management.
+                    </p>
+                  </div>
+                  <Button variant="outline" className="bg-white text-medical-primary hover:bg-gray-100 border-white px-8 py-3 rounded-xl">
+                    Request a demo
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Trusted by section */}
+            <div className="text-center">
+              <p className="text-gray-400 text-sm font-semibold tracking-wider uppercase mb-8">
+                TRUSTED BY +25,000 HEALTH PROFESSIONALS & INDIVIDUALS
               </p>
-              <Link to="/auth">
-                <Button className="bg-white text-red-500 hover:bg-gray-100 px-8 py-3 rounded-lg text-lg">
-                  Get Started Today
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-              <div className="text-center">
-                <Phone className="h-8 w-8 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Call Us</h3>
-                <p className="opacity-90">+1 (555) 123-4567</p>
-              </div>
-              <div className="text-center">
-                <Mail className="h-8 w-8 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Email Us</h3>
-                <p className="opacity-90">support@doclumen.com</p>
-              </div>
-              <div className="text-center">
-                <Clock className="h-8 w-8 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Support Hours</h3>
-                <p className="opacity-90">24/7 Available</p>
+              
+              <div className="flex flex-wrap items-center justify-center gap-8 opacity-60">
+                <div className="text-white font-bold text-xl">HealthTech India</div>
+                <div className="text-white font-bold text-xl">MedAI Solutions</div>
+                <div className="text-white font-bold text-xl">WellnessPro</div>
+                <div className="text-white font-bold text-xl">HealthIntel</div>
+                <div className="text-white font-bold text-xl">MedAnalyzer</div>
+                <div className="text-white font-bold text-xl">SmartHealth</div>
               </div>
             </div>
           </div>
         </section>
       </div>
-    </>
-  );
+    </>;
 };
 
 export default Landing;
