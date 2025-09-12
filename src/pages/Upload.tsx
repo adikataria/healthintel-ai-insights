@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
+import { MobileUploadFlow } from "@/components/mobile/MobileUploadFlow";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -13,7 +14,22 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { PageHeader } from "@/components/shared/PageHeader";
 
+import { useIsMobile } from "@/hooks/use-mobile";
+
 const Upload = () => {
+  const isMobile = useIsMobile();
+  
+  // Redirect to mobile version on mobile devices
+  if (isMobile) {
+    return (
+      <div className="min-h-screen bg-background p-4">
+        <MobileUploadFlow 
+          onFilesSelected={() => {}}
+          onUploadStart={() => {}}
+        />
+      </div>
+    );
+  }
   const { user } = useAuth();
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
