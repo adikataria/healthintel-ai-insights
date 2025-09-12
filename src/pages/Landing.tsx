@@ -9,177 +9,188 @@ import HowItWorks from '@/components/landing/HowItWorks';
 import TestimonialsCarousel from '@/components/landing/TestimonialsCarousel';
 import TabbedFeatures from '@/components/landing/TabbedFeatures';
 import SEO from '@/components/SEO';
+import MobileHeroSection from '@/components/mobile/MobileHeroSection';
+import PWAInstallPrompt from '@/components/PWAInstallPrompt';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Landing = () => {
+  const isMobile = useIsMobile();
+  
   return <>
       <SEO title="AI-Powered Health Analytics & Medical Report Analysis Platform" description="Transform your health management with DocLumen's AI technology. Get instant lab report analysis, personalized health insights, 24/7 AI doctor assistance. Join 25,000+ users. Free trial available." keywords="AI health analytics, lab report analysis, medical report analyzer, health insights, AI doctor assistant, personalized healthcare, health management platform, medical AI, health data analysis, lab results interpretation" url="https://doclumen.com" />
       
+      <PWAInstallPrompt />
+      
       <div className="min-h-screen">
-        {/* Modern Hero Section */}
-        <section className="relative overflow-hidden bg-gradient-to-br from-background to-muted/20 pt-20 pb-32">
-          <div className="container mx-auto px-4">
-            <div className="max-w-7xl mx-auto">
-              {/* Hero Content */}
-              <div className="text-center mb-16">
-                
-                
-                <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 max-w-4xl mx-auto leading-tight">
-                  Analyze health reports smarter,
-                  <span className="block text-transparent bg-clip-text bg-gradient-to-r from-medical-primary to-medical-secondary">
-                    Scale faster.
-                  </span>
-                </h1>
-                
-                <p className="text-lg sm:text-xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
-                  DocLumen is the only AI-powered health platform offering personalized 
-                  medical analysis and assistance to boost health outcomes, increase wellness retention, 
-                  and reduce medical confusion.
-                </p>
-                
-                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 max-w-md mx-auto">
-                  <Input type="email" placeholder="Your Work Email" className="flex-1 h-12 text-base" />
-                  <Link to="/auth" aria-label="Try DocLumen for free">
-                    <Button size="lg" className="bg-foreground text-background hover:bg-foreground/90 px-8 py-3 h-12 rounded-lg font-semibold">
-                      Try for Free
-                    </Button>
-                  </Link>
+        {/* Mobile-First Hero Section */}
+        {isMobile ? (
+          <MobileHeroSection />
+        ) : (
+          // Desktop Hero Section - Simplified
+          <section className="relative overflow-hidden bg-gradient-to-br from-background to-muted/20 pt-20 pb-32">
+            <div className="container mx-auto px-4">
+              <div className="max-w-7xl mx-auto">
+                {/* Hero Content */}
+                <div className="text-center mb-16 animate-fade-in">
+                  <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 max-w-4xl mx-auto leading-tight">
+                    Analyze health reports smarter,
+                    <span className="block text-transparent bg-clip-text bg-gradient-to-r from-medical-primary to-medical-secondary">
+                      Scale faster.
+                    </span>
+                  </h1>
+                  
+                  <p className="text-lg sm:text-xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
+                    DocLumen is the only AI-powered health platform offering personalized 
+                    medical analysis and assistance to boost health outcomes, increase wellness retention, 
+                    and reduce medical confusion.
+                  </p>
+                  
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 max-w-md mx-auto">
+                    <Input type="email" placeholder="Your Work Email" className="flex-1 h-12 text-base" />
+                    <Link to="/auth" aria-label="Try DocLumen for free">
+                      <Button size="lg" className="bg-medical-primary hover:bg-medical-dark text-white px-8 py-3 h-12 rounded-lg font-semibold haptic-feedback">
+                        Try for Free
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
-              </div>
 
-              {/* Features Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-16 max-w-5xl mx-auto">
-                <Card className="text-center p-6 hover:shadow-lg transition-all duration-300 border-0 bg-card/50">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <Activity className="h-6 w-6 text-blue-600" />
-                  </div>
-                  <h3 className="font-semibold text-sm mb-1">Health Reports</h3>
-                  <p className="text-xs text-muted-foreground">AI-powered analysis</p>
-                </Card>
-
-                <Card className="text-center p-6 hover:shadow-lg transition-all duration-300 border-0 bg-card/50">
-                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <ClipboardList className="h-6 w-6 text-purple-600" />
-                  </div>
-                  <h3 className="font-semibold text-sm mb-1">Health Tracking</h3>
-                  <p className="text-xs text-muted-foreground">Monitor vital metrics</p>
-                </Card>
-
-                <Card className="text-center p-6 hover:shadow-lg transition-all duration-300 border-0 bg-card/50">
-                  <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <MessageCircle className="h-6 w-6 text-orange-600" />
-                  </div>
-                  <h3 className="font-semibold text-sm mb-1">AI Consultations</h3>
-                  <p className="text-xs text-muted-foreground">24/7 health insights</p>
-                </Card>
-
-                <Card className="text-center p-6 hover:shadow-lg transition-all duration-300 border-0 bg-card/50">
-                  <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <Bell className="h-6 w-6 text-red-600" />
-                  </div>
-                  <h3 className="font-semibold text-sm mb-1">Smart Alerts</h3>
-                  <p className="text-xs text-muted-foreground">Proactive notifications</p>
-                </Card>
-
-                <Card className="text-center p-6 hover:shadow-lg transition-all duration-300 border-0 bg-card/50">
-                  <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <Lightbulb className="h-6 w-6 text-green-600" />
-                  </div>
-                  <h3 className="font-semibold text-sm mb-1">Health Tips</h3>
-                  <p className="text-xs text-muted-foreground">Personalized guidance</p>
-                </Card>
-
-                <Card className="text-center p-6 hover:shadow-lg transition-all duration-300 border-0 bg-card/50">
-                  <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                    <Settings className="h-6 w-6 text-yellow-600" />
-                  </div>
-                  <h3 className="font-semibold text-sm mb-1">Health Management</h3>
-                  <p className="text-xs text-muted-foreground">Comprehensive control</p>
-                </Card>
-              </div>
-
-              {/* Dashboard Preview */}
-              <div className="relative max-w-5xl mx-auto">
-                <div className="bg-card rounded-2xl shadow-2xl border p-6 max-w-5xl mx-auto">
-                  {/* Dashboard Header */}
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-medical-primary rounded-lg flex items-center justify-center">
-                        <Brain className="h-5 w-5 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-foreground">DocLumen</h3>
-                        <p className="text-sm text-muted-foreground">Health Dashboard</p>
-                      </div>
+                {/* Features Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-16 max-w-5xl mx-auto">
+                  <Card className="text-center p-6 hover:shadow-lg transition-all duration-300 border-0 bg-card/50 mobile-card">
+                    <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                      <Activity className="h-6 w-6 text-blue-600" />
                     </div>
-                    <Button size="sm" className="bg-medical-primary hover:bg-medical-dark text-white rounded-lg">
-                      <ArrowRight className="h-4 w-4 mr-1" />
-                      View Full
-                    </Button>
-                  </div>
+                    <h3 className="font-semibold text-sm mb-1">Health Reports</h3>
+                    <p className="text-xs text-muted-foreground">AI-powered analysis</p>
+                  </Card>
 
-                  {/* Dashboard Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                    {/* Health Overview Card */}
-                    <Card className="p-4 border-0 bg-muted/30">
-                      <div className="space-y-3">
-                        <div className="w-full h-3 bg-muted rounded-full"></div>
-                        <div className="w-3/4 h-3 bg-muted rounded-full"></div>
-                        <div className="w-1/2 h-3 bg-muted rounded-full"></div>
-                        <div className="flex items-center gap-2 mt-4">
-                          <div className="w-6 h-6 bg-medical-primary rounded-full"></div>
-                          <div className="w-16 h-2 bg-muted rounded-full"></div>
-                        </div>
-                      </div>
-                    </Card>
-
-                    {/* Recent Reports Card */}
-                    <Card className="p-4 border-0 bg-muted/30">
-                      <div className="space-y-3">
-                        <div className="w-full h-3 bg-muted rounded-full"></div>
-                        <div className="w-2/3 h-3 bg-muted rounded-full"></div>
-                        <div className="w-4/5 h-3 bg-muted rounded-full"></div>
-                        <div className="flex items-center gap-2 mt-4">
-                          <div className="w-6 h-6 bg-medical-secondary rounded-full"></div>
-                          <div className="w-20 h-2 bg-muted rounded-full"></div>
-                        </div>
-                      </div>
-                    </Card>
-
-                    {/* Chart Placeholder */}
-                    <Card className="p-4 border-0 bg-muted/30 md:col-span-2">
-                      <div className="space-y-3">
-                        <div className="w-1/3 h-3 bg-muted rounded-full"></div>
-                        <div className="h-20 bg-muted/50 rounded-lg flex items-end justify-around p-2">
-                          <div className="w-4 h-8 bg-medical-primary rounded-t"></div>
-                          <div className="w-4 h-12 bg-medical-secondary rounded-t"></div>
-                          <div className="w-4 h-6 bg-medical-primary rounded-t"></div>
-                          <div className="w-4 h-10 bg-medical-secondary rounded-t"></div>
-                          <div className="w-4 h-14 bg-medical-primary rounded-t"></div>
-                        </div>
-                      </div>
-                    </Card>
-                  </div>
-
-                  {/* AI Assistant Chat Bubble */}
-                  <div className="absolute -bottom-4 right-8 bg-medical-primary text-white p-4 rounded-2xl rounded-br-sm shadow-lg max-w-xs">
-                    <div className="flex items-start gap-2">
-                      <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Brain className="h-3 w-3" />
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium mb-1">AI Health Assistant</p>
-                        <p className="text-xs opacity-90">
-                          Your latest blood work shows improvement! Click to view detailed analysis.
-                        </p>
-                      </div>
+                  <Card className="text-center p-6 hover:shadow-lg transition-all duration-300 border-0 bg-card/50 mobile-card">
+                    <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                      <ClipboardList className="h-6 w-6 text-purple-600" />
                     </div>
-                    <div className="absolute -bottom-1 right-4 w-4 h-4 bg-medical-primary transform rotate-45"></div>
+                    <h3 className="font-semibold text-sm mb-1">Health Tracking</h3>
+                    <p className="text-xs text-muted-foreground">Monitor vital metrics</p>
+                  </Card>
+
+                  <Card className="text-center p-6 hover:shadow-lg transition-all duration-300 border-0 bg-card/50 mobile-card">
+                    <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                      <MessageCircle className="h-6 w-6 text-orange-600" />
+                    </div>
+                    <h3 className="font-semibold text-sm mb-1">AI Consultations</h3>
+                    <p className="text-xs text-muted-foreground">24/7 health insights</p>
+                  </Card>
+
+                  <Card className="text-center p-6 hover:shadow-lg transition-all duration-300 border-0 bg-card/50 mobile-card">
+                    <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                      <Bell className="h-6 w-6 text-red-600" />
+                    </div>
+                    <h3 className="font-semibold text-sm mb-1">Smart Alerts</h3>
+                    <p className="text-xs text-muted-foreground">Proactive notifications</p>
+                  </Card>
+
+                  <Card className="text-center p-6 hover:shadow-lg transition-all duration-300 border-0 bg-card/50 mobile-card">
+                    <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                      <Lightbulb className="h-6 w-6 text-green-600" />
+                    </div>
+                    <h3 className="font-semibold text-sm mb-1">Health Tips</h3>
+                    <p className="text-xs text-muted-foreground">Personalized guidance</p>
+                  </Card>
+
+                  <Card className="text-center p-6 hover:shadow-lg transition-all duration-300 border-0 bg-card/50 mobile-card">
+                    <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                      <Settings className="h-6 w-6 text-yellow-600" />
+                    </div>
+                    <h3 className="font-semibold text-sm mb-1">Health Management</h3>
+                    <p className="text-xs text-muted-foreground">Comprehensive control</p>
+                  </Card>
+                </div>
+
+                {/* Dashboard Preview */}
+                <div className="relative max-w-5xl mx-auto animate-slide-up">
+                  <div className="bg-card rounded-2xl shadow-2xl border p-6 max-w-5xl mx-auto">
+                    {/* ... rest of dashboard preview ... */}
+                    {/* Dashboard Header */}
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-medical-primary rounded-lg flex items-center justify-center">
+                          <Brain className="h-5 w-5 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-foreground">DocLumen</h3>
+                          <p className="text-sm text-muted-foreground">Health Dashboard</p>
+                        </div>
+                      </div>
+                      <Button size="sm" className="bg-medical-primary hover:bg-medical-dark text-white rounded-lg haptic-feedback">
+                        <ArrowRight className="h-4 w-4 mr-1" />
+                        View Full
+                      </Button>
+                    </div>
+
+                    {/* Dashboard Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                      {/* Health Overview Card */}
+                      <Card className="p-4 border-0 bg-muted/30">
+                        <div className="space-y-3">
+                          <div className="w-full h-3 bg-muted rounded-full"></div>
+                          <div className="w-3/4 h-3 bg-muted rounded-full"></div>
+                          <div className="w-1/2 h-3 bg-muted rounded-full"></div>
+                          <div className="flex items-center gap-2 mt-4">
+                            <div className="w-6 h-6 bg-medical-primary rounded-full"></div>
+                            <div className="w-16 h-2 bg-muted rounded-full"></div>
+                          </div>
+                        </div>
+                      </Card>
+
+                      {/* Recent Reports Card */}
+                      <Card className="p-4 border-0 bg-muted/30">
+                        <div className="space-y-3">
+                          <div className="w-full h-3 bg-muted rounded-full"></div>
+                          <div className="w-2/3 h-3 bg-muted rounded-full"></div>
+                          <div className="w-4/5 h-3 bg-muted rounded-full"></div>
+                          <div className="flex items-center gap-2 mt-4">
+                            <div className="w-6 h-6 bg-medical-secondary rounded-full"></div>
+                            <div className="w-20 h-2 bg-muted rounded-full"></div>
+                          </div>
+                        </div>
+                      </Card>
+
+                      {/* Chart Placeholder */}
+                      <Card className="p-4 border-0 bg-muted/30 md:col-span-2">
+                        <div className="space-y-3">
+                          <div className="w-1/3 h-3 bg-muted rounded-full"></div>
+                          <div className="h-20 bg-muted/50 rounded-lg flex items-end justify-around p-2">
+                            <div className="w-4 h-8 bg-medical-primary rounded-t"></div>
+                            <div className="w-4 h-12 bg-medical-secondary rounded-t"></div>
+                            <div className="w-4 h-6 bg-medical-primary rounded-t"></div>
+                            <div className="w-4 h-10 bg-medical-secondary rounded-t"></div>
+                            <div className="w-4 h-14 bg-medical-primary rounded-t"></div>
+                          </div>
+                        </div>
+                      </Card>
+                    </div>
+
+                    {/* AI Assistant Chat Bubble */}
+                    <div className="absolute -bottom-4 right-8 bg-medical-primary text-white p-4 rounded-2xl rounded-br-sm shadow-lg max-w-xs animate-float">
+                      <div className="flex items-start gap-2">
+                        <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+                          <Brain className="h-3 w-3" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium mb-1">AI Health Assistant</p>
+                          <p className="text-xs opacity-90">
+                            Your latest blood work shows improvement! Click to view detailed analysis.
+                          </p>
+                        </div>
+                      </div>
+                      <div className="absolute -bottom-1 right-4 w-4 h-4 bg-medical-primary transform rotate-45"></div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* How It Works Section */}
         <HowItWorks />
