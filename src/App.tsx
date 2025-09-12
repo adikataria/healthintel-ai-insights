@@ -1,31 +1,22 @@
 
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthProvider } from "@/contexts/AuthContext";
-
-// Import pages
-import Landing from "@/pages/Landing";
-import Auth from "@/pages/Auth";
-import Home from "@/pages/Home";
-import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-
-const queryClient = new QueryClient();
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/dashboard" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
+    <div className="min-h-screen bg-white">
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl font-bold text-center mb-8">DocLumen</h1>
+        <p className="text-xl text-center mb-8">AI-Powered Health Analytics Platform</p>
+        <div className="text-center">
+          <a 
+            href="/auth" 
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Get Started
+          </a>
+        </div>
+      </div>
+    </div>
   );
 }
 
