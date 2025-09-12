@@ -36,6 +36,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
+        
+        // Auto redirect to dashboard after login
+        if (event === 'SIGNED_IN' && session?.user) {
+          console.log('User signed in, redirecting to dashboard...');
+          setTimeout(() => {
+            window.location.href = '/dashboard';
+          }, 100);
+        }
       }
     );
 

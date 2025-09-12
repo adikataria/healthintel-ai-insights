@@ -43,8 +43,8 @@ export const AuthForm = () => {
     } else {
       console.log('Sign in successful, redirecting to dashboard...');
       toast.success('Welcome back!');
-      // Use React Router navigation instead of window.location.href
-      navigate('/dashboard');
+      // Force redirect to dashboard
+      window.location.href = '/dashboard';
     }
 
     setIsLoading(false);
