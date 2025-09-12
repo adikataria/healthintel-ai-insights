@@ -86,18 +86,20 @@ const AppContent = () => {
   );
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
-          <AppContent />
+          <TooltipProvider>
+            <AppContent />
+            <Toaster />
+            <Sonner />
+          </TooltipProvider>
         </AuthProvider>
       </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+    </QueryClientProvider>
+  );
+}
 
 export default App;
