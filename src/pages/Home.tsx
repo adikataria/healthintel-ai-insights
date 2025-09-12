@@ -6,12 +6,7 @@ import { EnhancedHealthInsightsDashboard } from "@/components/dashboard/Enhanced
  * Features modern UI, customizable widgets, gamification, and personalized experience.
  */
 const Dashboard = () => {
-  console.log('Dashboard component rendering...');
-  return (
-    <div className="min-h-screen bg-background">
-      <EnhancedHealthInsightsDashboard />
-    </div>
-  );
+  return <EnhancedHealthInsightsDashboard />;
 };
 
 export default Dashboard;

@@ -34,17 +34,13 @@ export const AuthForm = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    console.log('Attempting sign in...');
     const { error } = await signIn(signInData.email, signInData.password);
 
     if (error) {
-      console.error('Sign in error:', error);
       toast.error(error.message);
     } else {
-      console.log('Sign in successful, redirecting to dashboard...');
       toast.success('Welcome back!');
-      // Force redirect to dashboard
-      window.location.href = '/dashboard';
+      navigate('/dashboard');
     }
 
     setIsLoading(false);
