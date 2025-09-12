@@ -10,7 +10,6 @@ import TestimonialsCarousel from '@/components/landing/TestimonialsCarousel';
 import TabbedFeatures from '@/components/landing/TabbedFeatures';
 import SEO from '@/components/SEO';
 import MobileHeroSection from '@/components/mobile/MobileHeroSection';
-import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const Landing = () => {
@@ -18,8 +17,6 @@ const Landing = () => {
   
   return <>
       <SEO title="AI-Powered Health Analytics & Medical Report Analysis Platform" description="Transform your health management with DocLumen's AI technology. Get instant lab report analysis, personalized health insights, 24/7 AI doctor assistance. Join 25,000+ users. Free trial available." keywords="AI health analytics, lab report analysis, medical report analyzer, health insights, AI doctor assistant, personalized healthcare, health management platform, medical AI, health data analysis, lab results interpretation" url="https://doclumen.com" />
-      
-      <PWAInstallPrompt />
       
       <div className="min-h-screen">
         {/* Mobile-First Hero Section */}
