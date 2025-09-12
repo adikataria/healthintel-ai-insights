@@ -92,11 +92,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AuthProvider>
-          <TooltipProvider>
-            <AppContent />
-            <Toaster />
-            <Sonner />
-          </TooltipProvider>
+          <AppContent />
+          <Toaster />
+          <Sonner />
         </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>
