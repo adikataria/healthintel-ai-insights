@@ -10,13 +10,13 @@
   "categories": ["health", "medical", "productivity"],
   "icons": [
     {
-      "src": "/lovable-uploads/d86a5932-1dca-418d-8051-95ffe43239f2.png",
+      "src": "/lovable-uploads/pwa-logo.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/lovable-uploads/d86a5932-1dca-418d-8051-95ffe43239f2.png",
+      "src": "/lovable-uploads/pwa-logo.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -38,7 +38,7 @@
       "url": "/upload",
       "icons": [
         {
-          "src": "/lovable-uploads/d86a5932-1dca-418d-8051-95ffe43239f2.png",
+          "src": "/lovable-uploads/pwa-logo.png",
           "sizes": "96x96"
         }
       ]
@@ -50,7 +50,7 @@
       "url": "/chat",
       "icons": [
         {
-          "src": "/lovable-uploads/d86a5932-1dca-418d-8051-95ffe43239f2.png",
+          "src": "/lovable-uploads/pwa-logo.png",
           "sizes": "96x96"
         }
       ]
