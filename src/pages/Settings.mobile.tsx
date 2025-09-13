@@ -49,6 +49,7 @@ import { cn } from "@/lib/utils";
 const SettingsMobile = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  
   const [profile, setProfile] = useState({
     firstName: "",
     lastName: "",

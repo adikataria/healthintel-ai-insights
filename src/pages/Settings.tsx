@@ -20,9 +20,7 @@ const Settings = () => {
   const { user } = useAuth();
   const isMobile = useIsMobile();
 
-  if (isMobile) {
-    return <SettingsMobile />;
-  }
+  // Initialize state variables first
   const [profile, setProfile] = useState({
     firstName: "",
     lastName: "",
@@ -55,6 +53,11 @@ const Settings = () => {
     language: "english",
     timezone: "ist"
   });
+
+  // Return mobile version after state initialization
+  if (isMobile) {
+    return <SettingsMobile />;
+  }
 
   const handleProfileSave = () => {
     // TODO: Implement profile update logic
