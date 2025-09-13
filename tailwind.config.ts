@@ -26,24 +26,24 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					DEFAULT: '#00796B',
+					foreground: '#FFFFFF'
 				},
 				secondary: {
-					DEFAULT: 'hsl(var(--secondary))',
-					foreground: 'hsl(var(--secondary-foreground))'
+					DEFAULT: '#FFFFFF',
+					foreground: '#333333'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
 					foreground: 'hsl(var(--destructive-foreground))'
 				},
 				muted: {
-					DEFAULT: 'hsl(var(--muted))',
-					foreground: 'hsl(var(--muted-foreground))'
+					DEFAULT: '#F5F5F5',
+					foreground: '#6B7280'
 				},
 				accent: {
-					DEFAULT: 'hsl(var(--accent))',
-					foreground: 'hsl(var(--accent-foreground))'
+					DEFAULT: '#333333',
+					foreground: '#FFFFFF'
 				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
@@ -63,33 +63,12 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Modern Healthcare App Colors
+				// HealthIntel AI Brand Colors
 				medical: {
-					primary: 'hsl(var(--medical-primary))',
-					secondary: 'hsl(var(--medical-secondary))', 
-					light: 'hsl(var(--medical-light))',
-					dark: 'hsl(var(--medical-dark))'
-				},
-				// Medication Management Card Colors
-				coral: {
-					DEFAULT: 'hsl(var(--coral))',
-					foreground: 'hsl(var(--coral-foreground))',
-					light: 'hsl(var(--coral-light))'
-				},
-				purple: {
-					DEFAULT: 'hsl(var(--purple))',
-					foreground: 'hsl(var(--purple-foreground))',
-					light: 'hsl(var(--purple-light))'
-				},
-				indigo: {
-					DEFAULT: 'hsl(var(--indigo))',
-					foreground: 'hsl(var(--indigo-foreground))',
-					light: 'hsl(var(--indigo-light))'
-				},
-				orange: {
-					DEFAULT: 'hsl(var(--orange))',
-					foreground: 'hsl(var(--orange-foreground))',
-					light: 'hsl(var(--orange-light))'
+					primary: '#00796B',
+					secondary: '#4DB6AC', 
+					light: '#B2DFDB',
+					dark: '#004D40'
 				}
 			},
 			fontFamily: {
