@@ -26,24 +26,24 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: '#00796B',
-					foreground: '#FFFFFF'
+					DEFAULT: 'hsl(var(--primary))',
+					foreground: 'hsl(var(--primary-foreground))'
 				},
 				secondary: {
-					DEFAULT: '#FFFFFF',
-					foreground: '#333333'
+					DEFAULT: 'hsl(var(--secondary))',
+					foreground: 'hsl(var(--secondary-foreground))'
 				},
 				destructive: {
 					DEFAULT: 'hsl(var(--destructive))',
 					foreground: 'hsl(var(--destructive-foreground))'
 				},
 				muted: {
-					DEFAULT: '#F5F5F5',
-					foreground: '#6B7280'
+					DEFAULT: 'hsl(var(--muted))',
+					foreground: 'hsl(var(--muted-foreground))'
 				},
 				accent: {
-					DEFAULT: '#333333',
-					foreground: '#FFFFFF'
+					DEFAULT: 'hsl(var(--accent))',
+					foreground: 'hsl(var(--accent-foreground))'
 				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
@@ -63,12 +63,33 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// HealthIntel AI Brand Colors
+				// Modern Healthcare App Colors
 				medical: {
-					primary: '#00796B',
-					secondary: '#4DB6AC', 
-					light: '#B2DFDB',
-					dark: '#004D40'
+					primary: 'hsl(var(--medical-primary))',
+					secondary: 'hsl(var(--medical-secondary))', 
+					light: 'hsl(var(--medical-light))',
+					dark: 'hsl(var(--medical-dark))'
+				},
+				// Medication Management Card Colors
+				coral: {
+					DEFAULT: 'hsl(var(--coral))',
+					foreground: 'hsl(var(--coral-foreground))',
+					light: 'hsl(var(--coral-light))'
+				},
+				purple: {
+					DEFAULT: 'hsl(var(--purple))',
+					foreground: 'hsl(var(--purple-foreground))',
+					light: 'hsl(var(--purple-light))'
+				},
+				indigo: {
+					DEFAULT: 'hsl(var(--indigo))',
+					foreground: 'hsl(var(--indigo-foreground))',
+					light: 'hsl(var(--indigo-light))'
+				},
+				orange: {
+					DEFAULT: 'hsl(var(--orange))',
+					foreground: 'hsl(var(--orange-foreground))',
+					light: 'hsl(var(--orange-light))'
 				}
 			},
 			fontFamily: {
