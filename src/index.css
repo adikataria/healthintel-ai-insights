@@ -224,11 +224,30 @@
   }
 
   .mobile-chat-bubble {
-    @apply max-w-[85%] p-4 rounded-2xl shadow-sm backdrop-blur-sm transition-all duration-200;
+    @apply max-w-[85%] sm:max-w-[75%] relative;
   }
 
   .mobile-input-container {
-    @apply flex items-end gap-3 p-4 bg-card/95 backdrop-blur-lg border-t border-border/20;
+    @apply flex items-end space-x-2 p-3 sm:p-4 bg-background border-t border-border/20;
+  }
+
+  /* Responsive breakpoints for xs screens */
+  .xs\:inline {
+    display: inline;
+  }
+
+  /* Scrollbar hide utility */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Animation for slide down */
+  .animate-slideDown {
+    animation: slideDown 0.2s ease-out;
   }
 }
 
@@ -249,5 +268,16 @@
   }
   to {
     opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
