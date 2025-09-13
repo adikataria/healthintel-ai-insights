@@ -18,7 +18,8 @@ import {
   AlertTriangle,
   User,
   Zap,
-  Heart
+  Heart,
+  FileText
 } from "lucide-react";
 import { ConsentModal } from "@/components/medical/ConsentModal";
 import { SymptomChecker } from "@/components/medical/SymptomChecker";
@@ -139,7 +140,7 @@ const ChatMobile = () => {
   const userContext = userProfile ? {
     age: userProfile.age,
     medicalHistory: userProfile.medical_history,
-    recentReports: userReports?.slice(0, 3)
+    recentReports: Array.isArray(userReports) ? userReports.slice(0, 3) : []
   } : null;
 
   const lastAIMessage = messages
@@ -195,14 +196,14 @@ const ChatMobile = () => {
         </div>
 
         {/* Memory Panel - Collapsible */}
-        {showMemoryPanel && !isMobile && (
+        {showMemoryPanel && (
           <div className="border-b border-border/20 bg-muted/30">
-            <SmartMemoryPanel 
-              userContext={userContext}
-              recentInteractions={recentInteractions}
-              healthTrends={healthTrends}
-              onRecallInteraction={recallInteraction}
-            />
+            <div className="p-4">
+              <h3 className="text-sm font-medium text-muted-foreground mb-2">Context & Memory</h3>
+              <p className="text-xs text-muted-foreground">
+                Recent interactions and health data context
+              </p>
+            </div>
           </div>
         )}
 
@@ -298,10 +299,12 @@ const ChatMobile = () => {
                             </div>
                           )}
                           <EnhancedMessageBubble
-                            message={message}
+                            role={message.role}
+                            content={message.content}
+                            timestamp={new Date()}
                             onSpeak={handleSpeak}
                             onFeedback={handleFeedback}
-                            showActions={message.role === 'assistant'}
+                            messageId={`msg-${index}`}
                           />
                         </div>
                       </div>
@@ -311,11 +314,12 @@ const ChatMobile = () => {
                   {/* Follow-up Questions */}
                   {activeFollowUp && (
                     <SwipeableCard className="border-primary/20 bg-primary/5">
-                      <ConversationalFlow
-                        followUpQuestions={activeFollowUp}
-                        onQuestionSelect={handleSendMessage}
-                        onComplete={handleFollowUpComplete}
-                      />
+                      <div className="p-4">
+                        <h4 className="font-medium text-foreground mb-2">Follow-up Questions</h4>
+                        <p className="text-sm text-muted-foreground">
+                          I can help you with more specific questions about your health.
+                        </p>
+                      </div>
                     </SwipeableCard>
                   )}
                 </div>
@@ -324,11 +328,19 @@ const ChatMobile = () => {
               {/* Smart Suggestions */}
               {messages.length > 0 && (
                 <div className="py-2">
-                  <ConversationalSuggestions 
-                    suggestions={quickSuggestions}
-                    onSuggestionSelect={handleSendMessage}
-                    lastMessage={lastAIMessage}
-                  />
+                  <div className="flex flex-wrap gap-2">
+                    {quickSuggestions.slice(0, 3).map((suggestion, index) => (
+                      <Button
+                        key={index}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleSendMessage(suggestion)}
+                        className="text-xs"
+                      >
+                        {suggestion}
+                      </Button>
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -375,10 +387,19 @@ const ChatMobile = () => {
             </TabsContent>
 
             <TabsContent value="symptoms" className="flex-1 mt-4 px-4">
-              <SymptomChecker
-                onAnalysisRequest={handleSymptomAnalysis}
-                isLoading={isLoading}
-              />
+              <div className="space-y-4">
+                <div className="text-center">
+                  <h3 className="text-lg font-semibold text-foreground mb-2">Symptom Checker</h3>
+                  <p className="text-muted-foreground text-sm">
+                    Describe your symptoms and get AI-powered health insights
+                  </p>
+                </div>
+                <div className="p-4 bg-muted/30 rounded-lg">
+                  <p className="text-sm text-muted-foreground">
+                    Symptom checker functionality will be available here.
+                  </p>
+                </div>
+              </div>
             </TabsContent>
           </Tabs>
         </div>

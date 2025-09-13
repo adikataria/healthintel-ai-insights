@@ -10,12 +10,15 @@ import Index from "@/pages/Index";
 import Home from "@/pages/Home";
 import Landing from "@/pages/Landing";
 import Upload from "@/pages/Upload";
+import UploadMobile from "@/pages/Upload.mobile";
 import Insights from "@/pages/Insights";
 import Goals from "@/pages/Goals";
 import HealthHistory from "@/pages/HealthHistory";
 import Compliance from "@/pages/Compliance";
 import Chat from "@/pages/Chat";
+import ChatMobile from "@/pages/Chat.mobile";
 import Trends from "@/pages/Trends";
+import TrendsMobile from "@/pages/Trends.mobile";
 import Settings from "@/pages/Settings";
 import FamilyManagement from "@/pages/FamilyManagement";
 import Auth from "@/pages/Auth";
@@ -28,11 +31,13 @@ import AILabAnalyzer from "@/pages/AILabAnalyzer";
 import AIDoctor from "@/pages/AIDoctor";
 import Pricing from "@/pages/Pricing";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const queryClient = new QueryClient();
 
 const AppContent = () => {
   const location = useLocation();
+  const isMobile = useIsMobile();
   
   // Routes where footer should be hidden (protected/dashboard routes)
   const hideFooterRoutes = [
@@ -51,6 +56,11 @@ const AppContent = () => {
     location.pathname.startsWith(route)
   );
 
+  // Mobile-optimized component selection
+  const UploadComponent = isMobile ? UploadMobile : Upload;
+  const ChatComponent = isMobile ? ChatMobile : Chat;
+  const TrendsComponent = isMobile ? TrendsMobile : Trends;
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -63,13 +73,13 @@ const AppContent = () => {
           <Route path="/pricing" element={<Pricing />} />
           {/* Main dashboard route for signed-in users */}
           <Route path="/dashboard" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-          <Route path="/upload" element={<ProtectedRoute><Upload /></ProtectedRoute>} />
+          <Route path="/upload" element={<ProtectedRoute><UploadComponent /></ProtectedRoute>} />
           <Route path="/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />
           <Route path="/goals" element={<ProtectedRoute><Goals /></ProtectedRoute>} />
           <Route path="/health-history" element={<ProtectedRoute><HealthHistory /></ProtectedRoute>} />
           <Route path="/compliance" element={<Compliance />} />
-          <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
-          <Route path="/trends" element={<ProtectedRoute><Trends /></ProtectedRoute>} />
+          <Route path="/chat" element={<ProtectedRoute><ChatComponent /></ProtectedRoute>} />
+          <Route path="/trends" element={<ProtectedRoute><TrendsComponent /></ProtectedRoute>} />
           <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
           <Route path="/family" element={<ProtectedRoute><FamilyManagement /></ProtectedRoute>} />
           <Route path="/privacy" element={<Privacy />} />

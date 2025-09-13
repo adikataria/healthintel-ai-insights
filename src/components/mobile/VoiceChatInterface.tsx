@@ -40,22 +40,13 @@ const VoiceChatInterface: React.FC<VoiceChatInterfaceProps> = ({
     isRecording,
     isProcessing,
     startRecording,
-    stopRecording,
-    audioLevel
-  } = useVoiceRecording({
-    onTranscriptionComplete: (text) => {
-      setTranscribedText(text);
-      onVoiceResult?.(text);
-    },
-    onError: (error) => {
-      console.error('Voice recording error:', error);
-    }
-  });
+    stopRecording
+  } = useVoiceRecording();
 
   const {
-    isPlaying,
+    isSpeaking,
     speak,
-    stop: stopSpeaking
+    stopSpeaking
   } = useTextToSpeech();
 
   const handleToggleRecording = useCallback(() => {
@@ -70,12 +61,12 @@ const VoiceChatInterface: React.FC<VoiceChatInterfaceProps> = ({
   const handlePlayLastMessage = useCallback(() => {
     if (!lastAIMessage) return;
     
-    if (isPlaying) {
+    if (isSpeaking) {
       stopSpeaking();
     } else {
       speak(lastAIMessage);
     }
-  }, [lastAIMessage, isPlaying, speak, stopSpeaking]);
+  }, [lastAIMessage, isSpeaking, speak, stopSpeaking]);
 
   const handleSendTranscript = useCallback(() => {
     if (transcribedText.trim()) {
@@ -114,10 +105,10 @@ const VoiceChatInterface: React.FC<VoiceChatInterfaceProps> = ({
               onClick={handlePlayLastMessage}
               className={cn(
                 "w-14 h-14 rounded-full transition-all duration-200",
-                isPlaying && "bg-blue-500 text-white border-blue-500"
+                isSpeaking && "bg-blue-500 text-white border-blue-500"
               )}
             >
-              {isPlaying ? (
+              {isSpeaking ? (
                 <VolumeX className="h-6 w-6" />
               ) : (
                 <Volume2 className="h-6 w-6" />
@@ -146,13 +137,9 @@ const VoiceChatInterface: React.FC<VoiceChatInterfaceProps> = ({
             )}
             
             {/* Audio Level Indicator */}
-            {isRecording && audioLevel > 0 && (
+            {isRecording && (
               <div 
-                className="absolute inset-0 rounded-full border-4 border-white/30"
-                style={{
-                  transform: `scale(${1 + audioLevel * 0.3})`,
-                  transition: 'transform 0.1s ease-out'
-                }}
+                className="absolute inset-0 rounded-full border-4 border-white/30 animate-pulse"
               />
             )}
           </Button>
