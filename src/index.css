@@ -109,8 +109,11 @@
     @apply bg-card rounded-lg border border-border/20 shadow-lg hover:shadow-xl transition-all duration-300;
   }
 
+  /* Mobile-first enhanced touch targets */
   .mobile-touch-target {
     @apply min-h-[44px] min-w-[44px] p-3;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
 
   .mobile-card {
@@ -139,5 +142,112 @@
 
   .pull-to-refresh {
     @apply transform transition-transform duration-300 ease-out;
+  }
+
+  /* Enhanced mobile interactions */
+  .mobile-swipe-card {
+    @apply transition-transform duration-200 ease-out touch-pan-y;
+  }
+
+  .mobile-pull-indicator {
+    @apply absolute top-0 left-1/2 transform -translate-x-1/2 transition-all duration-300;
+  }
+
+  /* Safe area support for iOS devices */
+  .safe-area-inset-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-inset-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-area-inset-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Mobile optimized scrolling */
+  .mobile-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+  }
+
+  /* Enhanced haptic feedback */
+  .haptic-strong {
+    @apply transition-transform duration-75 active:scale-95;
+  }
+
+  /* Mobile-first animations */
+  .mobile-slide-up {
+    animation: mobile-slide-up 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .mobile-fade-in {
+    animation: mobile-fade-in 0.3s ease-out;
+  }
+
+  /* Gesture-based interactions */
+  .swipe-left-enter {
+    transform: translateX(100%);
+  }
+
+  .swipe-left-enter-active {
+    transform: translateX(0);
+    transition: transform 300ms ease-out;
+  }
+
+  .swipe-right-enter {
+    transform: translateX(-100%);
+  }
+
+  .swipe-right-enter-active {
+    transform: translateX(0);
+    transition: transform 300ms ease-out;
+  }
+
+  /* Mobile camera styles */
+  .mobile-camera-overlay {
+    @apply absolute inset-0 pointer-events-none;
+  }
+
+  .mobile-capture-button {
+    @apply w-20 h-20 rounded-full bg-white hover:bg-white/90 text-black border-4 border-white/50 transition-all duration-200;
+  }
+
+  /* Enhanced card styles for mobile */
+  .mobile-trend-card {
+    @apply bg-card/95 backdrop-blur-sm border border-border/20 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 mobile-touch-target;
+  }
+
+  .mobile-chat-bubble {
+    @apply max-w-[85%] p-4 rounded-2xl shadow-sm backdrop-blur-sm transition-all duration-200;
+  }
+
+  .mobile-input-container {
+    @apply flex items-end gap-3 p-4 bg-card/95 backdrop-blur-lg border-t border-border/20;
+  }
+}
+
+@keyframes mobile-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mobile-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
