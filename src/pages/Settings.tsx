@@ -13,9 +13,16 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { User, Bell, Shield, CreditCard, Palette, Globe, Users, Download, Trash2, Settings as SettingsIcon } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import SettingsMobile from "./Settings.mobile";
 
 const Settings = () => {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    return <SettingsMobile />;
+  }
   const [profile, setProfile] = useState({
     firstName: "",
     lastName: "",
