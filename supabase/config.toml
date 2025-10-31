@@ -1,1 +1,22 @@
 project_id = "gepslncpokzrbeigrygg"
+
+[functions.'analyze-medical-report']
+verify_jwt = false
+
+[functions.'create-razorpay-order']
+verify_jwt = false
+
+[functions.'ai-doctor-chat']
+verify_jwt = false
+
+[functions.'ai-doctor-chat-stream']
+verify_jwt = false
+
+[functions.'text-to-speech']
+verify_jwt = false
+
+[functions.'voice-to-text']
+verify_jwt = false
+
+[functions.'razorpay-webhook']
+verify_jwt = false

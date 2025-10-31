@@ -14,15 +14,15 @@ export const useSubscription = () => {
       if (!user) return null;
       
       const { data, error } = await supabase
-        .from('user_subscriptions')
+        .from('subscriptions')
         .select(`
           *,
           subscription_plans (*)
         `)
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
       
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         throw error;
       }
       
@@ -46,16 +46,16 @@ export const useSubscription = () => {
   });
 
   const createSubscription = useMutation({
-    mutationFn: async ({ planId, billingCycle }: { planId: string; billingCycle: 'monthly' | 'annual' }) => {
+    mutationFn: async ({ planId, billingCycle }: { planId: string; billingCycle: 'monthly' | 'yearly' }) => {
       if (!user) throw new Error('User not authenticated');
       
       const { data, error } = await supabase
-        .from('user_subscriptions')
+        .from('subscriptions')
         .insert({
           user_id: user.id,
           plan_id: planId,
           billing_cycle: billingCycle,
-          status: 'pending'
+          status: 'trial'
         })
         .select()
         .single();
@@ -77,7 +77,7 @@ export const useSubscription = () => {
       if (!user || !currentSubscription) throw new Error('No active subscription');
       
       const { error } = await supabase
-        .from('user_subscriptions')
+        .from('subscriptions')
         .update({ 
           status: 'cancelled',
           cancelled_at: new Date().toISOString()

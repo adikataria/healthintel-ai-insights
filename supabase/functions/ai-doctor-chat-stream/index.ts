@@ -10,7 +10,7 @@ const corsHeaders = {
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-const geminiApiKey = Deno.env.get('GEMINI_API_KEY')!;
+const lovableApiKey = Deno.env.get('LOVABLE_API_KEY')!;
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -108,54 +108,48 @@ Provide a FAST, CONCISE, helpful response while adhering to these guidelines.`;
 
     const doctorPrompt = basePrompt + disclaimerText;
 
-    // Optimized Gemini AI call with faster parameters
-    const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`,
+    // Optimized Lovable AI call with faster parameters
+    const aiResponseData = await fetch(
+      'https://ai.gateway.lovable.dev/v1/chat/completions',
       {
         method: 'POST',
         headers: {
+          'Authorization': `Bearer ${lovableApiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: doctorPrompt
-            }]
-          }],
-          generationConfig: {
-            temperature: 0.3, // Lower for faster, more focused responses
-            topK: 20, // Reduced for speed
-            topP: 0.8, // Reduced for speed
-            maxOutputTokens: 800, // Reduced for faster responses
-          },
-          safetySettings: [
+          model: 'google/gemini-2.5-flash',
+          messages: [
             {
-              category: "HARM_CATEGORY_HARASSMENT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-              category: "HARM_CATEGORY_HATE_SPEECH",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-              category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
-            },
-            {
-              category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-              threshold: "BLOCK_MEDIUM_AND_ABOVE"
+              role: 'user',
+              content: doctorPrompt
             }
-          ]
+          ],
+          temperature: 0.3,
+          max_tokens: 800
         }),
       }
     );
 
-    if (!geminiResponse.ok) {
-      throw new Error(`Gemini API error: ${geminiResponse.statusText}`);
+    if (!aiResponseData.ok) {
+      const errorText = await aiResponseData.text();
+      if (aiResponseData.status === 429) {
+        return new Response(
+          JSON.stringify({ error: 'Rate limits exceeded, please try again later.' }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      if (aiResponseData.status === 402) {
+        return new Response(
+          JSON.stringify({ error: 'Payment required, please add funds to your Lovable AI workspace.' }),
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      throw new Error(`Lovable AI error: ${aiResponseData.statusText} - ${errorText}`);
     }
 
-    const geminiData = await geminiResponse.json();
-    const aiResponse = geminiData.candidates[0].content.parts[0].text;
+    const aiData = await aiResponseData.json();
+    const aiResponse = aiData.choices[0].message.content;
 
     // Enhanced conversation logging with metadata (async to not block response)
     if (conversationId) {

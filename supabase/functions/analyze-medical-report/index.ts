@@ -9,7 +9,7 @@ const corsHeaders = {
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
 const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-const geminiApiKey = Deno.env.get('GEMINI_API_KEY')!;
+const lovableApiKey = Deno.env.get('LOVABLE_API_KEY')!;
 
 // Version 2: Advanced multi-format document processing for DocLumen AI
 async function processUniversalDocument(
@@ -595,88 +595,76 @@ serve(async (req) => {
       geminiApiKeyExists: !!geminiApiKey
     });
 
-    // Call Gemini AI with enhanced error handling
-    console.log('Making Gemini API request...');
-    const geminiResponse = await retryWithBackoff(async () => {
-      console.log('Attempting Gemini API call...');
+    // Call Lovable AI with enhanced error handling
+    console.log('Making Lovable AI request...');
+    const aiResponse = await retryWithBackoff(async () => {
+      console.log('Attempting Lovable AI call...');
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`,
+        'https://ai.gateway.lovable.dev/v1/chat/completions',
         {
           method: 'POST',
           headers: {
+            'Authorization': `Bearer ${lovableApiKey}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            contents: [{
-              parts: [{
-                text: analysisPrompt
-              }]
-            }],
-            generationConfig: {
-              temperature: 0.2, // Balanced for accuracy with natural language
-              topK: 10,
-              topP: 0.8,
-              maxOutputTokens: 12000, // Increased for comprehensive DocLumen V2 responses
-              candidateCount: 1
-            },
-            safetySettings: [
+            model: 'google/gemini-2.5-flash',
+            messages: [
               {
-                category: "HARM_CATEGORY_HARASSMENT",
-                threshold: "BLOCK_MEDIUM_AND_ABOVE"
-              },
-              {
-                category: "HARM_CATEGORY_HATE_SPEECH", 
-                threshold: "BLOCK_MEDIUM_AND_ABOVE"
-              },
-              {
-                category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                threshold: "BLOCK_MEDIUM_AND_ABOVE"
-              },
-              {
-                category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-                threshold: "BLOCK_MEDIUM_AND_ABOVE"
+                role: 'user',
+                content: analysisPrompt
               }
-            ]
+            ],
+            temperature: 0.2,
+            max_tokens: 12000
           }),
         }
       );
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Gemini API error details:', {
+        console.error('Lovable AI error details:', {
           status: response.status,
           statusText: response.statusText,
           error: errorText,
           url: response.url
         });
-        throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
+        
+        if (response.status === 429) {
+          throw new Error('Rate limits exceeded, please try again later.');
+        }
+        if (response.status === 402) {
+          throw new Error('Payment required, please add funds to your Lovable AI workspace.');
+        }
+        
+        throw new Error(`Lovable AI error: ${response.status} - ${errorText}`);
       }
 
-      console.log('Gemini API response received successfully:', {
+      console.log('Lovable AI response received successfully:', {
         status: response.status,
         contentType: response.headers.get('content-type')
       });
       return response;
     }, 3, 2000);
 
-    console.log('Parsing Gemini response...');
-    const geminiData = await geminiResponse.json();
-    console.log('DocLumen V2 Gemini analysis completed successfully:', {
-      hasCandidates: !!geminiData.candidates,
-      candidatesLength: geminiData.candidates?.length || 0
+    console.log('Parsing Lovable AI response...');
+    const aiData = await aiResponse.json();
+    console.log('DocLumen V2 Lovable AI analysis completed successfully:', {
+      hasChoices: !!aiData.choices,
+      choicesLength: aiData.choices?.length || 0
     });
 
-    if (!geminiData.candidates || !geminiData.candidates[0] || !geminiData.candidates[0].content) {
-      console.error('Invalid Gemini response structure:', {
-        hasCandidates: !!geminiData.candidates,
-        candidatesLength: geminiData.candidates?.length || 0,
-        firstCandidate: geminiData.candidates?.[0] ? 'exists' : 'missing',
-        content: geminiData.candidates?.[0]?.content ? 'exists' : 'missing'
+    if (!aiData.choices || !aiData.choices[0] || !aiData.choices[0].message) {
+      console.error('Invalid Lovable AI response structure:', {
+        hasChoices: !!aiData.choices,
+        choicesLength: aiData.choices?.length || 0,
+        firstChoice: aiData.choices?.[0] ? 'exists' : 'missing',
+        message: aiData.choices?.[0]?.message ? 'exists' : 'missing'
       });
-      throw new Error('Invalid response structure from Gemini AI');
+      throw new Error('Invalid response structure from Lovable AI');
     }
 
-    const analysisText = geminiData.candidates[0].content.parts[0].text;
+    const analysisText = aiData.choices[0].message.content;
     console.log('DocLumen V2 analysis received, length:', analysisText.length);
 
     // DocLumen V2: Enhanced JSON parsing with intelligent validation
@@ -793,7 +781,7 @@ serve(async (req) => {
              fileType: reportType,
              fileName: fileName,
              contentLength: processedContent.length,
-             geminiModel: 'gemini-1.5-flash',
+             aiModel: 'google/gemini-2.5-flash',
              processingVersion: 'DocLumen-V2.0',
              zeroMissingData: true,
              completeExtraction: true,
@@ -852,11 +840,11 @@ serve(async (req) => {
          method: req.method,
          url: req.url,
          hasReportId: !!requestBody?.reportId,
-         hasContent: !!requestBody?.reportContent,
-         contentLength: requestBody?.reportContent?.length || 0,
-         hasConsent: !!requestBody?.userConsent
+          hasContent: !!requestBody?.reportContent,
+          contentLength: requestBody?.reportContent?.length || 0,
+          hasConsent: !!requestBody?.userConsent
        },
-      geminiApiKeyExists: !!geminiApiKey
+      lovableApiKeyExists: !!lovableApiKey
     });
     
     return new Response(
