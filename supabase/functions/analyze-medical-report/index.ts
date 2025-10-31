@@ -590,9 +590,9 @@ serve(async (req) => {
       analysisType || 'comprehensive'
     );
     
-    console.log('DocLumen V2: Sending analysis to Gemini AI...', {
+    console.log('DocLumen V2: Sending analysis to Lovable AI...', {
       promptLength: analysisPrompt.length,
-      geminiApiKeyExists: !!geminiApiKey
+      lovableApiKeyExists: !!lovableApiKey
     });
 
     // Call Lovable AI with enhanced error handling
