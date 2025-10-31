@@ -553,9 +553,8 @@ COMPLETE ANALYSIS MANDATE: Extract ALL medical laboratory data, test results, an
           user_id: user.id,
           title: uploadedFiles[0].name,
           file_name: uploadedFiles[0].name,
-          file_type: uploadedFiles[0].type,
-          file_size: uploadedFiles[0].size,
-          upload_status: 'completed'
+          report_type: uploadedFiles[0].type,
+          analysis_status: 'pending'
         })
         .select()
         .single();
