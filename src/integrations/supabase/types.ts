@@ -249,6 +249,7 @@ export type Database = {
       medical_reports: {
         Row: {
           analysis: Json | null
+          analysis_status: string | null
           created_at: string | null
           file_name: string | null
           file_path: string | null
@@ -256,11 +257,13 @@ export type Database = {
           notes: string | null
           report_date: string | null
           report_type: string | null
+          title: string | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
           analysis?: Json | null
+          analysis_status?: string | null
           created_at?: string | null
           file_name?: string | null
           file_path?: string | null
@@ -268,11 +271,13 @@ export type Database = {
           notes?: string | null
           report_date?: string | null
           report_type?: string | null
+          title?: string | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
           analysis?: Json | null
+          analysis_status?: string | null
           created_at?: string | null
           file_name?: string | null
           file_path?: string | null
@@ -280,10 +285,58 @@ export type Database = {
           notes?: string | null
           report_date?: string | null
           report_type?: string | null
+          title?: string | null
           updated_at?: string | null
           user_id?: string
         }
         Relationships: []
+      }
+      report_exports: {
+        Row: {
+          created_at: string | null
+          download_count: number | null
+          export_type: string
+          file_name: string
+          file_path: string | null
+          id: string
+          report_id: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          download_count?: number | null
+          export_type: string
+          file_name: string
+          file_path?: string | null
+          id?: string
+          report_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          download_count?: number | null
+          export_type?: string
+          file_name?: string
+          file_path?: string | null
+          id?: string
+          report_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_exports_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "medical_reports"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subscription_plans: {
         Row: {
