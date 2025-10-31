@@ -31,7 +31,7 @@ export const useRazorpay = () => {
     amount: number;
     planName: string;
     userEmail: string;
-    billingCycle: 'monthly' | 'annual';
+    billingCycle: 'monthly' | 'yearly';
     onSuccess: (paymentId: string) => void;
     onFailure: (error: any) => void;
   }) => {

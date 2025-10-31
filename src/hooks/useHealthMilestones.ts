@@ -7,15 +7,14 @@ import { toast } from '@/components/ui/use-toast';
 export interface HealthMilestone {
   id: string;
   user_id: string;
-  goal_id?: string;
+  goal_id?: string | null;
   title: string;
-  description?: string;
-  milestone_type?: string;
-  value_achieved?: number;
-  percentage_improvement?: number;
-  is_shared: boolean;
-  celebration_shown: boolean;
-  achieved_at: string;
+  description?: string | null;
+  target_date?: string | null;
+  completed_date?: string | null;
+  is_completed: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export const useHealthMilestones = () => {
@@ -31,7 +30,7 @@ export const useHealthMilestones = () => {
         .from('health_milestones')
         .select('*')
         .eq('user_id', user.id)
-        .order('achieved_at', { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data as HealthMilestone[];
@@ -40,7 +39,7 @@ export const useHealthMilestones = () => {
   });
 
   const createMilestone = useMutation({
-    mutationFn: async (milestoneData: Omit<HealthMilestone, 'id' | 'user_id' | 'achieved_at'>) => {
+    mutationFn: async (milestoneData: Omit<HealthMilestone, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
       if (!user?.id) throw new Error('User not authenticated');
 
       const { data, error } = await supabase

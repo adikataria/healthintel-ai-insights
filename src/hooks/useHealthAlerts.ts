@@ -7,18 +7,14 @@ import { toast } from '@/components/ui/use-toast';
 export interface HealthAlert {
   id: string;
   user_id: string;
-  alert_type: 'critical' | 'warning' | 'reminder' | 'milestone';
+  alert_type: 'critical' | 'warning' | 'info' | 'reminder';
+  category: 'medication' | 'appointment' | 'test_result' | 'general';
   title: string;
   message: string;
-  metric_name?: string;
-  metric_value?: number;
-  severity: 'low' | 'medium' | 'high' | 'critical';
   is_read: boolean;
   is_dismissed: boolean;
-  action_taken: boolean;
-  metadata?: any;
-  expires_at?: string;
   created_at: string;
+  updated_at: string;
 }
 
 export const useHealthAlerts = () => {
@@ -80,6 +76,6 @@ export const useHealthAlerts = () => {
     markAsRead,
     dismissAlert,
     unreadCount: alerts.filter(alert => !alert.is_read).length,
-    criticalAlerts: alerts.filter(alert => alert.severity === 'critical'),
+    criticalAlerts: alerts.filter(alert => alert.alert_type === 'critical'),
   };
 };

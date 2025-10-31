@@ -7,16 +7,14 @@ import { toast } from '@/components/ui/use-toast';
 export interface ReportExport {
   id: string;
   user_id: string;
+  report_id?: string | null;
   export_type: string;
   file_name: string;
-  file_url?: string;
-  report_ids?: string[];
-  date_range_start?: string;
-  date_range_end?: string;
-  status: 'pending' | 'processing' | 'completed' | 'failed';
+  file_path?: string | null;
+  status: string;
   download_count: number;
-  expires_at?: string;
   created_at: string;
+  updated_at: string;
 }
 
 export const useReportExports = () => {
@@ -52,14 +50,14 @@ export const useCreateReportExport = () => {
   const queryClient = useQueryClient();
 
   const createExport = useMutation({
-    mutationFn: async (exportData: Omit<ReportExport, 'id' | 'user_id' | 'created_at' | 'status' | 'download_count'>) => {
+    mutationFn: async (exportData: Omit<ReportExport, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'status' | 'download_count'>) => {
       if (!user?.id) throw new Error('User not authenticated');
 
       const { data, error } = await supabase
         .from('report_exports')
         .insert({
           user_id: user.id,
-          status: 'pending',
+          status: 'completed',
           download_count: 0,
           ...exportData,
         })

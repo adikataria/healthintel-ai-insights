@@ -13,9 +13,9 @@ interface SubscriptionPlan {
   name: string;
   description: string;
   price_monthly: number;
-  price_annual: number;
+  price_yearly: number;
   features: string[];
-  max_report_uploads: number;
+  max_report_uploads?: number;
 }
 
 interface SubscriptionCardProps {
@@ -24,9 +24,9 @@ interface SubscriptionCardProps {
     name: string;
     description: string;
     price_monthly: number;
-    price_annual: number;
+    price_yearly: number;
     features: any;
-    max_report_uploads: number;
+    max_report_uploads?: number;
   };
   isAnnual: boolean;
   isCurrentPlan?: boolean;
@@ -65,7 +65,7 @@ export const SubscriptionCard = ({ plan, isAnnual, isCurrentPlan }: Subscription
   };
 
   const Icon = getIcon();
-  const price = isAnnual ? plan.price_annual : plan.price_monthly;
+  const price = isAnnual ? plan.price_yearly : plan.price_monthly;
   const features = Array.isArray(plan.features) ? plan.features : [];
 
   const handleSubscribe = async () => {
@@ -78,7 +78,7 @@ export const SubscriptionCard = ({ plan, isAnnual, isCurrentPlan }: Subscription
       // Create free subscription directly
       createSubscription.mutate({
         planId: plan.id,
-        billingCycle: isAnnual ? 'annual' : 'monthly'
+        billingCycle: isAnnual ? 'yearly' : 'monthly'
       });
       return;
     }
@@ -88,14 +88,14 @@ export const SubscriptionCard = ({ plan, isAnnual, isCurrentPlan }: Subscription
       amount: price,
       planName: plan.name,
       userEmail: user.email || '',
-      billingCycle: isAnnual ? 'annual' : 'monthly',
+      billingCycle: isAnnual ? 'yearly' : 'monthly',
       onSuccess: async (paymentId: string) => {
         try {
           console.log('Payment completed with ID:', paymentId);
           // Create subscription and payment record
           createSubscription.mutate({
             planId: plan.id,
-            billingCycle: isAnnual ? 'annual' : 'monthly'
+            billingCycle: isAnnual ? 'yearly' : 'monthly'
           });
           
           toast.success('Payment successful! Your subscription is now active.');

@@ -75,7 +75,7 @@ export const PlanManagement = () => {
               {currentSubscription.subscription_plans?.name || 'Unknown Plan'}
             </p>
             <p className="text-sm text-muted-foreground">
-              {currentSubscription.billing_cycle === 'annual' ? 'Annual' : 'Monthly'} billing
+              {currentSubscription.billing_cycle === 'yearly' ? 'Annual' : 'Monthly'} billing
             </p>
           </div>
           

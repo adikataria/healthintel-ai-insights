@@ -5,11 +5,18 @@ import { useAuth } from '@/contexts/AuthContext';
 
 interface MedicalReport {
   id: string;
-  title: string;
-  file_name: string;
+  title?: string | null;
+  file_name?: string | null;
+  file_path?: string | null;
+  report_type?: string | null;
+  report_date?: string | null;
   created_at: string;
-  analysis_status: string;
-  ai_insights: any;
+  analysis_status?: string | null;
+  analysis?: any;
+  ai_insights?: any;
+  notes?: string | null;
+  user_id: string;
+  updated_at: string;
 }
 
 export const useMedicalReports = () => {
