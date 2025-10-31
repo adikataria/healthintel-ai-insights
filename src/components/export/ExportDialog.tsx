@@ -40,13 +40,14 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
 
   const handleExport = async () => {
     try {
-      await createExport.mutateAsync({
-        export_type: exportType,
-        report_ids: selectedReports,
-        date_range_start: dateRange.start || undefined,
-        date_range_end: dateRange.end || undefined,
-        file_name: `health_report_${new Date().toISOString().split('T')[0]}`
-      });
+      // Create an export for the first selected report (or handle multiple separately)
+      if (selectedReports.length > 0) {
+        await createExport.mutateAsync({
+          export_type: exportType,
+          report_id: selectedReports[0], // Single report export
+          file_name: `health_report_${new Date().toISOString().split('T')[0]}.${exportType}`
+        });
+      }
       onClose();
     } catch (error) {
       console.error('Export failed:', error);

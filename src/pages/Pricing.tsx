@@ -108,7 +108,14 @@ const Pricing = () => {
           {plans?.map((plan) => (
             <SubscriptionCard
               key={plan.id}
-              plan={plan}
+              plan={{
+                id: plan.id,
+                name: plan.name,
+                description: plan.description,
+                price_monthly: plan.price_monthly,
+                price_yearly: plan.price_yearly,
+                features: plan.features,
+              }}
               isAnnual={isAnnual}
               isCurrentPlan={currentSubscription?.plan_id === plan.id}
             />

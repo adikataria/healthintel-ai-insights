@@ -68,8 +68,8 @@ const HealthHistory = () => {
       type: 'milestone' as const,
       title: milestone.title,
       description: milestone.description || 'Health milestone achieved',
-      timestamp: milestone.achieved_at,
-      status: 'completed',
+      timestamp: milestone.completed_date || milestone.created_at,
+      status: milestone.is_completed ? 'completed' : 'in_progress',
       icon: TrendingUp,
       data: milestone
     })),

@@ -21,13 +21,13 @@ export const NotificationCenter = () => {
     }
   };
 
-  const getAlertColor = (severity: string) => {
-    switch (severity) {
+  const getAlertColor = (alertType: string) => {
+    switch (alertType) {
       case 'critical':
         return 'border-l-red-500 bg-red-50';
-      case 'high':
+      case 'warning':
         return 'border-l-orange-500 bg-orange-50';
-      case 'medium':
+      case 'reminder':
         return 'border-l-yellow-500 bg-yellow-50';
       default:
         return 'border-l-blue-500 bg-blue-50';
@@ -73,7 +73,7 @@ export const NotificationCenter = () => {
                 return (
                   <Card
                     key={alert.id}
-                    className={`border-l-4 ${getAlertColor(alert.severity)} ${
+                    className={`border-l-4 ${getAlertColor(alert.alert_type)} ${
                       !alert.is_read ? 'ring-1 ring-blue-200' : ''
                     }`}
                   >
@@ -85,10 +85,13 @@ export const NotificationCenter = () => {
                             <CardTitle className="text-sm leading-tight">{alert.title}</CardTitle>
                             <div className="flex items-center gap-2 mt-1">
                               <Badge
-                                variant={alert.severity === 'critical' ? 'destructive' : 'secondary'}
+                                variant={alert.alert_type === 'critical' ? 'destructive' : 'secondary'}
                                 className="text-xs"
                               >
-                                {alert.severity}
+                                {alert.alert_type}
+                              </Badge>
+                              <Badge variant="outline" className="text-xs">
+                                {alert.category}
                               </Badge>
                               <span className="text-xs text-gray-500">
                                 {new Date(alert.created_at).toLocaleDateString()}
@@ -124,13 +127,6 @@ export const NotificationCenter = () => {
                       <CardDescription className="text-xs leading-relaxed">
                         {alert.message}
                       </CardDescription>
-                      
-                      {alert.metric_name && alert.metric_value && (
-                        <div className="mt-2 p-2 bg-white rounded border text-xs">
-                          <span className="font-medium">{alert.metric_name}: </span>
-                          <span>{alert.metric_value}</span>
-                        </div>
-                      )}
                     </CardContent>
                   </Card>
                 );
