@@ -1,269 +1,452 @@
-import React from "react";
-import { Bot, MessageCircle, Brain, Shield, Clock, Heart } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Link } from "react-router-dom";
-import FeatureHighlights from "@/components/landing/FeatureHighlights";
-import HowItWorks from "@/components/landing/HowItWorks";
-import ComplianceTrust from "@/components/landing/ComplianceTrust";
-import InteractiveDemo from "@/components/landing/InteractiveDemo";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Send, Bot, Sparkles, AlertTriangle, Download, Heart, Activity, Brain } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import SEO from "@/components/SEO";
 import StructuredData from "@/components/StructuredData";
+import { supabase } from "@/integrations/supabase/client";
 
-const features = [
-  {
-    icon: MessageCircle,
-    title: "Instant Health Guidance",
-    description: "Get immediate answers to your health questions with AI-powered medical assistance available 24/7."
-  },
-  {
-    icon: Brain,
-    title: "Personalized Medical Insights",
-    description: "Receive tailored health recommendations based on your medical history and current symptoms."
-  },
-  {
-    icon: Shield,
-    title: "Safe & Reliable",
-    description: "Evidence-based responses with clear guidance on when to seek professional medical care."
-  },
-  {
-    icon: Clock,
-    title: "Available Anytime",
-    description: "Access health guidance whenever you need it, with no appointments or waiting times required."
-  },
-  {
-    icon: Heart,
-    title: "Empathetic Care",
-    description: "Human-like, compassionate responses that understand your health concerns and provide comfort."
-  },
-  {
-    icon: Bot,
-    title: "Advanced AI Technology",
-    description: "Powered by cutting-edge AI trained on vast medical knowledge to provide accurate guidance."
-  }
-];
+interface Message {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: Date;
+}
 
-const benefits = [
-  "Get instant answers to health questions",
-  "Understand symptoms and when to seek care",
-  "Receive medication guidance and interactions",
-  "Track health trends and patterns",
-  "Access preventive care recommendations",
-  "Get mental health support and resources"
+const quickActions = [
+  "Analyze my lab report",
+  "What are common symptoms of flu?",
+  "Preventive health tips",
+  "Explain my test results"
 ];
 
 export default function AIDoctor() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [inputMessage, setInputMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const messageCountRef = useRef(0);
+
+  // Load messages from localStorage for non-logged-in users
+  useEffect(() => {
+    if (!user) {
+      const savedMessages = localStorage.getItem('aiDoctorMessages');
+      if (savedMessages) {
+        try {
+          const parsed = JSON.parse(savedMessages);
+          setMessages(parsed.map((m: any) => ({
+            ...m,
+            timestamp: new Date(m.timestamp)
+          })));
+          messageCountRef.current = parsed.length;
+        } catch (error) {
+          console.error('Error loading saved messages:', error);
+        }
+      }
+    }
+  }, [user]);
+
+  // Auto-scroll to bottom
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  // Save messages to localStorage for non-logged-in users
+  useEffect(() => {
+    if (!user && messages.length > 0) {
+      localStorage.setItem('aiDoctorMessages', JSON.stringify(messages));
+    }
+  }, [messages, user]);
+
+  const handleSendMessage = async (messageText?: string) => {
+    const content = messageText || inputMessage;
+    if (!content.trim() || isLoading) return;
+
+    // Check message limit for non-logged-in users
+    if (!user && messageCountRef.current >= 3) {
+      setShowLoginModal(true);
+      return;
+    }
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: 'user',
+      content,
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setInputMessage("");
+    setIsLoading(true);
+    messageCountRef.current += 1;
+
+    // Create AI message placeholder with streaming effect
+    const aiMessageId = (Date.now() + 1).toString();
+    const aiMessage: Message = {
+      id: aiMessageId,
+      role: 'assistant',
+      content: '',
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, aiMessage]);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-doctor-chat', {
+        body: {
+          message: content,
+          conversationId: null,
+          userReports: [],
+          userProfile: null,
+          symptoms: [],
+          conversationHistory: [],
+          healthTrends: [],
+          conversationContext: {}
+        }
+      });
+
+      if (error) throw error;
+
+      // Simulate typing effect
+      const fullResponse = data.response;
+      let currentText = '';
+      const words = fullResponse.split(' ');
+      
+      for (let i = 0; i < words.length; i++) {
+        currentText += (i > 0 ? ' ' : '') + words[i];
+        setMessages(prev => prev.map(msg => 
+          msg.id === aiMessageId 
+            ? { ...msg, content: currentText }
+            : msg
+        ));
+        await new Promise(resolve => setTimeout(resolve, 30));
+      }
+
+    } catch (error) {
+      console.error('Error sending message:', error);
+      toast.error('Failed to get response. Please try again.');
+      setMessages(prev => prev.map(msg => 
+        msg.id === aiMessageId 
+          ? { 
+              ...msg, 
+              content: 'I apologize, but I\'m currently experiencing technical difficulties. Please try again or consult with a healthcare provider.'
+            }
+          : msg
+      ));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  const handleLogin = () => {
+    // Save current messages to resume after login
+    localStorage.setItem('aiDoctorMessages', JSON.stringify(messages));
+    navigate('/auth');
+  };
+
+  const downloadSummary = (content: string) => {
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `doclumen-consultation-${Date.now()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success('Summary downloaded successfully');
+  };
+
   return (
     <>
       <SEO
-        title="AI Doctor Assistant - 24/7 Medical Guidance & Health Consultation"
-        description="Get instant medical guidance with DocLumen's AI Doctor Assistant. 24/7 symptom analysis, personalized health advice, and professional medical recommendations. Start your free consultation today."
-        keywords="AI doctor, medical consultation, symptom checker, health guidance, medical advice, telemedicine, AI health assistant, virtual doctor, medical AI, health consultation online"
+        title="AI Doctor Chat - 24/7 Medical Consultation | DocLumen"
+        description="Chat with DocLumen's AI Doctor for instant medical guidance. Get personalized health advice, symptom analysis, and expert recommendations available 24/7."
+        keywords="AI doctor chat, medical consultation, health chat, symptom checker, medical advice, virtual doctor"
         url="https://doclumen.com/ai-doctor"
       />
       <StructuredData type="service" />
       
-      <div className="min-h-screen bg-gradient-to-br from-medical-primary/5 to-white">
-        {/* Hero Section */}
-        <section className="relative py-20 lg:py-32 overflow-hidden">
-          <div className="container mx-auto px-4">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div className="space-y-8">
-                <div className="space-y-4">
-                  <div className="inline-flex items-center gap-2 bg-medical-primary/10 text-medical-primary px-4 py-2 rounded-full text-sm font-medium">
-                    <Bot className="w-4 h-4" />
-                    AI-Powered Medical Assistant
-                  </div>
-                  <h1 className="text-4xl lg:text-6xl font-bold text-foreground leading-tight">
-                    Your Personal
-                    <span className="text-medical-primary block">AI Doctor Assistant</span>
-                  </h1>
-                  <p className="text-xl text-muted-foreground leading-relaxed">
-                    Get instant, reliable medical guidance powered by advanced AI technology. Ask health questions, describe symptoms, and receive personalized medical insights available 24/7 with professional-grade accuracy.
-                  </p>
+      <div className="min-h-screen bg-gradient-to-br from-medical-primary/5 to-white flex flex-col">
+        {/* Header */}
+        <header className="border-b bg-white/95 backdrop-blur-sm sticky top-0 z-50">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-medical-primary to-medical-secondary rounded-full flex items-center justify-center">
+                  <img 
+                    src="/lovable-uploads/f53de30c-14ea-4f2b-ad69-1ada86812a6b.png" 
+                    alt="DocLumen" 
+                    className="w-8 h-8 object-contain"
+                  />
                 </div>
-
-                <div className="space-y-4">
-                  <div className="flex flex-wrap gap-3">
-                    <Link to="/auth" aria-label="Try DocLumen AI Doctor free consultation">
-                      <Button size="lg" className="bg-medical-primary hover:bg-medical-dark text-white px-8 py-3">
-                        Try AI Doctor Free
-                      </Button>
-                    </Link>
-                    <Button variant="outline" size="lg" className="px-8 py-3">
-                      Watch Demo
-                    </Button>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    ✓ No credit card required ✓ Instant access ✓ HIPAA compliant ✓ 24/7 availability
+                <div>
+                  <h1 className="text-xl font-bold text-foreground">DocLumen AI Doctor</h1>
+                  <p className="text-xs text-green-600 flex items-center gap-1">
+                    <span className="w-2 h-2 bg-green-600 rounded-full animate-pulse"></span>
+                    Available 24/7
                   </p>
                 </div>
               </div>
-
-              <div className="relative">
-                <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-md mx-auto">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 pb-4 border-b">
-                      <div className="w-10 h-10 bg-medical-primary/10 rounded-full flex items-center justify-center">
-                        <Bot className="w-5 h-5 text-medical-primary" />
-                      </div>
-                      <div>
-                        <p className="font-medium">AI Doctor Assistant</p>
-                        <p className="text-sm text-green-600">● Available 24/7</p>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      <div className="bg-gray-100 p-3 rounded-lg">
-                        <p className="text-sm">👋 Hello! I'm your AI medical assistant. How can I help with your health concerns today?</p>
-                      </div>
-                      <div className="bg-medical-primary text-white p-3 rounded-lg ml-8">
-                        <p className="text-sm">I've been having persistent headaches for 3 days. Should I be concerned?</p>
-                      </div>
-                      <div className="bg-gray-100 p-3 rounded-lg">
-                        <p className="text-sm">I understand your concern about persistent headaches. Can you tell me about the intensity, location, and any triggers you've noticed?</p>
-                      </div>
-                    </div>
-                    
-                    <div className="pt-2">
-                      <div className="flex gap-2">
-                        <div className="flex-1 bg-gray-50 rounded-lg px-3 py-2">
-                          <p className="text-xs text-gray-500">Type your health question...</p>
-                        </div>
-                        <div className="w-8 h-8 bg-medical-primary rounded-lg flex items-center justify-center">
-                          <MessageCircle className="w-4 h-4 text-white" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Features Section */}
-        <section className="py-20 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-                Why Choose DocLumen AI Doctor Assistant?
-              </h2>
-              <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-                Advanced AI medical technology meets compassionate healthcare to provide you with instant, reliable medical guidance whenever you need professional health support.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {features.map((feature, index) => (
-                <Card key={index} className="border-2 hover:border-medical-primary/50 transition-all duration-300 hover:shadow-lg">
-                  <CardContent className="p-6">
-                    <div className="w-12 h-12 bg-medical-primary/10 rounded-lg flex items-center justify-center mb-4">
-                      <feature.icon className="w-6 h-6 text-medical-primary" />
-                    </div>
-                    <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
-                    <p className="text-muted-foreground">{feature.description}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Interactive Demo Section */}
-        <InteractiveDemo />
-
-        {/* Benefits Section */}
-        <section className="py-20 bg-gradient-to-br from-medical-light/20 to-white">
-          <div className="container mx-auto px-4">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div>
-                <h2 className="text-3xl lg:text-4xl font-bold mb-6">
-                  Your Health, Enhanced by AI Technology
-                </h2>
-                <p className="text-lg text-muted-foreground mb-8">
-                  DocLumen AI Doctor Assistant combines the latest in artificial intelligence with comprehensive medical expertise to provide you with professional-grade health support and medical guidance.
-                </p>
-                
-                <div className="space-y-4 mb-8">
-                  {benefits.map((benefit, index) => (
-                    <div key={index} className="flex items-center gap-3">
-                      <div className="w-6 h-6 bg-medical-secondary rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-white text-sm">✓</span>
-                      </div>
-                      <span className="text-foreground">{benefit}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-8">
-                  <Link to="/auth" aria-label="Start your health journey with AI Doctor">
-                    <Button size="lg" className="bg-medical-primary hover:bg-medical-dark text-white">
-                      Start Your Health Journey
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-
-              <div className="relative">
-                <div className="bg-white rounded-2xl shadow-xl p-8">
-                  <div className="space-y-6">
-                    <div className="text-center">
-                      <div className="w-16 h-16 bg-medical-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Bot className="w-8 h-8 text-medical-primary" />
-                      </div>
-                      <h3 className="font-semibold text-lg">AI Medical Assistant</h3>
-                      <p className="text-sm text-muted-foreground">Professional health guidance available 24/7</p>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      <div className="bg-gray-50 p-3 rounded-lg">
-                        <p className="text-sm font-medium mb-1">Symptom Analysis</p>
-                        <p className="text-xs text-muted-foreground">Describe your symptoms for instant medical guidance</p>
-                      </div>
-                      <div className="bg-gray-50 p-3 rounded-lg">
-                        <p className="text-sm font-medium mb-1">Medication Help</p>
-                        <p className="text-xs text-muted-foreground">Get information about drug interactions and safety</p>
-                      </div>
-                      <div className="bg-gray-50 p-3 rounded-lg">
-                        <p className="text-sm font-medium mb-1">Preventive Care</p>
-                        <p className="text-xs text-muted-foreground">Receive personalized health recommendations</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* How It Works */}
-        <HowItWorks />
-
-        {/* Trust & Compliance */}
-        <ComplianceTrust />
-
-        {/* CTA Section */}
-        <section className="py-20 bg-medical-primary text-white">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-              Ready to Experience AI-Powered Healthcare?
-            </h2>
-            <p className="text-xl mb-8 opacity-90 max-w-2xl mx-auto">
-              Join thousands of users who trust DocLumen AI Doctor for their health guidance. Get started in seconds with professional medical support.
-            </p>
-            <div className="space-y-4">
-              <Link to="/auth" aria-label="Try DocLumen AI Doctor Assistant free">
-                <Button size="lg" variant="secondary" className="px-8 py-3 text-medical-primary">
-                  Try AI Doctor Free
+              {!user && (
+                <Button 
+                  onClick={handleLogin}
+                  variant="outline"
+                  size="sm"
+                  className="border-medical-primary text-medical-primary hover:bg-medical-primary hover:text-white"
+                >
+                  Sign In
                 </Button>
-              </Link>
-              <p className="text-sm opacity-75">
-                No commitment required • Instant access • Privacy protected • HIPAA compliant
-              </p>
+              )}
             </div>
           </div>
-        </section>
+        </header>
+
+        {/* Main Chat Interface */}
+        <div className="flex-1 container mx-auto px-4 py-6 max-w-5xl">
+          <Card className="h-full flex flex-col shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
+            {/* Welcome State */}
+            {messages.length === 0 && (
+              <CardContent className="flex-1 flex flex-col items-center justify-center p-8">
+                <div className="text-center space-y-6 max-w-2xl">
+                  <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-medical-primary to-medical-secondary flex items-center justify-center shadow-lg">
+                    <Bot className="w-10 h-10 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-3xl font-bold text-foreground mb-3">
+                      Meet DocLumen AI Doctor
+                    </h2>
+                    <p className="text-lg text-muted-foreground">
+                      Your 24/7 Health Companion
+                    </p>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Ask health questions, get instant AI insights, and understand your reports with ease.
+                    </p>
+                  </div>
+
+                  {/* Quick Actions */}
+                  <div className="space-y-3">
+                    <p className="text-sm font-medium text-muted-foreground">Try asking about:</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {quickActions.map((action, index) => (
+                        <Button
+                          key={index}
+                          variant="outline"
+                          onClick={() => handleSendMessage(action)}
+                          className="h-auto py-3 px-4 text-left justify-start hover:border-medical-primary hover:bg-medical-primary/5 group"
+                        >
+                          <div className="flex items-center gap-3 w-full">
+                            {index === 0 && <Activity className="w-5 h-5 text-medical-primary flex-shrink-0" />}
+                            {index === 1 && <Brain className="w-5 h-5 text-medical-primary flex-shrink-0" />}
+                            {index === 2 && <Heart className="w-5 h-5 text-medical-primary flex-shrink-0" />}
+                            {index === 3 && <Sparkles className="w-5 h-5 text-medical-primary flex-shrink-0" />}
+                            <span className="text-sm group-hover:text-medical-primary">{action}</span>
+                          </div>
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {!user && (
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
+                      <p className="font-medium mb-1">Free Trial: 3 messages</p>
+                      <p className="text-xs">Sign in to continue your conversation and save your chat history.</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            )}
+
+            {/* Messages Area */}
+            {messages.length > 0 && (
+              <>
+                <ScrollArea className="flex-1 p-6" ref={scrollAreaRef}>
+                  <div className="space-y-6 max-w-4xl mx-auto">
+                    {messages.map((message) => (
+                      <div
+                        key={message.id}
+                        className={`flex gap-3 animate-fade-in ${
+                          message.role === 'user' ? 'justify-end' : 'justify-start'
+                        }`}
+                      >
+                        {message.role === 'assistant' && (
+                          <div className="w-8 h-8 bg-gradient-to-br from-medical-primary to-medical-secondary rounded-full flex items-center justify-center flex-shrink-0">
+                            <Bot className="w-4 h-4 text-white" />
+                          </div>
+                        )}
+                        
+                        <div className={`max-w-[80%] ${message.role === 'user' ? 'order-1' : ''}`}>
+                          <div
+                            className={`rounded-2xl px-4 py-3 shadow-md ${
+                              message.role === 'user'
+                                ? 'bg-medical-primary text-white rounded-tr-sm'
+                                : 'bg-white border border-gray-200 rounded-tl-sm'
+                            }`}
+                          >
+                            <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                              {message.content}
+                            </p>
+                          </div>
+                          
+                          {message.role === 'assistant' && message.content && (
+                            <div className="flex items-center gap-2 mt-2">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => downloadSummary(message.content)}
+                                className="h-8 text-xs text-muted-foreground hover:text-medical-primary"
+                              >
+                                <Download className="w-3 h-3 mr-1" />
+                                Download
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+
+                    {isLoading && (
+                      <div className="flex gap-3 animate-fade-in">
+                        <div className="w-8 h-8 bg-gradient-to-br from-medical-primary to-medical-secondary rounded-full flex items-center justify-center">
+                          <Bot className="w-4 h-4 text-white" />
+                        </div>
+                        <div className="bg-white border border-gray-200 rounded-2xl rounded-tl-sm px-4 py-3 shadow-md">
+                          <div className="flex items-center gap-2">
+                            <div className="flex space-x-1">
+                              <div className="w-2 h-2 bg-medical-primary rounded-full animate-bounce"></div>
+                              <div className="w-2 h-2 bg-medical-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                              <div className="w-2 h-2 bg-medical-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                            </div>
+                            <span className="text-sm text-gray-600">AI is thinking...</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </ScrollArea>
+
+                {/* Quick Suggestions Above Input */}
+                <div className="px-6 pb-2">
+                  <div className="flex flex-wrap gap-2 max-w-4xl mx-auto">
+                    {["Explain in simpler terms", "What should I do next?", "Any warning signs?"].map((suggestion, idx) => (
+                      <Button
+                        key={idx}
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleSendMessage(suggestion)}
+                        disabled={isLoading}
+                        className="text-xs h-8 hover:bg-medical-primary/5 hover:border-medical-primary"
+                      >
+                        {suggestion}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Input Area */}
+            <div className="border-t bg-white p-4">
+              <div className="max-w-4xl mx-auto">
+                <div className="flex gap-3">
+                  <Input
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder="Ask DocLumen anything about your health..."
+                    className="flex-1 h-12 border-gray-200 focus:border-medical-primary rounded-xl text-sm"
+                    disabled={isLoading}
+                  />
+                  <Button 
+                    onClick={() => handleSendMessage()}
+                    disabled={!inputMessage.trim() || isLoading}
+                    className="h-12 px-6 bg-medical-primary hover:bg-medical-dark text-white rounded-xl"
+                  >
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
+                <p className="text-xs text-gray-500 mt-2 text-center">
+                  {!user && `${Math.max(0, 3 - messageCountRef.current)} free messages remaining • `}
+                  Press Enter to send • Your privacy is protected
+                </p>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Medical Disclaimer */}
+        <div className="container mx-auto px-4 pb-6 max-w-5xl">
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
+              <div className="text-xs text-amber-800">
+                <p className="font-medium mb-1">Medical Disclaimer</p>
+                <p>
+                  DocLumen AI provides health information for educational purposes only. This is not a substitute for 
+                  professional medical advice, diagnosis, or treatment. Always consult your healthcare provider for 
+                  medical concerns. In emergencies, contact emergency services immediately.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Login Modal */}
+        {showLoginModal && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <Card className="max-w-md w-full shadow-2xl animate-scale-in">
+              <CardContent className="p-6 space-y-4">
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-medical-primary to-medical-secondary flex items-center justify-center">
+                    <Sparkles className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">Continue Your Health Journey</h3>
+                  <p className="text-muted-foreground text-sm">
+                    To continue chatting with DocLumen AI Doctor, please sign in or create a free account.
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <Button 
+                    onClick={handleLogin}
+                    className="w-full h-12 bg-medical-primary hover:bg-medical-dark text-white"
+                  >
+                    Sign In / Create Account
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => setShowLoginModal(false)}
+                    className="w-full h-12"
+                  >
+                    Maybe Later
+                  </Button>
+                </div>
+
+                <div className="text-center text-xs text-muted-foreground">
+                  <p>✓ Save your chat history</p>
+                  <p>✓ Unlimited conversations</p>
+                  <p>✓ Personalized health insights</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </>
   );
