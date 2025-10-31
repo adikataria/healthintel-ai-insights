@@ -539,74 +539,104 @@ COMPLETE ANALYSIS MANDATE: Extract ALL medical laboratory data, test results, an
       return;
     }
 
+    if (uploadedFiles.length === 0) {
+      toast.error('Please select a file to upload');
+      return;
+    }
+
     setIsUploading(true);
     setAnalysisStatus('processing');
     setUploadProgress(0);
 
     try {
-      console.log('Starting comprehensive file processing for:', uploadedFiles[0].name, uploadedFiles[0].type);
+      const file = uploadedFiles[0];
+      console.log('Starting file upload for:', file.name, file.type);
+
+      // Upload file to storage first
+      const fileName = `${user.id}/${Date.now()}_${file.name}`;
+      const { data: storageData, error: uploadError } = await supabase.storage
+        .from('medical-reports')
+        .upload(fileName, file);
+
+      if (uploadError) {
+        console.error('Storage upload error:', uploadError);
+        throw uploadError;
+      }
+
+      // Simulate upload progress
+      const interval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(interval);
+            return 90;
+          }
+          return prev + 10;
+        });
+      }, 200);
 
       // Create a report record in the database
       const { data: reportData, error: insertError } = await supabase
         .from('medical_reports')
         .insert({
           user_id: user.id,
-          title: uploadedFiles[0].name,
-          file_name: uploadedFiles[0].name,
-          report_type: uploadedFiles[0].type,
+          title: file.name,
+          file_name: file.name,
+          file_path: storageData.path,
+          report_type: file.type,
           analysis_status: 'pending'
         })
         .select()
         .single();
 
-      if (insertError) throw insertError;
+      if (insertError) {
+        console.error('Database insert error:', insertError);
+        throw insertError;
+      }
+
+      if (!reportData) {
+        console.error('No report data returned from insert');
+        throw new Error('Failed to create report record');
+      }
 
       setCurrentReportId(reportData.id);
+      clearInterval(interval);
+      setUploadProgress(100);
 
-      // Simulate upload progress
-      const interval = setInterval(() => {
-        setUploadProgress(prev => {
-          if (prev >= 100) {
-            clearInterval(interval);
-            setIsUploading(false);
+      // Extract file content with comprehensive processing
+      setTimeout(() => {
+        setIsUploading(false);
+        extractFileContent(file)
+          .then(content => {
+            console.log('Comprehensive medical file content extracted:', {
+              fileName: file.name,
+              fileType: file.type,
+              contentLength: content.length,
+              contentPreview: content.substring(0, 800)
+            });
             
-            // Extract file content with comprehensive processing
-            extractFileContent(uploadedFiles[0])
-              .then(content => {
-                console.log('Comprehensive medical file content extracted:', {
-                  fileName: uploadedFiles[0].name,
-                  fileType: uploadedFiles[0].type,
-                  contentLength: content.length,
-                  contentPreview: content.substring(0, 800),
-                  medicalTermsDetected: (content.match(/(?:hemoglobin|glucose|cholesterol|creatinine|protein|albumin|bilirubin|enzyme|vitamin|hormone|test|result|value|normal|range)/gi) || []).length
-                });
-                
-                // Start AI analysis with comprehensive content and PDF data
-                startAnalysis({
-                  reportId: reportData.id,
-                  content: content,
-                  type: uploadedFiles[0].type,
-                  fileName: uploadedFiles[0].name,
-                  pdfData: currentPdfData // Include enhanced PDF processing data
-                });
-              })
-              .catch(error => {
-                console.error('Comprehensive file extraction error:', error);
-                toast.error('Failed to extract file content. Please try again.');
-                setAnalysisStatus('idle');
-              });
-            
-            return 100;
-          }
-          return prev + 10;
-        });
-      }, 200);
+            // Start AI analysis with comprehensive content and PDF data
+            startAnalysis({
+              reportId: reportData.id,
+              content: content,
+              type: file.type,
+              fileName: file.name,
+              pdfData: currentPdfData
+            });
+          })
+          .catch(error => {
+            console.error('Comprehensive file extraction error:', error);
+            toast.error('Failed to extract file content. Please try again.');
+            setAnalysisStatus('idle');
+          });
+      }, 500);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Upload error:', error);
-      toast.error('Upload failed');
+      const errorMessage = error?.message || 'Upload failed. Please try again.';
+      toast.error(errorMessage);
       setIsUploading(false);
       setAnalysisStatus('idle');
+      setUploadProgress(0);
     }
   };
 
